@@ -1,0 +1,48 @@
+.demo-header-inner {
+  padding: 0 20px;
+}
+
+.demo-header-brand {
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
+.demo-title {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.demo-header-menu {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.demo-header-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.demo-header-segments {
+  width: max-content;
+}
+
+.theme-toggle {
+  flex: 0 0 36px;
+}
+
+@media (max-width: 720px) {
+  .demo-header-inner {
+    padding: 0 14px;
+  }
+
+  .demo-title {
+    font-size: 16px;
+  }
+
+  .demo-header-menu {
+    flex-basis: 1px;
+  }
+}

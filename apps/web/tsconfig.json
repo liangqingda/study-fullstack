@@ -1,0 +1,10 @@
+// 用于前端业务代码
+{
+  "extends": "@liangqingda/tsconfig/react.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

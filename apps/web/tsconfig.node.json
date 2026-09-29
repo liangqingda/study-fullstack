@@ -1,0 +1,8 @@
+// 用于 vite 配置
+{
+  "extends": "@liangqingda/tsconfig/node.json",
+  "compilerOptions": {
+    "noEmit": true,
+  },
+  "include": ["vite.config.ts"]
+}

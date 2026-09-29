@@ -1,0 +1,55 @@
+{
+  "name": "@liangqingda/study-nodejs-schema",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Runtime schemas and OpenAPI contracts for study-nodejs",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./apis": {
+      "types": "./lib/apis/index.d.ts",
+      "default": "./lib/apis/index.js"
+    }
+  },
+  "files": [
+    "lib"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "generate:apitypes": "ts-node scripts/generate-apitypes.ts",
+    "generate:openapi": "ts-node scripts/generate-openapi.ts",
+    "lint": "eslint 'types/**/*.ts' 'apis/**/*.ts' 'common/**/*.ts' 'scripts/**/*.ts' index.ts",
+    "lint:fix": "pnpm lint --fix",
+    "prebuild": "pnpm generate:apitypes && pnpm generate:openapi",
+    "build": "node -e \"require('node:fs').rmSync('lib', { recursive: true, force: true })\" && tsc",
+    "postbuild": "node -e \"const fs=require('node:fs'); fs.copyFileSync('openApiJsonFile.json', 'lib/openApiJsonFile.json'); fs.rmSync('lib/scripts', {recursive:true, force:true})\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.1",
+  "lint-staged": {
+    "*.ts": "eslint --fix"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^9.1.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@liangqingda/eslint-config": "^1.2.14",
+    "@liangqingda/tsconfig": "^1.0.1",
+    "@types/node": "^26.6.2",
+    "eslint": "^9.39.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
+    "zod-to-ts": "^2.1.0"
+  }
+}

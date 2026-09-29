@@ -1,0 +1,41 @@
+.demo-sidebar-desktop {
+  height: 100%;
+}
+
+.demo-sidebar-list {
+  display: grid;
+  gap: 4px;
+  padding: 12px 10px;
+}
+
+.demo-sidebar-mobile {
+  display: none;
+}
+
+.demo-sidebar-link {
+  border-radius: var(--mantine-radius-md);
+}
+
+@media (max-width: 48em) {
+  .demo-sidebar-desktop {
+    display: none;
+  }
+
+  .demo-sidebar-mobile {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 14px;
+    scrollbar-width: none;
+  }
+
+  .demo-sidebar-mobile::-webkit-scrollbar {
+    display: none;
+  }
+
+  .demo-sidebar-link {
+    flex: 0 0 auto;
+    width: max-content;
+    min-width: 180px;
+  }
+}

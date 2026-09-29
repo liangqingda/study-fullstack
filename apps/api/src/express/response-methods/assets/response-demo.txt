@@ -1,0 +1,3 @@
+Express response methods demo
+res.download() 将此文件作为附件下载。
+res.sendFile() 将同一文件直接发送给浏览器。

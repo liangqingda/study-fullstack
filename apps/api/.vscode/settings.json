@@ -1,0 +1,49 @@
+{
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "pgsql.serverGroups": [
+    {
+      "name": "服务器",
+      "id": "FE26B370-23DD-4896-8D35-AC84B4EEC63F",
+      "isDefault": true
+    }
+  ],
+  "pgsql.connections": [
+    {
+      "id": "68D818E0-0B0B-43D1-8481-53C1D8EDEC88",
+      "groupId": "FE26B370-23DD-4896-8D35-AC84B4EEC63F",
+      "authenticationType": "None",
+      "connectTimeout": 15,
+      "applicationName": "vscode-pgsql",
+      "clientEncoding": "utf8",
+      "sslmode": "prefer",
+      "sshSavePassword": true,
+      "savePassword": true,
+      "sslRootCertMode": "none",
+      "server": "127.0.0.1",
+      "user": "lqd",
+      "password": "",
+      "expiresOn": 0,
+      "emptyPasswordInput": true,
+      "database": "postgres",
+      "profileName": "local pg",
+      "port": "5432",
+      "sshPassword": "",
+      "profileSource": 0
+    }
+  ],
+  "pgsql.enableQueryHistoryCapture": false,
+  "dbcode.resultLocation": "below",
+  "[sql]": {
+    "editor.defaultFormatter": "ReneSaarsoo.sql-formatter-vsc",
+    "editor.formatOnSave": true
+  },
+  "SQL-Formatter-VSCode.dialect": "postgresql",
+  "SQL-Formatter-VSCode.keywordCase": "upper",
+  "SQL-Formatter-VSCode.dataTypeCase": "upper",
+  "SQL-Formatter-VSCode.functionCase": "upper"
+}

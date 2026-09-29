@@ -1,0 +1,9 @@
+**/node_modules
+**/build
+**/lib
+**/dist
+**/.env
+**/.env.*
+!**/.env.example
+.git
+.pnpm-store

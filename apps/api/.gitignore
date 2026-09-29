@@ -1,0 +1,12 @@
+node_modules
+.DS_Store
+build
+.env
+.env.*
+!.env.example
+coverage/
+*.tsbuildinfo
+*.log
+.pnpm-store/
+.eslintcache
+sql/

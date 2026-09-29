@@ -1,0 +1,41 @@
+{
+  "name": "study-react",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "gen:apis": "node scripts/gen-apis.mjs",
+    "test:apis": "node --test scripts/gen-apis.test.mjs",
+    "gen:routes": "node scripts/gen-routes.mjs",
+    "build": "pnpm gen:routes && tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@liangqingda/study-nodejs-schema": "workspace:*",
+    "@mantine/code-highlight": "9.4.1",
+    "@mantine/core": "^9.4.1",
+    "@mantine/hooks": "^9.4.1",
+    "@tabler/icons-react": "^3.45.0",
+    "axios": "^1.20.0",
+    "highlight.js": "^11.12.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router": "^8.2.0"
+  },
+  "devDependencies": {
+    "@liangqingda/eslint-config": "^1.2.14",
+    "@liangqingda/tsconfig": "^1.0.1",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "eslint": "^9.39.5",
+    "openapi-typescript": "^7.13.0",
+    "prettier": "^3.9.5",
+    "sass": "^1.101.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.5"
+  }
+}

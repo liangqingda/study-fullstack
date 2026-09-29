@@ -1,0 +1,10 @@
+node_modules/
+lib/
+build/
+openApiJsonFile.json
+.env
+.env.*
+*.log
+.pnpm-store/
+.cache/
+.DS_Store
