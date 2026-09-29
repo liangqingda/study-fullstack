@@ -29,7 +29,7 @@
       "password": "",
       "expiresOn": 0,
       "emptyPasswordInput": true,
-      "database": "postgres",
+      "database": "study_nodejs",
       "profileName": "local pg",
       "port": "5432",
       "sshPassword": "",
