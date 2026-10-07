@@ -7,6 +7,8 @@
     "dev": "vite",
     "gen:apis": "node scripts/gen-apis.mjs",
     "test:apis": "node --test scripts/gen-apis.test.mjs",
+    "test": "node --test scripts/*.test.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit",
     "gen:routes": "node scripts/gen-routes.mjs",
     "build": "pnpm gen:routes && tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build",
     "lint": "eslint .",

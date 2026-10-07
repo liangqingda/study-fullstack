@@ -34,16 +34,6 @@ export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial
   app.disable('x-powered-by');
   const jsonParser = express.json();
 
-  app.use((req, res, next) => {
-    if (req.path === '/api/middleware/built-in') {
-      next();
-      return;
-    }
-
-    jsonParser(req, res, next);
-  });
-  app.use(cors({ origin: config.corsOrigins.length ? config.corsOrigins : false }));
-  app.use(compression());
   app.use(
     pinoHttp({
       logger,
@@ -53,6 +43,16 @@ export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial
       },
     }),
   );
+  app.use(cors({ origin: config.corsOrigins.length ? config.corsOrigins : false }));
+  app.use(compression());
+  app.use((req, res, next) => {
+    if (req.path === '/api/middleware/built-in') {
+      next();
+      return;
+    }
+
+    jsonParser(req, res, next);
+  });
 
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
   app.get('/health-check', (_req, res) => res.json({ status: 'ok' }));

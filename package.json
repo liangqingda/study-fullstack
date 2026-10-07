@@ -6,11 +6,12 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "pnpm --parallel --filter study-nodejs --filter study-react dev",
-    "build": "pnpm --filter @liangqingda/study-nodejs-schema build && pnpm --filter study-react gen:apis && pnpm --filter study-nodejs build && pnpm --filter study-react build",
+    "dev": "node scripts/dev.mjs",
+    "sync": "pnpm --filter @liangqingda/study-nodejs-schema build && pnpm --filter study-react gen:apis && pnpm --filter study-react gen:routes",
+    "build": "pnpm sync && pnpm --filter study-nodejs build && pnpm --filter study-react build",
     "lint": "pnpm -r lint",
-    "test": "pnpm --filter study-nodejs test && pnpm --filter study-react test:apis",
-    "typecheck": "pnpm --filter study-nodejs typecheck && pnpm --filter study-nodejs typecheck:test",
+    "test": "pnpm --filter study-nodejs test && pnpm --filter study-react test",
+    "typecheck": "pnpm -r typecheck && pnpm --filter study-nodejs typecheck:test",
     "prepare": "husky"
   },
   "devDependencies": {

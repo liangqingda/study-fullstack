@@ -22,6 +22,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "generate:apitypes": "ts-node scripts/generate-apitypes.ts",
     "generate:openapi": "ts-node scripts/generate-openapi.ts",
     "lint": "eslint 'types/**/*.ts' 'apis/**/*.ts' 'common/**/*.ts' 'scripts/**/*.ts' index.ts",

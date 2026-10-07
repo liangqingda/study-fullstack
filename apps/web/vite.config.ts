@@ -8,6 +8,8 @@ import { defineConfig, normalizePath } from 'vite';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 
+import { routesPlugin } from './scripts/routes-plugin.mjs';
+
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = normalizePath(path.resolve(rootDir, 'src'));
 const scssExtension = '.scss';
@@ -145,7 +147,7 @@ export default defineConfig({
       localsConvention: 'camelCaseOnly',
     },
   },
-  plugins: [implicitScssModules(), backendSourcePreview(), react()],
+  plugins: [routesPlugin(rootDir), implicitScssModules(), backendSourcePreview(), react()],
   resolve: {
     alias: {
       '@': srcDir,

@@ -11,12 +11,11 @@ Node.js/Express learning service, React/Vite UI, and shared API contracts in one
 ```sh
 corepack enable
 pnpm install
-pnpm build
 pnpm dev
 ```
 
-Open `http://localhost:5173`; the API listens on `http://localhost:3000`. `pnpm dev` starts both services. From a fresh checkout, run `pnpm build` first so the schema's `lib/` exists. For PostgreSQL demos, put `DATABASE_URL` pointing only to `study_nodejs` in ignored `apps/api/.env`; see `apps/api/.env.example`. The default tests do not need a database. Never commit credentials.
+Open `http://localhost:5173`; the API listens on `http://localhost:3000`. `pnpm dev` prepares the schema, API client and routes before starting both services. Schema source changes rebuild the contracts and restart the API; adding or removing pages automatically refreshes routes. If schema generation fails, fix the error and save again to retry. For PostgreSQL demos, put `DATABASE_URL` pointing only to `study_nodejs` in ignored `apps/api/.env`; see `apps/api/.env.example`. The default tests do not need a database. Never commit credentials.
 
-`pnpm build` builds the schema, refreshes the generated web API client, and builds the API and web apps in that order. Run `pnpm lint`, `pnpm typecheck`, and `pnpm test` from the root for workspace verification. Package-specific commands and learning notes remain in each package's README. The private ESLint and TypeScript config packages require authorized GitHub Packages access; the root `.npmrc` contains no token.
+`pnpm sync` refreshes the schema, API client and routes without starting services. Run it after a fresh install before standalone type checks or tests. `pnpm build` synchronizes these files and builds the API and web apps. Run `pnpm lint`, `pnpm typecheck`, and `pnpm test` from the root for workspace verification; type checks cover all three packages and API tests, while tests cover API behavior and API/route generation. Package-specific commands and learning notes remain in each package's README. The private ESLint and TypeScript config packages require authorized GitHub Packages access; the root `.npmrc` contains no token.
 
 For an API image, use `docker build -f apps/api/Dockerfile .` from this directory. CI verifies the workspace using a single frozen lockfile.
