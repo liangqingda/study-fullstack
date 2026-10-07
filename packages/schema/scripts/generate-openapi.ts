@@ -17,6 +17,11 @@ function isApiInfo(value: unknown): value is ApiInfo {
 
 const registry = new OpenAPIRegistry();
 
+registry.registerComponent('securitySchemes', 'bearerAuth', {
+  type: 'http',
+  scheme: 'bearer',
+});
+
 for (const value of Object.values(apis)) {
   if (!isApiInfo(value)) {continue;}
 
@@ -25,6 +30,7 @@ for (const value of Object.values(apis)) {
     path: value.path,
     summary: value.summary,
     tags: value.tags,
+    security: value.requiresAuth ? [{ bearerAuth: [] }] : undefined,
     request: {
       query: value.query,
       params: value.params,

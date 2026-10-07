@@ -6,6 +6,7 @@ const ENVIRONMENT = z.object({
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   CORS_ORIGINS: z.string().optional(),
   DATABASE_URL: z.string().trim().min(1).optional(),
+  REDIS_URL: z.string().trim().min(1).default('redis://127.0.0.1:6379'),
 });
 
 export type AppConfig = {
@@ -14,6 +15,7 @@ export type AppConfig = {
   logLevel: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent';
   corsOrigins: string[];
   databaseUrl?: string;
+  redisUrl: string;
 };
 
 export const readConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
@@ -44,5 +46,6 @@ export const readConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
     logLevel: RESULT.data.LOG_LEVEL,
     corsOrigins: CORS_ORIGINS,
     databaseUrl: RESULT.data.DATABASE_URL,
+    redisUrl: RESULT.data.REDIS_URL,
   };
 };

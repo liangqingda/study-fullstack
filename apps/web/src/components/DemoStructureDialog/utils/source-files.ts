@@ -1,6 +1,7 @@
 const frontendSources = import.meta.glob<string>([
   '@/pages/Express/**/*.{ts,tsx,scss}',
   '@/pages/Postgres/**/*.{ts,tsx,scss}',
+  '@/pages/Redis/**/*.{ts,tsx,scss}',
   '@/pages/CssDemos/**/*.{ts,tsx,scss}',
   '@/apis/**/*.{ts,tsx}',
   '@/utils/http/**/*.{ts,tsx}',
@@ -8,14 +9,17 @@ const frontendSources = import.meta.glob<string>([
 
 const backendSources = import.meta.glob<string>([
   '../../../../api/src/services/app.ts',
+  '../../../../api/src/services/redis.ts',
   '../../../../api/src/middlewares/error-handler.ts',
   '../../../../api/src/express/middleware/**/*.{ts,txt,ejs}',
   '../../../../api/src/express/error-handling/**/*.{ts,txt,ejs}',
   '../../../../api/src/express/response-methods/**/*.{ts,txt,ejs}',
+  '../../../../api/src/express/sms-login/**/*.{ts}',
   '../../../../api/src/express/transactions/**/*.{ts,sql}',
 ], { query: '?raw', import: 'default' });
 
 const schemaSources = import.meta.glob<string>([
+  '../../../../../packages/schema/apis/sms-login/**/*.ts',
   '../../../../../packages/schema/apis/transactions/**/*.ts',
   '../../../../../packages/schema/apis/model/api-info.ts',
 ], { query: '?raw', import: 'default' });

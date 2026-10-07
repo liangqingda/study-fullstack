@@ -8,15 +8,17 @@ import type { Express } from 'express';
 import type { AppConfig } from '../consts/config';
 import type { PostgresClient } from '../express/postgres/queries';
 import type { Pool } from 'pg';
+import type { Redis } from 'ioredis';
 
 import { errorHandler } from '../middlewares/error-handler';
 import errorHandlingRouter from '../express/error-handling';
 import middlewareRouter, { applicationMiddleware } from '../express/middleware';
 import { createPostgresRouter } from '../express/postgres';
 import responseMethodsRouter from '../express/response-methods';
+import { createSmsLoginRouter } from '../express/sms-login';
 import { createTransactionRouter } from '../express/transactions';
 
-export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial<Pick<Pool, 'connect'>>): Express => {
+export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial<Pick<Pool, 'connect'>>, redis?: Redis): Express => {
   const app = express();
   const logger = pino({
     level: config.logLevel,
@@ -57,6 +59,7 @@ export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
   app.get('/health-check', (_req, res) => res.json({ status: 'ok' }));
   app.use('/api/postgres', createPostgresRouter(postgres));
+  app.use('/api/sms-login', createSmsLoginRouter(redis));
   app.use('/api/transactions', createTransactionRouter(postgres?.connect ? postgres as Pick<Pool, 'connect'> : undefined));
   app.use('/api/response-methods', responseMethodsRouter);
   app.use('/api/middleware', applicationMiddleware, middlewareRouter);

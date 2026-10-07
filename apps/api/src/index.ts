@@ -3,10 +3,12 @@ import 'dotenv/config';
 import { readConfig } from './consts/config';
 import { createApp } from './services/app';
 import { createPostgresPool } from './services/postgres';
+import { createRedisClient } from './services/redis';
 
 const config = readConfig();
 const postgres = config.databaseUrl ? createPostgresPool(config.databaseUrl) : undefined;
-const server = createApp(config, postgres).listen(config.httpPort, () => {
+const redis = createRedisClient(config.redisUrl);
+const server = createApp(config, postgres, redis).listen(config.httpPort, () => {
   console.info(`Server running at http://localhost:${config.httpPort}`);
 });
 
@@ -31,6 +33,13 @@ const shutdown = async () => {
       await postgres?.end();
     } catch (error) {
       console.error('[postgres] pool shutdown failed', error);
+      process.exitCode = 1;
+    }
+
+    try {
+      redis.disconnect();
+    } catch (error) {
+      console.error('[redis] shutdown failed', error);
       process.exitCode = 1;
     }
   }

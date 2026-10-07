@@ -123,6 +123,7 @@ export const generateApiClient = async (document) => {
       const requiredQuery = allParams.some((parameter) => parameter.in === 'query' && parameter.required);
       const hasBody = Boolean(operation.requestBody);
       const requiredBody = Boolean(operation.requestBody?.required);
+      const hasAuth = Boolean(operation.security?.length || document.security?.length);
 
       if ((route.includes('{') && !hasPath) || (hasBody && !operation.requestBody.content?.['application/json'])) {
         throw new Error(`Unsupported path parameters or request body: ${method.toUpperCase()} ${route}`);
@@ -131,6 +132,7 @@ export const generateApiClient = async (document) => {
         ...(hasPath ? [`path: ${await parameterType(allParams.filter((parameter) => parameter.in === 'path'))}`] : []),
         ...(hasQuery ? [`query${requiredQuery ? '' : '?'}: ${await parameterType(allParams.filter((parameter) => parameter.in === 'query'))}`] : []),
         ...(hasBody ? [`body${requiredBody ? '' : '?'}: ${await schemaType(operation.requestBody.content['application/json'].schema)}`] : []),
+        ...(hasAuth ? ['headers?: { authorization?: string }'] : []),
         'signal?: AbortSignal',
       ];
       const required = hasPath || requiredQuery || requiredBody;
@@ -141,6 +143,7 @@ export const generateApiClient = async (document) => {
         `url: ${url}`,
         ...(hasQuery ? ['params: input.query'] : []),
         ...(hasBody ? ['data: input.body'] : []),
+        ...(hasAuth ? ['headers: input.headers'] : []),
         'signal: input.signal',
       ];
 

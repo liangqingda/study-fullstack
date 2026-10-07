@@ -7,6 +7,7 @@ import ExpressErrorHandlingPage from "@/pages/Express/ErrorHandling/index";
 import ExpressMiddlewarePage from "@/pages/Express/Middleware/index";
 import ExpressResponseMethodsPage from "@/pages/Express/ResponseMethods/index";
 import PostgresTransactionsPage from "@/pages/Postgres/Transactions/index";
+import RedisSmsLoginPage from "@/pages/Redis/SmsLogin/index";
 
 export type DemoRoute = {
   path: string;
@@ -61,6 +62,13 @@ export const demoRoutes: DemoRoute[] = [
     label: "transactions",
     Component: PostgresTransactionsPage,
   },
+  {
+    path: "/redis/sms-login",
+    menuKey: "/redis/sms-login",
+    topLevelKey: "/redis",
+    label: "sms-login",
+    Component: RedisSmsLoginPage,
+  },
 ];
 
 export const headerMenus: DemoMenuItem[] = [
@@ -78,6 +86,11 @@ export const headerMenus: DemoMenuItem[] = [
     "key": "/postgres",
     "label": "postgres",
     "path": "/postgres/transactions"
+  },
+  {
+    "key": "/redis",
+    "label": "redis",
+    "path": "/redis/sms-login"
   }
 ];
 
@@ -111,6 +124,13 @@ export const sidebarMenusByTopLevel: Record<string, DemoMenuItem[]> = {
       "key": "/postgres/transactions",
       "label": "transactions",
       "path": "/postgres/transactions"
+    }
+  ],
+  "/redis": [
+    {
+      "key": "/redis/sms-login",
+      "label": "sms-login",
+      "path": "/redis/sms-login"
     }
   ]
 };

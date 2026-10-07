@@ -26,10 +26,12 @@ const previewFiles = new Set([
   'src/express/response-methods/index.ts',
   'src/express/response-methods/assets/response-demo.txt',
   'src/express/response-methods/views/response-demo.ejs',
+  'src/express/sms-login/index.ts',
+  'src/services/redis.ts',
   'src/express/transactions/index.ts',
   'src/express/transactions/run.ts',
 ]);
-const schemaPreviewFiles = new Set(['apis/transactions/index.ts', 'apis/model/api-info.ts']);
+const schemaPreviewFiles = new Set(['apis/sms-login/index.ts', 'apis/transactions/index.ts', 'apis/model/api-info.ts']);
 
 const backendSourcePreview = (): Plugin => ({
   name: 'backend-source-preview',
