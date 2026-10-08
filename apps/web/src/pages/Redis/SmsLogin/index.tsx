@@ -101,6 +101,34 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
   });
   const cooldownEndRef = useRef<number>(loadCooldownEnd(label));
   const timerRef = useRef<number | null>(null);
+  const [meRemaining, setMeRemaining] = useState(0);
+  const meExpiresAtRef = useRef(0);
+  const meTimerRef = useRef<number | null>(null);
+
+  const clearMeTimer = useCallback(() => {
+    if (meTimerRef.current !== null) {
+      window.clearInterval(meTimerRef.current);
+      meTimerRef.current = null;
+    }
+  }, []);
+
+  const startMeCountdown = useCallback((seconds: number) => {
+    meExpiresAtRef.current = Date.now() + seconds * 1000;
+    setMeRemaining(seconds);
+    clearMeTimer();
+    meTimerRef.current = window.setInterval(() => {
+      const remaining = Math.max(0, Math.round((meExpiresAtRef.current - Date.now()) / 1000));
+
+      setMeRemaining(remaining);
+
+      if (remaining <= 0) {
+        clearMeTimer();
+        persistToken(label, null);
+        setToken(null);
+        setMe(null);
+      }
+    }, 1000);
+  }, [clearMeTimer, label]);
 
   const clearCooldownTimer = useCallback(() => {
     if (timerRef.current !== null) {
@@ -166,6 +194,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
         .then((response) => {
           setToken(storedToken);
           setMe(response.data);
+          startMeCountdown(response.data.remainingSeconds);
         })
         .catch(() => {
           persistToken(label, null);
@@ -174,8 +203,11 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
         });
     }
 
-    return clearCooldownTimer;
-  }, [clearCooldownTimer, stopCooldown, label]);
+    return () => {
+      clearCooldownTimer();
+      clearMeTimer();
+    };
+  }, [clearCooldownTimer, stopCooldown, label, startMeCountdown, clearMeTimer]);
 
   const auth = token ? { headers: { authorization: `Bearer ${token}` } } : undefined;
 
@@ -216,6 +248,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       persistToken(label, response.data.token);
       setToken(response.data.token);
       setMe({ phone, token: response.data.token, remainingSeconds: response.data.expiresInSeconds, refreshed: false });
+      startMeCountdown(response.data.expiresInSeconds);
       setOps((current) => [
         newOp('GET', `sms:code:${phone}`, '比对验证码'),
         newOp('DEL', `sms:code:${phone}`, '一次性使用'),
@@ -242,6 +275,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       const response = await getApiSmsLoginMe(auth ?? { signal: undefined });
 
       setMe(response.data);
+      startMeCountdown(response.data.remainingSeconds);
       setOps((current) => [
         newOp('GET', `session:${token?.slice(0, 8)}…`, '读取共享会话'),
         newOp('EXPIRE', `session:${token?.slice(0, 8)}…`, '滑动续期 30min'),
@@ -265,6 +299,8 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
 
       setOps((current) => [newOp('DEL', `session:${token?.slice(0, 8)}…`, response.data.ok ? '会话已删除' : '会话不存在'), ...current].slice(0, 12));
       persistToken(label, null);
+      clearMeTimer();
+      setMeRemaining(0);
       setToken(null);
       setMe(null);
       onLoginStateChange();
@@ -303,7 +339,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       {token && me && (
         <div className={styles.sessionBox}>
           <div><small>共享会话</small><CodeValue>{me.token.slice(0, 12)}…</CodeValue></div>
-          <div><small>剩余 TTL</small><strong>{me.remainingSeconds}s</strong><small>（刷新后）</small></div>
+          <div><small>剩余 TTL</small><strong>{meRemaining}s</strong><small>（每秒递减 · 刷新 /me 续期）</small></div>
           <div className={styles.sessionActions}>
             <Button leftSection={<IconRefresh size={15} />} loading={busy === 'me'} onClick={() => void refresh()} size="xs" variant="default">刷新会话 /me</Button>
             <Button color="red" leftSection={<IconX size={15} />} loading={busy === 'logout'} onClick={() => void logout()} size="xs" variant="outline">退出</Button>
