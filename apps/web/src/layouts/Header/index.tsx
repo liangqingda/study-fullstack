@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { ActionIcon, Group, SegmentedControl, ThemeIcon, Title, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
-import { IconBrandReact, IconMoon, IconSun } from '@tabler/icons-react';
+import { IconBrandGithub, IconBrandReact, IconMoon, IconSun } from '@tabler/icons-react';
 
 import type { DemoMenuItem } from '@/generated/routes';
 
@@ -53,6 +53,18 @@ const Header = ({ menus, selectedTopLevelKey }: HeaderProps) => {
           />
         </nav>
       ) : null}
+      <ActionIcon
+        aria-label="查看源码仓库"
+        className={styles.githubLink}
+        component="a"
+        href="https://github.com/liangqingda/study-fullstack"
+        size="lg"
+        target="_blank"
+        title="查看源码仓库"
+        variant="subtle"
+      >
+        <IconBrandGithub size={20} />
+      </ActionIcon>
       <ActionIcon
         aria-label={isDark ? '切换到亮色主题' : '切换到暗色主题'}
         className={styles.themeToggle}
