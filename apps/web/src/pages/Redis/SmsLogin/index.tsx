@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Badge, Button, Group, Text, TextInput, Title } from '@mantine/core';
 import { IconBrandGoogle, IconLogin, IconRefresh, IconX } from '@tabler/icons-react';
 
@@ -18,6 +18,38 @@ import { isAxiosError } from '@/utils/http';
 import styles from './index.scss';
 
 type RedisOp = { id: number; op: string; key: string; note: string };
+
+const storagePrefix = 'sms-login:';
+const tokenKey = (label: string): string => `${storagePrefix}token:${label}`;
+const cooldownKey = (label: string): string => `${storagePrefix}cooldown-end:${label}`;
+
+const loadStoredToken = (label: string): string | null => {
+  try {
+    return localStorage.getItem(tokenKey(label));
+  } catch {
+    return null;
+  }
+};
+
+const persistToken = (label: string, token: string | null): void => {
+  try {
+    if (token) {
+      localStorage.setItem(tokenKey(label), token);
+    } else {
+      localStorage.removeItem(tokenKey(label));
+    }
+  } catch {
+    // 隐私模式下存储不可用，仅退化为纯内存态。
+  }
+};
+
+const loadCooldownEnd = (label: string): number => {
+  try {
+    return Number(localStorage.getItem(cooldownKey(label)) ?? 0);
+  } catch {
+    return 0;
+  }
+};
 
 let opSeq = 0;
 
@@ -62,6 +94,88 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
   const [ops, setOps] = useState<RedisOp[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
+  const [cooldown, setCooldown] = useState(() => {
+    const end = loadCooldownEnd(label);
+
+    return end > Date.now() ? Math.round((end - Date.now()) / 1000) : 0;
+  });
+  const cooldownEndRef = useRef<number>(loadCooldownEnd(label));
+  const timerRef = useRef<number | null>(null);
+
+  const clearCooldownTimer = useCallback(() => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const stopCooldown = useCallback(() => {
+    clearCooldownTimer();
+
+    try {
+      localStorage.removeItem(cooldownKey(label));
+    } catch {
+      // 忽略。
+    }
+  }, [clearCooldownTimer, label]);
+
+  const startCooldown = useCallback((seconds: number) => {
+    cooldownEndRef.current = Date.now() + seconds * 1000;
+
+    try {
+      localStorage.setItem(cooldownKey(label), String(cooldownEndRef.current));
+    } catch {
+      // 忽略存储失败，倒计时退化为纯内存态。
+    }
+
+    setCooldown(seconds);
+    clearCooldownTimer();
+    timerRef.current = window.setInterval(() => {
+      const remaining = Math.max(0, Math.round((cooldownEndRef.current - Date.now()) / 1000));
+
+      setCooldown(remaining);
+
+      if (remaining <= 0) {
+        stopCooldown();
+      }
+    }, 1000);
+  }, [clearCooldownTimer, stopCooldown, label]);
+
+  useEffect(() => {
+    // 刷新后恢复发码倒计时：后端限频在 60s 内仍会拒绝，界面保持一致。
+    const savedEnd = loadCooldownEnd(label);
+
+    if (savedEnd > Date.now()) {
+      cooldownEndRef.current = savedEnd;
+      timerRef.current = window.setInterval(() => {
+        const remaining = Math.max(0, Math.round((cooldownEndRef.current - Date.now()) / 1000));
+
+        setCooldown(remaining);
+
+        if (remaining <= 0) {
+          stopCooldown();
+        }
+      }, 1000);
+    }
+
+    // 刷新后恢复登录态：从 localStorage 读 token，再用 /me 校验（会话在 Redis 中仍有效则自动续期）。
+    const storedToken = loadStoredToken(label);
+
+    if (storedToken) {
+      getApiSmsLoginMe({ headers: { authorization: `Bearer ${storedToken}` } })
+        .then((response) => {
+          setToken(storedToken);
+          setMe(response.data);
+        })
+        .catch(() => {
+          persistToken(label, null);
+          setToken(null);
+          setMe(null);
+        });
+    }
+
+    return clearCooldownTimer;
+  }, [clearCooldownTimer, stopCooldown, label]);
 
   const auth = token ? { headers: { authorization: `Bearer ${token}` } } : undefined;
 
@@ -73,6 +187,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       const response = await postApiSmsLoginSendCode({ body: { phone } });
 
       setSent(response.data);
+      startCooldown(response.data.ttlSeconds);
       setOps((current) => [
         newOp('SET', `sms:send:${phone}`, 'NX + EX 60s：限频标记'),
         newOp('SET', `sms:code:${phone}`, `EX ${response.data.ttlSeconds}s：写入验证码`),
@@ -82,6 +197,10 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       const data = isAxiosError<{ error: string; retryAfterSeconds?: number }>(cause) ? cause.response?.data : undefined;
 
       setError(data?.error ?? '发码失败；请确认后端与 Redis 已启动。');
+
+      if (data?.retryAfterSeconds) {
+        startCooldown(data.retryAfterSeconds);
+      }
     } finally {
       setBusy('');
     }
@@ -94,6 +213,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     try {
       const response = await postApiSmsLoginLogin({ body: { phone, code: codeInput } });
 
+      persistToken(label, response.data.token);
       setToken(response.data.token);
       setMe({ phone, token: response.data.token, remainingSeconds: response.data.expiresInSeconds, refreshed: false });
       setOps((current) => [
@@ -144,6 +264,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       const response = await postApiSmsLoginLogout(auth ?? { signal: undefined });
 
       setOps((current) => [newOp('DEL', `session:${token?.slice(0, 8)}…`, response.data.ok ? '会话已删除' : '会话不存在'), ...current].slice(0, 12));
+      persistToken(label, null);
       setToken(null);
       setMe(null);
       onLoginStateChange();
@@ -165,7 +286,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
 
       <div className={styles.row}>
         <TextInput aria-label={`客户${label} 手机号`} disabled={Boolean(token)} label="手机号" onChange={(event) => setPhone(event.currentTarget.value)} value={phone} />
-        <Button disabled={Boolean(token)} leftSection={<IconBrandGoogle size={16} />} loading={busy === 'send'} onClick={() => void sendCode()} variant="default">发送验证码</Button>
+        <Button disabled={Boolean(token) || cooldown > 0} leftSection={<IconBrandGoogle size={16} />} loading={busy === 'send'} onClick={() => void sendCode()} variant="default">{cooldown > 0 ? `${cooldown}s 后重试` : '发送验证码'}</Button>
       </div>
 
       {sent && (
