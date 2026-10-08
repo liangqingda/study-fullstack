@@ -13,17 +13,17 @@ import styles from './index.scss';
 
 const structure: DemoStructure = {
   frontend: [
-    { path: 'src/pages/Express/ResponseMethods/index.tsx', role: '选择响应方法并触发请求，组织页面讲解。' },
-    { path: 'src/pages/Express/ResponseMethods/hooks/useResponseRequest.ts', role: '发送请求并读取状态、响应头与响应体。' },
-    { path: 'src/pages/Express/ResponseMethods/utils/response-methods.ts', role: '各方法的请求地址、预期结果和对比说明。' },
-    { path: 'src/pages/Express/ResponseMethods/components/ResponseResult.tsx', role: '展示实际响应及对应解释。' },
-    { path: 'src/pages/Express/ResponseMethods/index.scss', role: '页面与结果样式。' },
+    { path: 'apps/web/src/pages/Express/ResponseMethods/index.tsx', role: '选择响应方法并触发请求，组织页面讲解。' },
+    { path: 'apps/web/src/pages/Express/ResponseMethods/hooks/useResponseRequest.ts', role: '发送请求并读取状态、响应头与响应体。' },
+    { path: 'apps/web/src/pages/Express/ResponseMethods/utils/response-methods.ts', role: '各方法的请求地址、预期结果和对比说明。' },
+    { path: 'apps/web/src/pages/Express/ResponseMethods/components/ResponseResult.tsx', role: '展示实际响应及对应解释。' },
+    { path: 'apps/web/src/pages/Express/ResponseMethods/index.scss', role: '页面与结果样式。' },
   ],
   backend: [
-    { path: 'src/services/app.ts', role: '将示例 Router 挂载到 /api/response-methods。' },
-    { path: 'src/express/response-methods/index.ts', role: '九种 res 响应方法的路由和终端日志。' },
-    { path: 'src/express/response-methods/assets/response-demo.txt', role: 'download 与 sendFile 使用的示例文件。' },
-    { path: 'src/express/response-methods/views/response-demo.ejs', role: 'render 方法使用的 EJS 模板。' },
+    { path: 'apps/api/src/services/app.ts', role: '将示例 Router 挂载到 /api/response-methods。' },
+    { path: 'apps/api/src/express/response-methods/index.ts', role: '九种 res 响应方法的路由和终端日志。' },
+    { path: 'apps/api/src/express/response-methods/assets/response-demo.txt', role: 'download 与 sendFile 使用的示例文件。' },
+    { path: 'apps/api/src/express/response-methods/views/response-demo.ejs', role: 'render 方法使用的 EJS 模板。' },
   ],
   connection: '页面向 /api/response-methods/{方法名} 发送请求；对应路由选用 res 方法返回响应，Hook 读取实际响应，再由 ResponseResult 展示。下载和跳转也提供浏览器直接操作入口。',
   database: '无。响应内容来自路由数据、同目录的文本文件或 EJS 模板，不查询或修改数据库。',

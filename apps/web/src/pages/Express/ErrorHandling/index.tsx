@@ -9,13 +9,13 @@ import styles from './index.scss';
 
 const structure: DemoStructure = {
   frontend: [
-    { path: 'src/pages/Express/ErrorHandling/index.tsx', role: '六种错误路径的讲解、请求操作与状态码、响应头和响应体展示。' },
-    { path: 'src/pages/Express/ErrorHandling/index.scss', role: '错误结果、执行步骤和页面布局样式。' },
+    { path: 'apps/web/src/pages/Express/ErrorHandling/index.tsx', role: '六种错误路径的讲解、请求操作与状态码、响应头和响应体展示。' },
+    { path: 'apps/web/src/pages/Express/ErrorHandling/index.scss', role: '错误结果、执行步骤和页面布局样式。' },
   ],
   backend: [
-    { path: 'src/services/app.ts', role: '将示例 Router 挂载到 /api/error-handling，并在路由之后挂载应用级错误处理器。' },
-    { path: 'src/express/error-handling/index.ts', role: '实现六条错误路由及四参数错误处理器，记录完成或连接关闭。' },
-    { path: 'src/middlewares/error-handler.ts', role: '处理示例 Router 继续转交的未发送响应错误；响应头已发送时再交给 Express 默认处理器。' },
+    { path: 'apps/api/src/services/app.ts', role: '将示例 Router 挂载到 /api/error-handling，并在路由之后挂载应用级错误处理器。' },
+    { path: 'apps/api/src/express/error-handling/index.ts', role: '实现六条错误路由及四参数错误处理器，记录完成或连接关闭。' },
+    { path: 'apps/api/src/middlewares/error-handler.ts', role: '处理示例 Router 继续转交的未发送响应错误；响应头已发送时再交给 Express 默认处理器。' },
   ],
   connection: '页面请求 /api/error-handling/{示例名}；路由触发错误后，示例处理器可直接返回 JSON，也可继续转交给应用级错误处理器。响应头已发送时继续进入 Express 默认处理器并关闭连接。',
   database: '无。错误由路由和文件读取模拟，不查询或修改数据库。',

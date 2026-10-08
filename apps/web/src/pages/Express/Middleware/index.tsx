@@ -9,12 +9,12 @@ import styles from './index.scss';
 
 const structure: DemoStructure = {
   frontend: [
-    { path: 'src/pages/Express/Middleware/index.tsx', role: '五类中间件的讲解、请求操作和执行链展示。' },
-    { path: 'src/pages/Express/Middleware/index.scss', role: '页面布局与结果样式。' },
+    { path: 'apps/web/src/pages/Express/Middleware/index.tsx', role: '五类中间件的讲解、请求操作和执行链展示。' },
+    { path: 'apps/web/src/pages/Express/Middleware/index.scss', role: '页面布局与结果样式。' },
   ],
   backend: [
-    { path: 'src/services/app.ts', role: '将应用级中间件和 Router 挂载到 /api/middleware，并配置通用请求处理。' },
-    { path: 'src/express/middleware/index.ts', role: '实现应用级、路由级、错误处理、内置和第三方中间件示例；记录执行链及终端日志。' },
+    { path: 'apps/api/src/services/app.ts', role: '将应用级中间件和 Router 挂载到 /api/middleware，并配置通用请求处理。' },
+    { path: 'apps/api/src/express/middleware/index.ts', role: '实现应用级、路由级、错误处理、内置和第三方中间件示例；记录执行链及终端日志。' },
   ],
   connection: '页面向 /api/middleware/{示例名} 发送 GET 或 POST；app.ts 先经过 applicationMiddleware，再由对应路由处理。后端返回的 trace 在页面按顺序展示。',
   database: '无。五个请求只使用请求体与 res.locals，不查询或修改数据库。',

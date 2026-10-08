@@ -24,15 +24,29 @@ const schemaSources = import.meta.glob<string>([
   '../../../../../packages/schema/apis/model/api-info.ts',
 ], { query: '?raw', import: 'default' });
 
+const rootPrefixes: Record<'frontend' | 'backend' | 'schema', string> = {
+  frontend: 'apps/web/',
+  backend: 'apps/api/',
+  schema: 'packages/schema/',
+};
+
+const stripRoot = (repository: 'frontend' | 'backend' | 'schema', path: string): string => {
+  const prefix = rootPrefixes[repository];
+
+  return path.startsWith(prefix) ? path.slice(prefix.length) : path;
+};
+
 export const getSourceFile = async (repository: 'frontend' | 'backend' | 'schema', path: string): Promise<string | undefined> => {
+  const rel = stripRoot(repository, path);
+
   if (repository === 'frontend') {
-    const key = `/${path}`;
+    const key = `/${rel}`;
 
     return key in frontendSources ? frontendSources[key]() : undefined;
   }
 
   if (import.meta.env.DEV) {
-    const response = await fetch(`${repository === 'schema' ? '/__demo_schema/' : '/__demo_source/'}${path}`);
+    const response = await fetch(`${repository === 'schema' ? '/__demo_schema/' : '/__demo_source/'}${rel}`);
 
     if (!response.ok) {
       throw new Error(`Source preview failed: ${response.status}`);
@@ -42,12 +56,12 @@ export const getSourceFile = async (repository: 'frontend' | 'backend' | 'schema
   }
 
   if (repository === 'schema') {
-    const key = `../../../../../packages/schema/${path}`;
+    const key = `../../../../../packages/schema/${rel}`;
 
     return key in schemaSources ? schemaSources[key]() : undefined;
   }
 
-  const key = `../../../../api/${path}`;
+  const key = `../../../../api/${rel}`;
 
   return key in backendSources ? backendSources[key]() : undefined;
 };

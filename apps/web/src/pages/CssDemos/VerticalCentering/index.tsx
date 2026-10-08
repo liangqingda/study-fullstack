@@ -36,8 +36,8 @@ import styles from './index.scss';
 
 const structure: DemoStructure = {
   frontend: [
-    { path: 'src/pages/CssDemos/VerticalCentering/index.tsx', role: '定义六种居中方式、切换内容高度并展示对比说明。' },
-    { path: 'src/pages/CssDemos/VerticalCentering/index.scss', role: '实现各预览区域的实际 CSS 居中规则及页面样式。' },
+    { path: 'apps/web/src/pages/CssDemos/VerticalCentering/index.tsx', role: '定义六种居中方式、切换内容高度并展示对比说明。' },
+    { path: 'apps/web/src/pages/CssDemos/VerticalCentering/index.scss', role: '实现各预览区域的实际 CSS 居中规则及页面样式。' },
   ],
   database: '无。此 Demo 只在浏览器内切换预览，不涉及后端接口或数据库。',
 };

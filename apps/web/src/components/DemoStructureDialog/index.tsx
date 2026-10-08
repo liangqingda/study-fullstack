@@ -252,18 +252,18 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
           <nav aria-label="源码文件" className={styles.sidebar}>
             <div className={styles.sidebarInner}>
               <div className={styles.sidebarGroup}>
-                <Text fw={700} size="sm">前端 · study-react</Text>
+                <Text fw={700} size="sm">前端 · apps/web</Text>
                 <StructureTree files={structure.frontend} readFiles={readFiles} repository="frontend" />
               </div>
               {structure.backend && (
                 <div className={styles.sidebarGroup}>
-                  <Text fw={700} size="sm">后端 · study-nodejs</Text>
+                  <Text fw={700} size="sm">后端 · apps/api</Text>
                   <StructureTree files={structure.backend} readFiles={readFiles} repository="backend" />
                 </div>
               )}
               {structure.schema && (
                 <div className={styles.sidebarGroup}>
-                  <Text fw={700} size="sm">契约 · study-nodejs-schema</Text>
+                  <Text fw={700} size="sm">契约 · packages/schema</Text>
                   <StructureTree files={structure.schema} readFiles={readFiles} repository="schema" />
                 </div>
               )}
@@ -299,7 +299,7 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
               </div>
             </section>
             <section className={styles.fileGroup}>
-              <Title order={3} size="h5">前端 · study-react</Title>
+              <Title order={3} size="h5">前端 · apps/web</Title>
               {structure.frontend.map((file) => (
                 <FileReview
                   file={file}
@@ -312,7 +312,7 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
             </section>
             {structure.backend && (
               <section className={styles.fileGroup}>
-                <Title order={3} size="h5">后端 · study-nodejs</Title>
+                <Title order={3} size="h5">后端 · apps/api</Title>
                 {structure.backend.map((file) => (
                   <FileReview
                     file={file}
@@ -326,7 +326,7 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
             )}
             {structure.schema && (
               <section className={styles.fileGroup}>
-                <Title order={3} size="h5">契约 · study-nodejs-schema</Title>
+                <Title order={3} size="h5">契约 · packages/schema</Title>
                 {structure.schema.map((file) => (
                   <FileReview
                     file={file}
