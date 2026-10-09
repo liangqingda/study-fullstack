@@ -40,6 +40,12 @@ description: Implement runnable, observable learning demos in the study-react, s
 - 涉及数据库时先检查 `study_nodejs` 是否有适用表；仅在不改变其他 demo 所依赖的结构、数据或结果时复用。写入和清理仅作用于本 demo 数据，否则使用专用表。
 - 新表用小写 `snake_case`：`demo_<模块名>_<表用途>`。模块名取前端 demo 页面目录最后一级转为 `snake_case`，并与后端功能目录对应；仅有后端时取后端功能目录最后一级。例如 `pages/Express/ResponseMethods` 对应 `demo_response_methods_<表用途>`，事务部门表可命名 `demo_transaction_departments`。表用途使用业务含义，不以 `001` 等编号作固定后缀。
 
+## 前端代码组织（有 Web 页面时）
+
+- 常量放到 `constants.ts`，util 方法放到 `utils.ts`，提取的类型放到 `types.ts`；这些文件就近存放在所属页面或组件目录下，不跨目录共享。
+- 组件适当拆分，每个组件单独一个文件，不要把多个组件堆在 `index.tsx` 里；子组件放在同目录的 `components/` 下，hook 放在 `hooks/` 下。
+- 只有当前页面用到的代码才放在该页面目录；跨 demo 复用的才提升到公共目录。
+
 ## 验证与交付
 
 验证构建、静态检查和关键交互，最终说明运行方式及未验证部分。数据库验证遵守上述连接和数据边界。
