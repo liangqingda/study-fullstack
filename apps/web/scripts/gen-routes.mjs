@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pageFileExtensionPattern = /\.(tsx|jsx|ts|js)$/;
-const ignoredSegmentNames = new Set(['components', 'errors', 'hooks', 'utils']);
+const ignoredSegmentNames = new Set(['components', 'constants', 'errors', 'hooks', 'types', 'utils']);
 
 const compareByName = (left, right) => left.name.localeCompare(right.name);
 
