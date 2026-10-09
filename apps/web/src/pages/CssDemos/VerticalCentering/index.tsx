@@ -258,17 +258,20 @@ const VerticalCenteringDemo = () => {
     <Container className={styles.centeringShell} size="xl">
       <Stack gap="xl">
         <header className={styles.demoHeader}>
-          <Group align="flex-start" gap="sm" justify="space-between">
+          <div>
+            <Text c="teal" fw={700} size="sm">CSS / VERTICAL CENTERING</Text>
+            <Title className={styles.demoTitle} order={1}>
+              CSS 垂直居中方案
+            </Title>
+            <Text c="dimmed" className={styles.demoSubtitle} lh={1.7} size="lg">
+              下面把常用方案放在同一个高度容器里对比：看预览判断对齐效果，
+              看代码决定实际页面该用哪一种。
+            </Text>
+          </div>
+          <Group gap="sm" justify="flex-end">
             <DemoStructureDialog structure={structure} />
             <DemoKnowledgeDialog content={knowledge} demoName="CSS 垂直居中方案" />
           </Group>
-          <Title className={styles.demoTitle} order={1}>
-            CSS 垂直居中方案
-          </Title>
-          <Text c="dimmed" className={styles.demoSubtitle} lh={1.7} size="lg">
-            下面把常用方案放在同一个高度容器里对比：看预览判断对齐效果，
-            看代码决定实际页面该用哪一种。
-          </Text>
         </header>
 
         <section className={styles.summaryBand}>

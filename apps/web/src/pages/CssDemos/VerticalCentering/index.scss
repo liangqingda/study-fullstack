@@ -12,14 +12,15 @@
 }
 
 .demo-header {
-  display: grid;
-  gap: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 28px;
 }
 
-.demo-kicker {
-  width: max-content;
-  font-weight: 700;
-  text-transform: none;
+.demo-header > :last-child {
+  flex-shrink: 0;
 }
 
 .demo-title {
