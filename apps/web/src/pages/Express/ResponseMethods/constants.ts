@@ -2,9 +2,9 @@ import type { Method } from './types';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
-export const basePath = '/api/response-methods';
+export const BASE_PATH = '/api/response-METHODS';
 
-export const methods: Method[] = [
+export const METHODS: Method[] = [
   {
     name: 'res.download()', slug: 'download', description: '提示客户端下载文件',
     note: '把服务器上的文件作为附件发送。',
@@ -66,11 +66,11 @@ export const methods: Method[] = [
     note: '告诉客户端改去另一个地址。',
     explanation: '这里用临时重定向把请求指向 JSON 示例。浏览器的 fetch 会自动跟随，因此页面展示的是最终 JSON 响应。',
     steps: [
-      'GET /redirect 首先返回 302，Location 指向 /api/response-methods/json。',
+      'GET /redirect 首先返回 302，Location 指向 /api/response-METHODS/json。',
       'fetch 默认跟随 Location 再发起一次 GET，第二个路由以 res.json() 返回 200 JSON。',
       '页面拿到的是最终响应，redirected 和 Final URL 表明中间发生过跳转。',
     ],
-    code: "res.redirect(302, '/api/response-methods/json');",
+    code: "res.redirect(302, '/api/response-METHODS/json');",
     observation: '页面显示最终的 200 JSON、Redirect 标记和最终 URL，而非直接显示中间的 302。',
     interpretation: '200 属于跳转目标，不是 res.redirect() 发出的首个响应。最终响应的 Location 为空也正常；它存在于中间的 302 响应上。',
     comparison: '与 res.send() 直接返回内容不同，redirect 让客户端再请求新地址。想观察 302/Location 可查看浏览器网络面板或用 curl -i 且不带 -L。',
@@ -133,7 +133,7 @@ export const methods: Method[] = [
   },
 ];
 
-export const structure: DemoStructure = {
+export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Express/ResponseMethods/index.tsx', role: '选择响应方法并触发请求，组织页面讲解。' },
     { path: 'apps/web/src/pages/Express/ResponseMethods/hooks/useResponseRequest.ts', role: '发送请求并读取状态、响应头与响应体。' },
@@ -144,16 +144,16 @@ export const structure: DemoStructure = {
     { path: 'apps/web/src/pages/Express/ResponseMethods/index.scss', role: '页面与结果样式。' },
   ],
   backend: [
-    { path: 'apps/api/src/services/app.ts', role: '将示例 Router 挂载到 /api/response-methods。' },
-    { path: 'apps/api/src/express/response-methods/index.ts', role: '九种 res 响应方法的路由和终端日志。' },
-    { path: 'apps/api/src/express/response-methods/assets/response-demo.txt', role: 'download 与 sendFile 使用的示例文件。' },
-    { path: 'apps/api/src/express/response-methods/views/response-demo.ejs', role: 'render 方法使用的 EJS 模板。' },
+    { path: 'apps/api/src/services/app.ts', role: '将示例 Router 挂载到 /api/response-METHODS。' },
+    { path: 'apps/api/src/express/response-METHODS/index.ts', role: '九种 res 响应方法的路由和终端日志。' },
+    { path: 'apps/api/src/express/response-METHODS/assets/response-demo.txt', role: 'download 与 sendFile 使用的示例文件。' },
+    { path: 'apps/api/src/express/response-METHODS/views/response-demo.ejs', role: 'render 方法使用的 EJS 模板。' },
   ],
-  connection: '页面向 /api/response-methods/{方法名} 发送请求；对应路由选用 res 方法返回响应，Hook 读取实际响应，再由 ResponseResult 展示。下载和跳转也提供浏览器直接操作入口。',
+  connection: '页面向 /api/response-METHODS/{方法名} 发送请求；对应路由选用 res 方法返回响应，Hook 读取实际响应，再由 ResponseResult 展示。下载和跳转也提供浏览器直接操作入口。',
   database: '无。响应内容来自路由数据、同目录的文本文件或 EJS 模板，不查询或修改数据库。',
 };
 
-export const knowledge = `## res 方法在做什么
+export const KNOWLEDGE = `## res 方法在做什么
 
 \`res.*\` 是 Express 用于**结束本次请求并写出响应**的方法。它们共同处理三件事：**状态码、响应头、响应体**。
 

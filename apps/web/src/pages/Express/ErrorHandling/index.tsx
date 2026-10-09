@@ -7,12 +7,12 @@ import type { Example, Result } from './types';
 import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
-import { examples, knowledge, structure } from './constants';
+import { EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
 
 import styles from './index.scss';
 
 const ErrorHandling = () => {
-  const [selected, setSelected] = useState<Example>(examples[0]);
+  const [selected, setSelected] = useState<Example>(EXAMPLES[0]);
   const [result, setResult] = useState<Result | null>(null);
   const [failure, setFailure] = useState('');
   const [loading, setLoading] = useState(false);
@@ -80,14 +80,14 @@ const ErrorHandling = () => {
             <Text c="dimmed">从错误产生、进入错误处理链，到最终响应或连接中断，逐步对照每条路径。</Text>
           </div>
           <Group gap="sm" justify="flex-end">
-            <DemoStructureDialog structure={structure} />
-            <DemoKnowledgeDialog content={knowledge} demoName="错误处理" />
+            <DemoStructureDialog structure={STRUCTURE} />
+            <DemoKnowledgeDialog content={KNOWLEDGE} demoName="错误处理" />
           </Group>
         </header>
 
         <div className={styles.workspace}>
           <nav aria-label="错误处理示例" className={styles.navigation}>
-            {examples.map((example) => (
+            {EXAMPLES.map((example) => (
               <button
                 aria-current={selected.slug === example.slug ? 'true' : undefined}
                 className={`${styles.navItem} ${selected.slug === example.slug ? styles.active : ''}`}

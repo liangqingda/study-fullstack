@@ -6,14 +6,14 @@ import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
 import ResponseResult from './components/ResponseResult';
-import { basePath, knowledge, methods, structure } from './constants';
+import { BASE_PATH, KNOWLEDGE, METHODS, STRUCTURE } from './constants';
 import { useResponseRequest } from './hooks/useResponseRequest';
 import { methodUrl } from './utils';
 
 import styles from './index.scss';
 
 const ResponseMethods = () => {
-  const [selected, setSelected] = useState(methods[2]);
+  const [selected, setSelected] = useState(METHODS[2]);
   const { result, error, loading, reset, run } = useResponseRequest();
   const url = methodUrl(selected.slug);
 
@@ -22,18 +22,18 @@ const ResponseMethods = () => {
       <div className={styles.shell}>
         <header className={styles.header}>
           <div>
-            <Title order={1}>Response methods</Title>
+            <Title order={1}>Response METHODS</Title>
             <Text c="dimmed">选择方法并发送请求，观察状态、响应头和响应体。</Text>
           </div>
           <Group gap="sm" justify="flex-end">
-            <DemoStructureDialog structure={structure} />
-            <DemoKnowledgeDialog content={knowledge} demoName="Response methods" />
+            <DemoStructureDialog structure={STRUCTURE} />
+            <DemoKnowledgeDialog content={KNOWLEDGE} demoName="Response METHODS" />
           </Group>
         </header>
 
         <div className={styles.workspace}>
-          <nav aria-label="Response methods" className={styles.methodList}>
-            {methods.map((method) => (
+          <nav aria-label="Response METHODS" className={styles.methodList}>
+            {METHODS.map((method) => (
               <button
                 aria-current={selected.slug === method.slug ? 'true' : undefined}
                 className={`${styles.methodItem} ${selected.slug === method.slug ? styles.active : ''}`}
@@ -78,7 +78,7 @@ const ResponseMethods = () => {
                 {(selected.slug === 'download' || selected.slug === 'redirect') && (
                   <Button
                     component="a"
-                    href={`${basePath}/${selected.slug}`}
+                    href={`${BASE_PATH}/${selected.slug}`}
                     leftSection={selected.slug === 'download' ? <IconDownload size={16} /> : <IconExternalLink size={16} />}
                     rel="noreferrer"
                     target="_blank"

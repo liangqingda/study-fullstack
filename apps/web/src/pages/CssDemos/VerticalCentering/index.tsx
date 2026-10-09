@@ -20,7 +20,7 @@ import type { CenteringMethod } from './types';
 import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
-import { centeringMethods, knowledge, principles, structure } from './constants';
+import { CENTERING_METHODS, KNOWLEDGE, PRINCIPLES, STRUCTURE } from './constants';
 
 import styles from './index.scss';
 
@@ -73,8 +73,8 @@ const VerticalCenteringDemo = () => {
             </Text>
           </div>
           <Group gap="sm" justify="flex-end">
-            <DemoStructureDialog structure={structure} />
-            <DemoKnowledgeDialog content={knowledge} demoName="CSS 垂直居中方案" />
+            <DemoStructureDialog structure={STRUCTURE} />
+            <DemoKnowledgeDialog content={KNOWLEDGE} demoName="CSS 垂直居中方案" />
           </Group>
         </header>
 
@@ -95,7 +95,7 @@ const VerticalCenteringDemo = () => {
           </div>
 
           <SimpleGrid cols={{ base: 1, md: 3 }} spacing="sm">
-            {principles.map((item) => (
+            {PRINCIPLES.map((item) => (
               <div className={styles.principleItem} key={item.text}>
                 <ThemeIcon color="gray" radius="md" size={32} variant="light">
                   <item.icon size={18} stroke={1.8} />
@@ -118,7 +118,7 @@ const VerticalCenteringDemo = () => {
           spacing="lg"
           verticalSpacing="lg"
         >
-          {centeringMethods.map((method) => (
+          {CENTERING_METHODS.map((method) => (
             <Card
               className={styles.methodCard}
               key={method.title}

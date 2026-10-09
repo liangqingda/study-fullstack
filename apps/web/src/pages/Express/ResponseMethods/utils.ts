@@ -1,4 +1,4 @@
-import { basePath } from './constants';
+import { BASE_PATH } from './constants';
 
 export const methodUrl = (slug: string) =>
-  `${basePath}/${slug}${slug === 'jsonp' ? '?callback=showResponse' : ''}`;
+  `${BASE_PATH}/${slug}${slug === 'jsonp' ? '?callback=showResponse' : ''}`;

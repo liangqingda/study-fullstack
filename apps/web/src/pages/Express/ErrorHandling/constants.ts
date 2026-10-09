@@ -2,7 +2,7 @@ import type { Example } from './types';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
-export const examples: Example[] = [
+export const EXAMPLES: Example[] = [
   {
     slug: 'sync', title: '同步抛错', subtitle: 'throw -> 默认处理器',
     purpose: '请求进入路由时直接抛出异常。这是最基本的错误入口：路由没有返回响应，Express 会接住错误并开始寻找错误处理器。',
@@ -83,7 +83,7 @@ export const examples: Example[] = [
   },
 ];
 
-export const structure: DemoStructure = {
+export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Express/ErrorHandling/index.tsx', role: '六种错误路径的讲解、请求操作与状态码、响应头和响应体展示。' },
     { path: 'apps/web/src/pages/Express/ErrorHandling/constants.ts', role: '六个示例数据、代码结构和知识点配置。' },
@@ -99,7 +99,7 @@ export const structure: DemoStructure = {
   database: '无。错误由路由和文件读取模拟，不查询或修改数据库。',
 };
 
-export const knowledge = `## 错误从哪里来
+export const KNOWLEDGE = `## 错误从哪里来
 
 错误可以在三个不同时机产生，Express 接住它们的方式不同：
 

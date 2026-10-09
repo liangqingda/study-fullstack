@@ -42,7 +42,7 @@ description: Implement runnable, observable learning demos in the study-react, s
 
 ## 前端代码组织（有 Web 页面时）
 
-- 常量放到 `constants.ts`，util 方法放到 `utils.ts`，提取的类型放到 `types.ts`；这些文件就近存放在所属页面或组件目录下，不跨目录共享。
+- 常量放到 `constants.ts`，util 方法放到 `utils.ts`，提取的类型放到 `types.ts`；这些文件就近存放在所属页面或组件目录下，不跨目录共享。`constants.ts` 中导出的非函数常量必须使用 `UPPER_SNAKE_CASE`（如 `BASE_PATH`、`METHODS`、`STRUCTURE`、`KNOWLEDGE`），函数和箭头函数除外。
 - 组件适当拆分，每个组件单独一个文件，不要把多个组件堆在 `index.tsx` 里；子组件放在同目录的 `components/` 下，hook 放在 `hooks/` 下。
 - 只有当前页面用到的代码才放在该页面目录；跨 demo 复用的才提升到公共目录。
 

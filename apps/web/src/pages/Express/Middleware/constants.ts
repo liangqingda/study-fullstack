@@ -2,9 +2,9 @@ import type { Example } from './types';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
-export const basePath = '/api/middleware';
+export const BASE_PATH = '/api/middleware';
 
-export const examples: Example[] = [
+export const EXAMPLES: Example[] = [
   {
     key: 'application', name: '应用级中间件', summary: '挂载在 app 上',
     explanation: 'app.use 挂载在 /api/middleware，五个示例都会先经过它。与路由级不同，它不属于某个 Router。',
@@ -72,7 +72,7 @@ export const examples: Example[] = [
   },
 ];
 
-export const structure: DemoStructure = {
+export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Express/Middleware/index.tsx', role: '五类中间件的讲解、请求操作和执行链展示。' },
     { path: 'apps/web/src/pages/Express/Middleware/constants.ts', role: '五个示例数据、代码结构和知识点配置。' },
@@ -87,7 +87,7 @@ export const structure: DemoStructure = {
   database: '无。五个请求只使用请求体与 res.locals，不查询或修改数据库。',
 };
 
-export const knowledge = `## 中间件是什么
+export const KNOWLEDGE = `## 中间件是什么
 
 中间件是挂在"请求 → 响应"链路上的处理函数。请求按挂载顺序依次经过它们，每个中间件可以读请求、写响应，或把控制权交给下一步（\`next()\`）。
 

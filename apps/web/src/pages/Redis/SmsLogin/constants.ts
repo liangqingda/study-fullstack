@@ -1,6 +1,6 @@
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
-export const structure: DemoStructure = {
+export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Redis/SmsLogin/index.tsx', role: '双客户端登录、共享会话视图与 Redis 操作日志。' },
     { path: 'apps/web/src/pages/Redis/SmsLogin/components/ClientPanel.tsx', role: '单个客户端的发码、登录、退出和 TTL 倒计时。' },
@@ -25,7 +25,7 @@ export const structure: DemoStructure = {
   database: '不使用 PostgreSQL。验证码与会话全部存于 Redis：sms:code:{phone}（EX 60s）、sms:send:{phone}（限频 NX+EX）、session:{token}（EX 30min，访问时滑动续期）。',
 };
 
-export const knowledge = `## 为什么"共享 session"用 Redis
+export const KNOWLEDGE = `## 为什么"共享 session"用 Redis
 
 登录会话要集中存储，让多个后端实例校验同一份 token。存在进程内内存 Session 只属于单个实例；存在 Redis 这份集中数据里，任何实例都指向同一状态，跨端、跨实例可见。
 

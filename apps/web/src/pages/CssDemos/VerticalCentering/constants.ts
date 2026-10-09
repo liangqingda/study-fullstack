@@ -15,7 +15,7 @@ import type { DemoStructure } from '@/components/DemoStructureDialog';
 
 import styles from './index.scss';
 
-export const centeringMethods: CenteringMethod[] = [
+export const CENTERING_METHODS: CenteringMethod[] = [
   {
     accent: 'blue',
     code: `.parent {
@@ -131,7 +131,7 @@ export const centeringMethods: CenteringMethod[] = [
   },
 ];
 
-export const principles: Principle[] = [
+export const PRINCIPLES: Principle[] = [
   {
     icon: IconLayoutGrid,
     text: '现代页面优先用 flex 或 grid；它们能处理未知尺寸和响应式变化。',
@@ -146,7 +146,7 @@ export const principles: Principle[] = [
   },
 ];
 
-export const structure: DemoStructure = {
+export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/CssDemos/VerticalCentering/index.tsx', role: '定义六种居中方式、切换内容高度并展示对比说明。' },
     { path: 'apps/web/src/pages/CssDemos/VerticalCentering/constants.ts', role: '六种居中方式数据、原则、代码结构和知识点配置。' },
@@ -156,7 +156,7 @@ export const structure: DemoStructure = {
   database: '无。此 Demo 只在浏览器内切换预览，不涉及后端接口或数据库。',
 };
 
-export const knowledge = `## 先记住结论
+export const KNOWLEDGE = `## 先记住结论
 
 普通内容区优先用 **flex** 或 **grid**；它们能处理未知尺寸和响应式变化。特殊场景才用 \`position\`、\`table-cell\`、\`line-height\`。
 

@@ -7,12 +7,12 @@ import type { DemoResponse, Example } from './types';
 import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
-import { basePath, examples, knowledge, structure } from './constants';
+import { BASE_PATH, EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
 
 import styles from './index.scss';
 
 const Middleware = () => {
-  const [selected, setSelected] = useState<Example>(examples[0]);
+  const [selected, setSelected] = useState<Example>(EXAMPLES[0]);
   const [body, setBody] = useState('{"topic":"Express","count":2}');
   const [result, setResult] = useState<{ status: number; data: DemoResponse } | null>(null);
   const [error, setError] = useState('');
@@ -41,7 +41,7 @@ const Middleware = () => {
     setError('');
 
     try {
-      const response = await fetch(`${basePath}/${selected.key}`, {
+      const response = await fetch(`${BASE_PATH}/${selected.key}`, {
         method: selected.method,
         signal: controller.signal,
         ...(selected.method === 'POST' ? { headers: { 'Content-Type': 'application/json' }, body } : {}),
@@ -73,13 +73,13 @@ const Middleware = () => {
             <Text c="dimmed">发送真实请求，对照中间件的执行链和响应。</Text>
           </div>
           <Group gap="sm" justify="flex-end">
-            <DemoStructureDialog structure={structure} />
-            <DemoKnowledgeDialog content={knowledge} demoName="五类中间件" />
+            <DemoStructureDialog structure={STRUCTURE} />
+            <DemoKnowledgeDialog content={KNOWLEDGE} demoName="五类中间件" />
           </Group>
         </header>
         <div className={styles.workspace}>
           <nav aria-label="中间件类型" className={styles.navigation}>
-            {examples.map((example) => (
+            {EXAMPLES.map((example) => (
               <button
                 aria-current={selected.key === example.key ? 'true' : undefined}
                 className={`${styles.navItem} ${selected.key === example.key ? styles.active : ''}`}
@@ -112,7 +112,7 @@ const Middleware = () => {
               <Textarea label="JSON 请求体" minRows={3} onChange={(event) => setBody(event.currentTarget.value)} value={body} />
             )}
             <div className={styles.action}>
-              <Code>{selected.method} {basePath}/{selected.key}</Code>
+              <Code>{selected.method} {BASE_PATH}/{selected.key}</Code>
               <Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void run()}>发送请求</Button>
             </div>
             {error && <Text c="red" role="alert">{error}</Text>}
