@@ -1,7 +1,7 @@
 .page { min-height: calc(100vh - 56px); padding: 32px; background: #f4f7f8; color: #17292f; }
 .shell { max-width: 1260px; margin: 0 auto; }
-.header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding-bottom: 24px; }
-.header h1 { margin: 4px 0 8px; font-size: 30px; letter-spacing: 0; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid #e3eaec; margin-bottom: 24px; }
+.header h1 { margin: 4px 0 10px; font-size: 32px; letter-spacing: 0; }
 .header > :first-child, .heading > :first-child { min-width: 0; }
 .header > :last-child, .heading > :last-child { flex-shrink: 0; }
 .workspace { display: grid; grid-template-columns: minmax(220px, 290px) minmax(0, 1fr); border: 1px solid #dce5e7; border-radius: 8px; overflow: hidden; background: #fff; }

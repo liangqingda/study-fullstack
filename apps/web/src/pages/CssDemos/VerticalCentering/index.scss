@@ -16,7 +16,9 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  padding-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e3eaec;
+  margin-bottom: 28px;
 }
 
 .demo-header > :last-child {
@@ -25,9 +27,10 @@
 
 .demo-title {
   color: #121826;
-  font-size: 46px;
-  line-height: 1.04;
+  font-size: 32px;
+  line-height: 1.2;
   letter-spacing: 0;
+  margin: 4px 0 10px;
 }
 
 .demo-subtitle {
