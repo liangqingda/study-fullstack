@@ -82,7 +82,6 @@ const ResponseMethods = () => {
             <Text c="dimmed">选择方法并发送请求，观察状态、响应头和响应体。</Text>
           </div>
           <Group gap="sm" justify="flex-end">
-            <Badge color="teal" variant="light">{methods.length} methods</Badge>
             <DemoStructureDialog structure={structure} />
             <DemoKnowledgeDialog content={knowledge} demoName="Response methods" />
           </Group>

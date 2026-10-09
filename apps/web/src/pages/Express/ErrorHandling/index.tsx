@@ -230,7 +230,6 @@ const ErrorHandling = () => {
             <Text c="dimmed">从错误产生、进入错误处理链，到最终响应或连接中断，逐步对照每条路径。</Text>
           </div>
           <Group gap="sm" justify="flex-end">
-            <Badge color="teal" variant="light">Express 5</Badge>
             <DemoStructureDialog structure={structure} />
             <DemoKnowledgeDialog content={knowledge} demoName="错误处理" />
           </Group>

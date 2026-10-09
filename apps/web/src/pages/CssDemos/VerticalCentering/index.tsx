@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Badge,
   Card,
   Code,
   Container,
@@ -260,14 +259,6 @@ const VerticalCenteringDemo = () => {
       <Stack gap="xl">
         <header className={styles.demoHeader}>
           <Group align="flex-start" gap="sm" justify="space-between">
-            <Badge
-              className={styles.demoKicker}
-              color="blue"
-              radius="xl"
-              variant="light"
-            >
-              CSS vertical centering
-            </Badge>
             <DemoStructureDialog structure={structure} />
             <DemoKnowledgeDialog content={knowledge} demoName="CSS 垂直居中方案" />
           </Group>

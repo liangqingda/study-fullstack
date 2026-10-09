@@ -442,7 +442,7 @@ const SmsLogin = () => {
       <div className={styles.shell}>
         <header className={styles.header}>
           <div><Text c="teal" fw={700} size="sm">REDIS / SMS LOGIN</Text><Title order={1}>短信登录 · Redis 共享 Session</Title><Text c="dimmed">验证码限频、会话建续、集中式共享会话，全部由 Redis 承载。</Text></div>
-          <Group gap="sm"><Badge color="teal" variant="light">5 个接口</Badge><DemoStructureDialog structure={structure} /><DemoKnowledgeDialog content={knowledge} demoName="短信登录 · Redis 共享 Session" /></Group>
+          <Group gap="sm"><DemoStructureDialog structure={structure} /><DemoKnowledgeDialog content={knowledge} demoName="短信登录 · Redis 共享 Session" /></Group>
         </header>
 
         <div className={styles.workspace}>

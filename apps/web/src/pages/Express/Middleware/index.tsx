@@ -207,7 +207,6 @@ const Middleware = () => {
             <Text c="dimmed">发送真实请求，对照中间件的执行链和响应。</Text>
           </div>
           <Group gap="sm" justify="flex-end">
-            <Badge color="teal" variant="light">5 types</Badge>
             <DemoStructureDialog structure={structure} />
             <DemoKnowledgeDialog content={knowledge} demoName="五类中间件" />
           </Group>

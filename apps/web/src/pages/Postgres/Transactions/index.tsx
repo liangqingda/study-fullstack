@@ -130,7 +130,7 @@ const Transactions = () => {
       <div className={styles.shell}>
         <header className={styles.header}>
           <div><Text c="teal" fw={700} size="sm">POSTGRESQL / TRANSACTIONS</Text><Title order={1}>事务实验</Title><Text c="dimmed">在真实数据库中执行，比较事务边界、快照和并发冲突。</Text></div>
-          <Group gap="sm"><Badge color="teal" variant="light">6 个场景</Badge><DemoStructureDialog structure={structure} /><DemoKnowledgeDialog content={knowledge} demoName="事务实验" /></Group>
+          <Group gap="sm"><DemoStructureDialog structure={structure} /><DemoKnowledgeDialog content={knowledge} demoName="事务实验" /></Group>
         </header>
         <div className={styles.workspace}>
           <nav aria-label="事务场景" className={styles.navigation}>{examples.map((example) => <button aria-current={selected.key === example.key ? 'true' : undefined} className={`${styles.navItem} ${selected.key === example.key ? styles.active : ''}`} key={example.key} onClick={() => select(example)} type="button"><strong>{example.title}</strong><span>{example.subtitle}</span></button>)}</nav>
