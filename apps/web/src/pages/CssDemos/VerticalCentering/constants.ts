@@ -15,7 +15,9 @@ import type { DemoStructure } from '@/components/DemoStructureDialog';
 
 import styles from './index.scss';
 
-/** 六种 CSS 垂直居中方案及其教学数据。 */
+/**
+ * 六种 CSS 垂直居中方案及其教学数据。
+ */
 export const CENTERING_METHODS: CenteringMethod[] = [
   {
     accent: 'blue',
@@ -132,7 +134,9 @@ export const CENTERING_METHODS: CenteringMethod[] = [
   },
 ];
 
-/** 顶部总结条中的选择原则。 */
+/**
+ * 顶部总结条中的选择原则。
+ */
 export const PRINCIPLES: Principle[] = [
   {
     icon: IconLayoutGrid,
@@ -148,7 +152,9 @@ export const PRINCIPLES: Principle[] = [
   },
 ];
 
-/** 代码结构弹窗展示的文件树。 */
+/**
+ * 代码结构弹窗展示的文件树。
+ */
 export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/CssDemos/VerticalCentering/index.tsx', role: '定义六种居中方式、切换内容高度并展示对比说明。' },
@@ -159,7 +165,9 @@ export const STRUCTURE: DemoStructure = {
   database: '无。此 Demo 只在浏览器内切换预览，不涉及后端接口或数据库。',
 };
 
-/** 知识点讲解弹窗的 Markdown 内容。 */
+/**
+ * 知识点讲解弹窗的 Markdown 内容。
+ */
 export const KNOWLEDGE = `## 先记住结论
 
 普通内容区优先用 **flex** 或 **grid**；它们能处理未知尺寸和响应式变化。特殊场景才用 \`position\`、\`table-cell\`、\`line-height\`。

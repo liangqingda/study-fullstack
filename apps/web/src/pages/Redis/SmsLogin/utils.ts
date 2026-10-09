@@ -2,11 +2,15 @@ import type { RedisOp } from './types';
 
 const storagePrefix = 'sms-login:';
 
-/** 构造某个客户端 token 在 localStorage 中的 key。 */
+/**
+ * 构造某个客户端 token 在 localStorage 中的 key。
+ */
 export const tokenKey = (label: string): string => `${storagePrefix}token:${label}`;
 const cooldownKey = (label: string): string => `${storagePrefix}cooldown-end:${label}`;
 
-/** 从 localStorage 读取已保存的 token，隐私模式下静默返回 null。 */
+/**
+ * 从 localStorage 读取已保存的 token，隐私模式下静默返回 null。
+ */
 export const loadStoredToken = (label: string): string | null => {
   try {
     return localStorage.getItem(tokenKey(label));
@@ -15,7 +19,9 @@ export const loadStoredToken = (label: string): string | null => {
   }
 };
 
-/** 写入或清除 localStorage 中的 token；传 null 表示退出登录。 */
+/**
+ * 写入或清除 localStorage 中的 token；传 null 表示退出登录。
+ */
 export const persistToken = (label: string, token: string | null): void => {
   try {
     if (token) {
@@ -28,7 +34,9 @@ export const persistToken = (label: string, token: string | null): void => {
   }
 };
 
-/** 读取验证码冷却截止时间戳（毫秒），失败时返回 0。 */
+/**
+ * 读取验证码冷却截止时间戳（毫秒），失败时返回 0。
+ */
 export const loadCooldownEnd = (label: string): number => {
   try {
     return Number(localStorage.getItem(cooldownKey(label)) ?? 0);
@@ -39,7 +47,9 @@ export const loadCooldownEnd = (label: string): number => {
 
 let opSeq = 0;
 
-/** 生成一条带自增 id 的 Redis 操作记录。 */
+/**
+ * 生成一条带自增 id 的 Redis 操作记录。
+ */
 export const newOp = (op: string, key: string, note: string): RedisOp => {
   opSeq += 1;
 

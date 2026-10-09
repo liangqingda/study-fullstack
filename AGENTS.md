@@ -11,6 +11,32 @@ use injection or mocks by default; explicitly opt in to real database tests.
 
 For learning demos, use the repository-level `.agents/skills/study-demo/SKILL.md`.
 
+## Code documentation
+
+All extracted or shared code — constants, utils, types, schema contracts, common
+modules — must carry JSDoc comments. Type-level and function-level JSDoc uses
+multi-line blocks:
+
+```ts
+/**
+ * Does one thing and returns it.
+ */
+export const helper = () => {};
+```
+
+Object type properties use single-line JSDoc above each field:
+
+```ts
+export type User = {
+  /** Unique user id. */
+  id: string;
+  /** Display name. */
+  name: string;
+};
+```
+
+Generated files (e.g. `packages/schema/types/api-types.ts`) are excluded.
+
 Services you start for a task (dev/preview servers, background processes,
 databases, etc.) must be stopped before you report the task complete. Only stop
 the processes you started; never kill another agent's, another project's, or
