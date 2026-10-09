@@ -2,8 +2,10 @@ import type { Example } from './types';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
+/** 后端接口的基础路径。 */
 export const BASE_PATH = '/api/middleware';
 
+/** 中间件执行顺序的演示用例列表。 */
 export const EXAMPLES: Example[] = [
   {
     key: 'application', name: '应用级中间件', summary: '挂载在 app 上',
@@ -72,6 +74,7 @@ export const EXAMPLES: Example[] = [
   },
 ];
 
+/** 代码结构弹窗展示的文件树。 */
 export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Express/Middleware/index.tsx', role: '五类中间件的讲解、请求操作和执行链展示。' },
@@ -87,6 +90,7 @@ export const STRUCTURE: DemoStructure = {
   database: '无。五个请求只使用请求体与 res.locals，不查询或修改数据库。',
 };
 
+/** 知识点讲解弹窗的 Markdown 内容。 */
 export const KNOWLEDGE = `## 中间件是什么
 
 中间件是挂在"请求 → 响应"链路上的处理函数。请求按挂载顺序依次经过它们，每个中间件可以读请求、写响应，或把控制权交给下一步（\`next()\`）。

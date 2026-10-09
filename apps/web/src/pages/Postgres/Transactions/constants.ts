@@ -2,6 +2,7 @@ import type { Example } from './types';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
+/** 事务隔离级别的演示场景列表。 */
 export const EXAMPLES: Example[] = [
   { key: 'atomicity', title: '原子性与中止状态', subtitle: '转账三步一起成败', question: 'A=500、B=200；扣款和入账后流水主键冲突，余额是多少？', expected: '先报 23505，继续查询报 25P02；回滚后仍是 500 / 200。', code: 'BEGIN;\nUPDATE accounts SET balance = balance - 100 WHERE id = 1;\nUPDATE accounts SET balance = balance + 100 WHERE id = 2;\nINSERT INTO entries VALUES (1, 99); -- 冲突\nROLLBACK;', explanation: '错误令显式事务进入中止状态；ROLLBACK 撤销两次成功的 UPDATE。', comparison: '没有 BEGIN 时，语句各自提交，无法将三步一并回滚。' },
   { key: 'savepoint', title: 'SAVEPOINT 局部回退', subtitle: '只撤销保存点之后的工作', question: '保存点后插入商品 10，再发生主键冲突；商品 10 会留下吗？', expected: '商品 10 被回退，之后插入的商品 11 随外层事务提交。', code: 'BEGIN;\nSAVEPOINT before_items;\nINSERT INTO entries VALUES (2, 10);\nINSERT INTO entries VALUES (1, 99); -- 冲突\nROLLBACK TO SAVEPOINT before_items;\nINSERT INTO entries VALUES (3, 11);\nCOMMIT;', explanation: 'ROLLBACK TO 会撤销保存点之后的所有修改，包括成功的插入。', comparison: '保存点不是真正的嵌套事务，最终仍由外层 COMMIT 决定。' },
@@ -11,6 +12,7 @@ export const EXAMPLES: Example[] = [
   { key: 'serializable', title: 'SERIALIZABLE', subtitle: '拒绝无法串行解释的结果', question: '相同的两次下班请求还能都成功吗？', expected: '一方得到 40001，最终仍有 1 人在岗。', code: 'A/B: BEGIN ISOLATION LEVEL SERIALIZABLE;\nA/B: SELECT count(*) WHERE active; -- 各为 2\nA: UPDATE doctor_A SET active = false;\nB: UPDATE doctor_B SET active = false;\nA/B: COMMIT; -- 一方报 40001', explanation: 'SSI 检测到相互冲突的读写依赖，拒绝不可能串行化的提交。', comparison: '必须从 BEGIN 重新查询和判断，不能只重试失败的 UPDATE。' },
 ];
 
+/** 代码结构弹窗展示的文件树。 */
 export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Postgres/Transactions/index.tsx', role: '选择实验，展示预测、会话执行顺序和实际结果。' },
@@ -33,6 +35,7 @@ export const STRUCTURE: DemoStructure = {
   database: '仅使用 study_nodejs。单连接场景使用临时表；并发场景复用或创建 demo_transactions_stock 与 demo_transactions_on_call，每次运行只写入并清理自己的演示行。',
 };
 
+/** 知识点讲解弹窗的 Markdown 内容。 */
 export const KNOWLEDGE = `## 为什么需要事务
 
 多条 SQL 要"一起成、一起败"。没有 \`BEGIN\` 时每条语句各自提交，无法整体回滚。

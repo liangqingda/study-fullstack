@@ -1,3 +1,4 @@
+/** 一个错误处理演示用例的完整定义。 */
 export type Example = {
   slug: string;
   title: string;
@@ -10,6 +11,7 @@ export type Example = {
   comparison: string;
 };
 
+/** 一次请求后返回给前端的响应摘要。 */
 export type Result = {
   status: number;
   statusText: string;

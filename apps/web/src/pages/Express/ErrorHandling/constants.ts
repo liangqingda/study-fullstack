@@ -2,6 +2,7 @@ import type { Example } from './types';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
+/** 错误处理的演示用例列表。 */
 export const EXAMPLES: Example[] = [
   {
     slug: 'sync', title: '同步抛错', subtitle: 'throw -> 默认处理器',
@@ -83,6 +84,7 @@ export const EXAMPLES: Example[] = [
   },
 ];
 
+/** 代码结构弹窗展示的文件树。 */
 export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Express/ErrorHandling/index.tsx', role: '六种错误路径的讲解、请求操作与状态码、响应头和响应体展示。' },
@@ -99,6 +101,7 @@ export const STRUCTURE: DemoStructure = {
   database: '无。错误由路由和文件读取模拟，不查询或修改数据库。',
 };
 
+/** 知识点讲解弹窗的 Markdown 内容。 */
 export const KNOWLEDGE = `## 错误从哪里来
 
 错误可以在三个不同时机产生，Express 接住它们的方式不同：

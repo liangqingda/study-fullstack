@@ -2,8 +2,10 @@ import type { Method } from './types';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
 
-export const BASE_PATH = '/api/response-METHODS';
+/** 后端接口的基础路径。 */
+export const BASE_PATH = '/api/response-methods';
 
+/** 所有演示的 HTTP 方法及其教学说明。 */
 export const METHODS: Method[] = [
   {
     name: 'res.download()', slug: 'download', description: '提示客户端下载文件',
@@ -133,6 +135,7 @@ export const METHODS: Method[] = [
   },
 ];
 
+/** 代码结构弹窗展示的文件树。 */
 export const STRUCTURE: DemoStructure = {
   frontend: [
     { path: 'apps/web/src/pages/Express/ResponseMethods/index.tsx', role: '选择响应方法并触发请求，组织页面讲解。' },
@@ -153,6 +156,7 @@ export const STRUCTURE: DemoStructure = {
   database: '无。响应内容来自路由数据、同目录的文本文件或 EJS 模板，不查询或修改数据库。',
 };
 
+/** 知识点讲解弹窗的 Markdown 内容。 */
 export const KNOWLEDGE = `## res 方法在做什么
 
 \`res.*\` 是 Express 用于**结束本次请求并写出响应**的方法。它们共同处理三件事：**状态码、响应头、响应体**。
