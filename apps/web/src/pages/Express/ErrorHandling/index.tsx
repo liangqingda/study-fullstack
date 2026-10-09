@@ -3,6 +3,7 @@ import { Badge, Button, Code, Group, Text, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
+import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
 import styles from './index.scss';
@@ -20,6 +21,43 @@ const structure: DemoStructure = {
   connection: '页面请求 /api/error-handling/{示例名}；路由触发错误后，示例处理器可直接返回 JSON，也可继续转交给应用级错误处理器。响应头已发送时继续进入 Express 默认处理器并关闭连接。',
   database: '无。错误由路由和文件读取模拟，不查询或修改数据库。',
 };
+
+const knowledge = `## 错误从哪里来
+
+错误可以在三个不同时机产生，Express 接住它们的方式不同：
+
+| 产生方式 | 进入错误链的方式 |
+| --- | --- |
+| 同步 \`throw\` | Express 自动捕获 |
+| async 函数 \`await\` 到 rejected Promise | Express 5 自动转交 \`next(error)\` |
+| Node 风格回调 | 需要在回调里手动 \`next(error)\` |
+
+## 错误处理链怎么走
+
+普通处理器只接收 \`(req, res, next)\`。**错误处理中间件有四个参数** \`(err, req, res, next)\`，并且要放在路由之后。请求触发错误后：
+
+\`错误 → next(error) → 跳过普通处理器 → 四参数错误中间件 → 写响应或继续转交\`
+
+## 谁能决定最终响应
+
+- **默认处理器**（Express 内置）：根据 \`err.status\` 选状态码、用 \`err.headers\` 加响应头，返回 HTML（生产环境不暴露堆栈）。
+- **自定义处理器**：自己 \`res.status(...).json(...)\` 结束请求，返回稳定的业务格式。
+
+两者二选一；如果既不写响应也不 \`next(err)\`，请求会一直挂起。
+
+## 两个关键元数据
+
+- \`err.status\`：数字状态码（4xx / 5xx 才生效，其他按 500）。
+- \`err.headers\`：附加到响应的额外响应头（如 \`X-Demo-Error\`）。
+
+## headersSent：响应已经开始的情况
+
+一旦 \`res.write(...)\` 发出了第一块内容，\`res.headersSent\` 变为 \`true\`，就**不能回头改成错误响应**。此时错误处理器只能 \`next(err)\`，由默认处理器关闭连接终止这条不完整的响应。先看到 200 不代表成功，因为 200 已随最初内容发出。
+
+## 一个常见误区
+
+不是所有回调里的错误都会被 Express 捕获。\`readFile\` 的回调不在路由的同步调用栈里，直接 \`throw\` 可能变成未捕获异常；必须在回调里 \`next(error)\` 才能交给 Express。
+`;
 
 type Example = {
   slug: string;
@@ -194,6 +232,7 @@ const ErrorHandling = () => {
           <Group gap="sm" justify="flex-end">
             <Badge color="teal" variant="light">Express 5</Badge>
             <DemoStructureDialog structure={structure} />
+            <DemoKnowledgeDialog content={knowledge} demoName="错误处理" />
           </Group>
         </header>
 

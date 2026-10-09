@@ -3,6 +3,7 @@ import { Badge, Button, Code, Group, Loader, Text, Title } from '@mantine/core';
 import { IconDownload, IconExternalLink, IconPlayerPlay } from '@tabler/icons-react';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
+import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
 import ResponseResult from './components/ResponseResult';
@@ -29,6 +30,43 @@ const structure: DemoStructure = {
   database: '无。响应内容来自路由数据、同目录的文本文件或 EJS 模板，不查询或修改数据库。',
 };
 
+const knowledge = `## res 方法在做什么
+
+\`res.*\` 是 Express 用于**结束本次请求并写出响应**的方法。它们共同处理三件事：**状态码、响应头、响应体**。
+
+## 方法速查
+
+| 方法 | 返回内容 | 典型用途 |
+| --- | --- | --- |
+| \`res.json()\` | 序列化后的 JSON | API 返回结构化数据 |
+| \`res.jsonp()\` | 包成函数调用的脚本 | 旧式跨域（教学） |
+| \`res.send()\` | 字符串 / Buffer / 对象 | 通用发送 |
+| \`res.sendStatus()\` | 状态文字 | 只给状态码 + 简短文字 |
+| \`res.status(204).end()\` | 空 | 无内容响应 |
+| \`res.download()\` | 文件 + attachment 头 | 提示浏览器下载 |
+| \`res.sendFile()\` | 文件内容 | 直接展示文件 |
+| \`res.render()\` | 模板渲染后的 HTML | 服务端渲染 |
+| \`res.redirect()\` | 302 + Location | 跳转到别的地址 |
+
+## 看结果时对照三样东西
+
+1. **状态码**：204 / 302 / 418 是方法或显式设置的产物。
+2. **Content-Type**：\`application/json\`、\`text/plain\`、\`text/html\` 决定客户端如何解释 Body。
+3. **Body**：有没有内容、是纯文本还是 JSON 还是脚本。
+
+## 几组易混的对比
+
+- \`json()\` 自动声明 \`application/json\`；\`send()\` 更通用，本示例用 \`res.type('text/plain').send(...)\` 限定为纯文本。
+- \`download()\` 与 \`sendFile()\` 发同一个文件，区别只在有没有 \`Content-Disposition: attachment\`。
+- \`sendStatus(418)\` 会写状态文字；\`status(204).end()\` 不写 Body，\`end()\` 只是结束连接。
+- \`redirect()\` 返回 302，fetch 会自动跟随到 \`json\`，所以你看到的 200 JSON 是**跳转目标**的响应，不是 302 本身。
+- \`render()\` 是后端把数据填进模板再发 HTML，预览里的内容是服务器生成，不是前端拼出来的。
+
+## 为什么 type 和状态值得关注
+
+HTTP 的语义由状态码与响应头共同表达：\`text/plain\` 让浏览器当文字读，\`application/json\` 让客户端按数据解析。只看 Body 不够，要连 Content-Type 一起读。
+`;
+
 const ResponseMethods = () => {
   const [selected, setSelected] = useState(methods[2]);
   const { result, error, loading, reset, run } = useResponseRequest();
@@ -46,6 +84,7 @@ const ResponseMethods = () => {
           <Group gap="sm" justify="flex-end">
             <Badge color="teal" variant="light">{methods.length} methods</Badge>
             <DemoStructureDialog structure={structure} />
+            <DemoKnowledgeDialog content={knowledge} demoName="Response methods" />
           </Group>
         </header>
 

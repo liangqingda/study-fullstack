@@ -3,6 +3,7 @@ import { Badge, Button, Code, Group, Text, Textarea, Title } from '@mantine/core
 import { IconPlayerPlay } from '@tabler/icons-react';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
+import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
 import styles from './index.scss';
@@ -19,6 +20,39 @@ const structure: DemoStructure = {
   connection: '页面向 /api/middleware/{示例名} 发送 GET 或 POST；app.ts 先经过 applicationMiddleware，再由对应路由处理。后端返回的 trace 在页面按顺序展示。',
   database: '无。五个请求只使用请求体与 res.locals，不查询或修改数据库。',
 };
+
+const knowledge = `## 中间件是什么
+
+中间件是挂在“请求 → 响应”链路上的处理函数。请求按挂载顺序依次经过它们，每个中间件可以读请求、写响应，或把控制权交给下一步（\`next()\`）。
+
+## 五种中间件怎么分
+
+| 类型 | 关键特征 | 本例 |
+| --- | --- | --- |
+| 应用级 | 挂在 \`app\` 上，前缀匹配整个子树 | \`app.use('/api/middleware', ...)\` |
+| 路由级 | 挂在某个 \`Router\` 上，可限定路径 | \`router.use('/router', ...)\` |
+| 错误处理 | 四个参数，接收 \`next(error)\` | \`router.use((err, req, res, next) => ...)\` |
+| 内置 | Express 自带 | \`express.json()\` 解析请求体 |
+| 第三方 | 来自独立 npm 包 | \`morgan\` 记录 HTTP 日志 |
+
+## 三个核心概念
+
+1. **挂载顺序决定执行顺序**：中间件按注册先后进入链；\`next()\` 放行到下一步，不调用则请求停在当前层。
+2. **\`next()\` 与 \`next(error)\` 的区别**：
+   - \`next()\` → 继续正常链，进入下一个普通处理器。
+   - \`next(error)\` → 跳过后续普通处理器，切换到错误处理链。
+3. **错误处理中间件必须四个参数**，否则不会被识别为错误处理器；普通三参数中间件接不到 \`next(error)\`。
+
+## trace 数组在证明什么
+
+后端把每一步按真实执行先后写进 \`res.locals.trace\`，页面按顺序展示。它是**后端执行链的直接证据**，不是前端猜的——例如第一条永远是 \`app.use\`，说明应用级中间件先于 Router 内的处理器运行。
+
+## 边界与误区
+
+- \`express.json()\` 是读取请求体的**中间件**；\`res.json()\` 是写响应的方法，两者不是一回事。
+- 第三方中间件只是来源不同，不代表固定在某时机运行；\`morgan\` 的 \`immediate: true\` 就让它跑在响应之前。
+- 路由级与应用级函数签名相同，差别在于挂载位置和匹配范围。
+`;
 
 type Example = {
   key: string;
@@ -175,6 +209,7 @@ const Middleware = () => {
           <Group gap="sm" justify="flex-end">
             <Badge color="teal" variant="light">5 types</Badge>
             <DemoStructureDialog structure={structure} />
+            <DemoKnowledgeDialog content={knowledge} demoName="五类中间件" />
           </Group>
         </header>
         <div className={styles.workspace}>

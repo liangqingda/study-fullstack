@@ -30,6 +30,7 @@ import {
 import type { ReactNode } from 'react';
 
 import type { DemoStructure } from '@/components/DemoStructureDialog';
+import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
 import styles from './index.scss';
@@ -41,6 +42,37 @@ const structure: DemoStructure = {
   ],
   database: '无。此 Demo 只在浏览器内切换预览，不涉及后端接口或数据库。',
 };
+
+const knowledge = `## 先记住结论
+
+普通内容区优先用 **flex** 或 **grid**；它们能处理未知尺寸和响应式变化。特殊场景才用 \`position\`、\`table-cell\`、\`line-height\`。
+
+## 六种方案速查
+
+| 方案 | 核心代码 | 适用场景 | 局限 |
+| --- | --- | --- | --- |
+| Flexbox | \`display:flex\` + \`align-items\` + \`justify-content\` | 元素尺寸未知、数量可变 | 改 \`flex-direction\` 后两轴职责会交换 |
+| Grid | \`place-items: center\` | 单个核心内容块 | 多网格项时居中的是各自单元格 |
+| Absolute + transform | \`top/left:50%\` + \`translate(-50%,-50%)\` | 浮层、徽标 | 脱离文档流，父容器不靠它撑高 |
+| Position + margin auto | 定高 + \`inset-block:0\` + \`margin auto\` | 高度已知的固定块 | 需要可计算高度，内容超限会溢出 |
+| Table-cell | \`display:table-cell\` + \`vertical-align\` | 旧式兼容 | 改变父容器布局模型 |
+| Line-height | 行高等于容器高度 | 单行文本 | 多行 / 未知高度不适用 |
+
+## 双轴与单轴别搞混
+
+- flex 里 \`align-items\` 对齐**交叉轴**，\`justify-content\` 对齐**主轴**，两者都要设才双轴居中。
+- \`text-align\` 管的是行内方向水平对齐，不等于垂直居中。
+
+## 三种方案的“为什么”
+
+1. **flex / grid**：由布局引擎在未知尺寸下算出剩余空间，天然自适应。
+2. **absolute + transform**：\`50%\` 把左上角移到父容器中心，\`translate(-50%,-50%)\` 再按自身宽高回移一半，所以不依赖固定高度。
+3. **line-height**：单行文本的行盒高度由 \`line-height\` 决定，行高等于容器高度时文字视觉居中；换行后每行仍占整行高，会溢出。
+
+## 选择顺序
+
+普通内容区 → \`flex\` / \`grid\`；覆盖层 / 悬浮块 → \`position\` + \`transform\`；单行文本 → \`line-height\`（轻但只适用单行）。切到“增高 / 换行”再看一遍预览，能更快看出哪种方案不能自适应内容。
+`;
 
 type CenteringMethod = {
   accent: string;
@@ -237,6 +269,7 @@ const VerticalCenteringDemo = () => {
               CSS vertical centering
             </Badge>
             <DemoStructureDialog structure={structure} />
+            <DemoKnowledgeDialog content={knowledge} demoName="CSS 垂直居中方案" />
           </Group>
           <Title className={styles.demoTitle} order={1}>
             CSS 垂直居中方案

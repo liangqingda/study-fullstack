@@ -1,0 +1,78 @@
+.modal-content { border-radius: 0; }
+.modal-header { min-height: 64px; padding: 12px 24px; border-bottom: 1px solid var(--mantine-color-default-border); }
+.modal-body { padding: 0; }
+.modal-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; }
+
+.markdown {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 48px) 88px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--mantine-color-text);
+
+  & > :first-child { margin-top: 0; }
+  & > :last-child { margin-bottom: 0; }
+
+  h1, h2, h3, h4, h5, h6 { margin: 1.4em 0 0.6em; font-weight: 700; line-height: 1.35; }
+  h1 { font-size: 26px; }
+  h2 { font-size: 21px; margin-top: 2em; padding-bottom: 8px; border-bottom: 1px solid var(--mantine-color-default-border); }
+  h3 { font-size: 18px; }
+  h4, h5, h6 { font-size: 15px; }
+
+  p { margin: 0.75em 0; }
+  ul, ol { margin: 0.75em 0; padding-left: 1.6em; }
+  li { margin: 0.35em 0; }
+  li > ul, li > ol { margin: 0.2em 0; }
+
+  a { color: var(--mantine-color-teal-6); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  strong { font-weight: 700; }
+
+  :not(pre) > code {
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--mantine-color-default-hover);
+    font-size: 0.88em;
+    font-family: var(--mantine-font-family-monospace);
+  }
+
+  pre {
+    margin: 0.9em 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    border: 1px solid var(--mantine-color-default-border);
+    border-radius: 8px;
+    background: var(--mantine-color-default-hover);
+    line-height: 1.6;
+
+    code {
+      display: block;
+      padding: 0;
+      background: transparent;
+      font-family: var(--mantine-font-family-monospace);
+      font-size: 13px;
+      white-space: pre;
+    }
+  }
+
+  blockquote {
+    margin: 0.9em 0;
+    padding: 6px 16px;
+    border-left: 3px solid var(--mantine-color-teal-5);
+    border-radius: 0 6px 6px 0;
+    background: var(--mantine-color-default-hover);
+
+    p { margin: 0.35em 0; }
+    p:first-child { margin-top: 0; }
+    p:last-child { margin-bottom: 0; }
+  }
+
+  hr { margin: 1.6em 0; border: none; border-top: 1px solid var(--mantine-color-default-border); }
+
+  table { width: 100%; margin: 0.9em 0; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 8px 12px; border: 1px solid var(--mantine-color-default-border); text-align: left; vertical-align: top; }
+  th { background: var(--mantine-color-default-hover); font-weight: 700; }
+  tr:nth-child(even) td { background: var(--mantine-color-body); }
+}
