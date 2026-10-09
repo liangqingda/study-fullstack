@@ -202,7 +202,6 @@ const Middleware = () => {
       <div className={styles.shell}>
         <header className={styles.header}>
           <div>
-            <Text c="teal" fw={700} size="sm">EXPRESS / REQUEST FLOW</Text>
             <Title order={1}>五类中间件</Title>
             <Text c="dimmed">发送真实请求，对照中间件的执行链和响应。</Text>
           </div>

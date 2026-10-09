@@ -77,7 +77,6 @@ const ResponseMethods = () => {
       <div className={styles.shell}>
         <header className={styles.header}>
           <div>
-            <Text c="teal" fw={700} size="sm">EXPRESS / HTTP</Text>
             <Title order={1}>Response methods</Title>
             <Text c="dimmed">选择方法并发送请求，观察状态、响应头和响应体。</Text>
           </div>

@@ -129,7 +129,7 @@ const Transactions = () => {
     <main className={styles.page}>
       <div className={styles.shell}>
         <header className={styles.header}>
-          <div><Text c="teal" fw={700} size="sm">POSTGRESQL / TRANSACTIONS</Text><Title order={1}>事务实验</Title><Text c="dimmed">在真实数据库中执行，比较事务边界、快照和并发冲突。</Text></div>
+          <div><Title order={1}>事务实验</Title><Text c="dimmed">在真实数据库中执行，比较事务边界、快照和并发冲突。</Text></div>
           <Group gap="sm"><DemoStructureDialog structure={structure} /><DemoKnowledgeDialog content={knowledge} demoName="事务实验" /></Group>
         </header>
         <div className={styles.workspace}>

@@ -225,7 +225,6 @@ const ErrorHandling = () => {
       <div className={styles.shell}>
         <header className={styles.header}>
           <div>
-            <Text c="teal" fw={700} size="sm">EXPRESS / ERROR FLOW</Text>
             <Title order={1}>错误处理</Title>
             <Text c="dimmed">从错误产生、进入错误处理链，到最终响应或连接中断，逐步对照每条路径。</Text>
           </div>

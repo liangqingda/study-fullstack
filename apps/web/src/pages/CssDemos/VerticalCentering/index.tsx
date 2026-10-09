@@ -259,7 +259,6 @@ const VerticalCenteringDemo = () => {
       <Stack gap="xl">
         <header className={styles.demoHeader}>
           <div>
-            <Text c="teal" fw={700} size="sm">CSS / VERTICAL CENTERING</Text>
             <Title className={styles.demoTitle} order={1}>
               CSS 垂直居中方案
             </Title>
