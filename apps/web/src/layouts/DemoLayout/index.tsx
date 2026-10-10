@@ -40,7 +40,7 @@ const DemoLayout = ({ title, description, structure, knowledge, demoName, childr
         <DemoKnowledgeDialog content={knowledge} demoName={demoName ?? title} />
       </Group>
     </header>
-    {children}
+    <div className={styles.content}>{children}</div>
   </div>
 );
 

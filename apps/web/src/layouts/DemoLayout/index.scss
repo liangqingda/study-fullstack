@@ -28,6 +28,10 @@
   letter-spacing: 0;
 }
 
+.content {
+  min-width: 0;
+}
+
 @media (max-width: 900px) {
   .shell {
     padding: 20px;
