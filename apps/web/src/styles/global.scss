@@ -1,6 +1,75 @@
+/* ============================================================
+   Design tokens — "Veridian Study Lab"
+   学习型 Demo 的统一视觉语言：verdigris 主色 + 深绿墨色，
+   浅/暗两套令牌，供所有页面组件消费。
+   ============================================================ */
 :root {
-  color: var(--mantine-color-text);
-  background: var(--mantine-color-body);
+  /* surfaces */
+  --demo-bg: #f3f6f4;
+  --demo-surface: #ffffff;
+  --demo-surface-subtle: #eef2f0;
+  --demo-surface-hover: #e9f1ee;
+  --demo-surface-active: #e0eee9;
+
+  /* ink */
+  --demo-ink: #172522;
+  --demo-ink-soft: #5b6b66;
+  --demo-ink-faint: #84938d;
+
+  /* lines */
+  --demo-line: #e2e8e5;
+  --demo-line-strong: #d2ddd8;
+  --demo-line-soft: #ecf1ef;
+
+  /* accent (verdigris) */
+  --demo-accent: #0e7a64;
+  --demo-accent-strong: #0a5f4e;
+  --demo-accent-ink: #176e60;
+  --demo-accent-soft: #e4f2ec;
+  --demo-accent-soft-strong: #d6ece3;
+
+  /* code */
+  --demo-code-bg: #15211d;
+  --demo-code-ink: #dff0ea;
+  --demo-code-muted: #94a8a0;
+
+  /* blueprint grid */
+  --demo-grid-line: rgba(14, 122, 100, 0.07);
+  --demo-grid-line-dark: rgba(150, 206, 186, 0.09);
+}
+
+html[data-mantine-color-scheme='dark'] {
+  --demo-bg: #0f1513;
+  --demo-surface: #18201e;
+  --demo-surface-subtle: #1d2724;
+  --demo-surface-hover: #22302c;
+  --demo-surface-active: #264039;
+
+  --demo-ink: #e6eee9;
+  --demo-ink-soft: #9aa9a3;
+  --demo-ink-faint: #74837d;
+
+  --demo-line: #2b3733;
+  --demo-line-strong: #3a4742;
+  --demo-line-soft: #232e2a;
+
+  --demo-accent: #3bc0a0;
+  --demo-accent-strong: #5fd6b6;
+  --demo-accent-ink: #8fe0c9;
+  --demo-accent-soft: #1c362f;
+  --demo-accent-soft-strong: #24483e;
+
+  --demo-code-bg: #0a0f0d;
+  --demo-code-ink: #e3f2ec;
+  --demo-code-muted: #7e928a;
+
+  --demo-grid-line: rgba(150, 206, 186, 0.08);
+  --demo-grid-line-dark: rgba(150, 206, 186, 0.1);
+}
+
+:root {
+  color: var(--demo-ink);
+  background: var(--demo-bg);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
@@ -39,4 +108,33 @@ button {
 
 a {
   color: inherit;
+}
+
+::selection {
+  background: var(--demo-accent-soft-strong);
+  color: var(--demo-ink);
+}
+
+/* 细滚动条，保持与 code/review 面板一致 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--demo-line-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: var(--demo-line-strong);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--demo-ink-faint);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }

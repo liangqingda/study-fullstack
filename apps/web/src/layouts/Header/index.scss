@@ -7,10 +7,37 @@
   min-width: max-content;
 }
 
+.brand-mark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 9px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #12a389, #0a5f4e);
+  box-shadow: 0 4px 12px rgba(10, 95, 78, 0.28);
+}
+
+.brand-text {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
 .demo-title {
   font-size: 18px;
   line-height: 1;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.brand-tagline {
+  color: var(--demo-ink-faint);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 11px;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -44,6 +71,10 @@
 
   .demo-title {
     font-size: 16px;
+  }
+
+  .brand-tagline {
+    display: none;
   }
 
   .demo-header-menu {

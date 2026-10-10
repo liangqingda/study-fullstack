@@ -171,7 +171,7 @@ const VerticalCenteringDemo = () => {
 
         <section className={styles.notesBand}>
           <Group gap="sm" wrap="nowrap">
-            <ThemeIcon color="blue" radius="md" size={36} variant="light">
+            <ThemeIcon color="teal" radius="md" size={36} variant="light">
               <IconAlignBoxCenterMiddle size={20} stroke={1.8} />
             </ThemeIcon>
             <Title order={2} size="h3">
@@ -183,7 +183,7 @@ const VerticalCenteringDemo = () => {
             center
             className={styles.notesList}
             icon={
-              <ThemeIcon color="blue" radius="xl" size={20} variant="light">
+              <ThemeIcon color="teal" radius="xl" size={20} variant="light">
                 <IconLayoutAlignMiddle size={13} stroke={2} />
               </ThemeIcon>
             }

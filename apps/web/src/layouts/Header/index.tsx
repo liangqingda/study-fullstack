@@ -1,6 +1,19 @@
 import { useNavigate } from 'react-router';
-import { ActionIcon, Group, SegmentedControl, ThemeIcon, Title, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
-import { IconBrandGithub, IconBrandReact, IconMoon, IconSun } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  Group,
+  SegmentedControl,
+  Text,
+  Title,
+  useComputedColorScheme,
+  useMantineColorScheme,
+} from '@mantine/core';
+import {
+  IconBrandGithub,
+  IconMoon,
+  IconSun,
+  IconTerminal2,
+} from '@tabler/icons-react';
 
 import type { DemoMenuItem } from '@/generated/routes';
 
@@ -32,19 +45,24 @@ const Header = ({ menus, selectedTopLevelKey }: HeaderProps) => {
   return (
     <Group className={styles.demoHeaderInner} gap="lg" h="100%" wrap="nowrap">
       <Group className={styles.demoHeaderBrand} gap="sm" wrap="nowrap">
-        <ThemeIcon radius="md" size={34} variant="light">
-          <IconBrandReact size={21} stroke={1.8} />
-        </ThemeIcon>
-        <Title className={styles.demoTitle} order={1}>
-          React Demo Lab
-        </Title>
+        <span aria-hidden="true" className={styles.brandMark}>
+          <IconTerminal2 size={19} stroke={2.1} />
+        </span>
+        <div className={styles.brandText}>
+          <Title className={styles.demoTitle} order={1}>
+            Study Lab
+          </Title>
+          <Text className={styles.brandTagline} component="span">
+            fullstack demos
+          </Text>
+        </div>
       </Group>
 
       {activeMenuKey && menuData.length > 0 ? (
         <nav aria-label="Demo sections" className={styles.demoHeaderMenu}>
           <SegmentedControl
             className={styles.demoHeaderSegments}
-            color="blue"
+            color="teal"
             data={menuData}
             onChange={handleMenuChange}
             radius="md"

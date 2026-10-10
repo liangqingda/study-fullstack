@@ -33,6 +33,7 @@ const SidebarMenuItem = ({
       <NavLink
         childrenOffset="md"
         className={styles.demoSidebarLink}
+        color="teal"
         defaultOpened
         label={item.label}
         leftSection={<IconChevronRight size={16} stroke={1.9} />}
@@ -55,10 +56,10 @@ const SidebarMenuItem = ({
     <NavLink
       active={isSelected}
       className={styles.demoSidebarLink}
-      color="blue"
+      color="teal"
       component="button"
       label={item.label}
-      leftSection={<IconPointFilled size={14} />}
+      leftSection={<IconPointFilled size={13} />}
       noWrap
       onClick={() => onNavigate(item)}
       type="button"

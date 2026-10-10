@@ -1,23 +1,23 @@
 .demo-app {
   min-height: 100vh;
-  background: var(--mantine-color-body);
+  background: var(--demo-bg);
 }
 
 .demo-header {
-  border-bottom: 1px solid var(--mantine-color-default-border);
-  background: var(--mantine-color-body);
+  border-bottom: 1px solid var(--demo-line);
+  background: var(--demo-surface);
   backdrop-filter: blur(16px);
 }
 
 .demo-sidebar {
-  border-right: 1px solid var(--mantine-color-default-border);
-  background: var(--mantine-color-body);
+  border-right: 1px solid var(--demo-line);
+  background: var(--demo-surface);
 }
 
 .demo-main {
   min-width: 0;
   min-height: 100vh;
-  background: var(--mantine-color-body);
+  background: var(--demo-bg);
   overflow: hidden;
 }
 
@@ -28,7 +28,7 @@
     width: 100%;
     height: auto;
     border-right: 0;
-    border-bottom: 1px solid var(--mantine-color-default-border);
+    border-bottom: 1px solid var(--demo-line);
     transform: none;
   }
 }

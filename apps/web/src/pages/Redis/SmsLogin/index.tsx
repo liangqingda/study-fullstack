@@ -48,7 +48,7 @@ const SmsLogin = () => {
 
         <div className={styles.workspace}>
           <div className={styles.clients}>
-            <ClientPanel accent="blue" label="A" onLoginStateChange={() => setDirty((value) => value + 1)} />
+            <ClientPanel accent="teal" label="A" onLoginStateChange={() => setDirty((value) => value + 1)} />
             <ClientPanel accent="grape" label="B" onLoginStateChange={() => setDirty((value) => value + 1)} />
           </div>
 
