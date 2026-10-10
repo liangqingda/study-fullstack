@@ -1,0 +1,8 @@
+.empty {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  border: 1px dashed var(--demo-line-strong);
+  border-radius: 8px;
+  color: var(--demo-ink-faint);
+}

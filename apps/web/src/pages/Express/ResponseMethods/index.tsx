@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Badge, Button, Code, Group, Loader, Text, Title } from '@mantine/core';
 import { IconDownload, IconExternalLink, IconPlayerPlay } from '@tabler/icons-react';
 
+import DemoEmpty from '@/components/DemoEmpty';
+import DemoNavDetail from '@/components/DemoNavDetail';
+import DemoSteps from '@/components/DemoSteps';
 import DemoLayout from '@/layouts/DemoLayout';
 
 import ResponseResult from './components/ResponseResult';
@@ -23,26 +26,20 @@ const ResponseMethods = () => {
       structure={STRUCTURE}
       title="Response METHODS"
     >
-      <div className={styles.workspace}>
-          <nav aria-label="Response METHODS" className={styles.methodList}>
-            {METHODS.map((method) => (
-              <button
-                aria-current={selected.slug === method.slug ? 'true' : undefined}
-                className={`${styles.methodItem} ${selected.slug === method.slug ? styles.active : ''}`}
-                key={method.slug}
-                onClick={() => {
-                  setSelected(method);
-                  reset();
-                }}
-                type="button"
-              >
-                <strong>{method.name}</strong>
-                <span>{method.description}</span>
-              </button>
-            ))}
-          </nav>
+      <DemoNavDetail
+        detailAriaLabel="响应详情"
+        items={METHODS.map((method) => ({ key: method.slug, title: method.name, subtitle: method.description }))}
+        navAriaLabel="Response METHODS"
+        onSelect={(key) => {
+          const method = METHODS.find((item) => item.slug === key);
 
-          <section aria-label="响应详情" className={styles.detail}>
+          if (method) {
+            setSelected(method);
+            reset();
+          }
+        }}
+        selectedKey={selected.slug}
+      >
             <div className={styles.detailHeading}>
               <div>
                 <Title order={2}>{selected.name}</Title>
@@ -53,7 +50,7 @@ const ResponseMethods = () => {
 
             <section className={styles.explanation}>
               <h3>这次请求会怎样走</h3>
-              <ol className={styles.steps}>{selected.steps.map((step) => <li key={step}>{step}</li>)}</ol>
+              <DemoSteps steps={selected.steps} />
               <div className={styles.explanationGrid}>
                 <div><h3>关键代码</h3><pre className={styles.exampleCode}>{selected.code}</pre></div>
                 <div><h3>发送后应看到</h3><Text size="sm">{selected.observation}</Text></div>
@@ -86,10 +83,9 @@ const ResponseMethods = () => {
             </div>
 
             {error && <Text c="red" role="alert">{error}</Text>}
-            {!result && !error && <div className={styles.empty}>{loading ? <Loader size="sm" /> : '等待请求'}</div>}
+            {!result && !error && <DemoEmpty>{loading ? <Loader size="sm" /> : '等待请求'}</DemoEmpty>}
             {result && <ResponseResult interpretation={selected.interpretation} result={result} showPreview={selected.slug === 'render'} />}
-          </section>
-      </div>
+          </DemoNavDetail>
     </DemoLayout>
   );
 };

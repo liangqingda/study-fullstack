@@ -6,6 +6,8 @@ import type { TransactionError } from '@liangqingda/study-nodejs-schema';
 import type { Example, Result } from './types';
 
 import { postApiTransactionsRun } from '@/apis';
+import DemoEmpty from '@/components/DemoEmpty';
+import DemoNavDetail from '@/components/DemoNavDetail';
 import DemoLayout from '@/layouts/DemoLayout';
 import { isAxiosError } from '@/utils/http';
 
@@ -65,22 +67,29 @@ const Transactions = () => {
       structure={STRUCTURE}
       title="事务实验"
     >
-      <div className={styles.workspace}>
-          <nav aria-label="事务场景" className={styles.navigation}>{EXAMPLES.map((example) => <button aria-current={selected.key === example.key ? 'true' : undefined} className={`${styles.navItem} ${selected.key === example.key ? styles.active : ''}`} key={example.key} onClick={() => select(example)} type="button"><strong>{example.title}</strong><span>{example.subtitle}</span></button>)}</nav>
-          <section aria-label="事务实验" className={styles.detail}>
+      <DemoNavDetail
+        detailAriaLabel="事务实验"
+        items={EXAMPLES.map((example) => ({ key: example.key, title: example.title, subtitle: example.subtitle }))}
+        navAriaLabel="事务场景"
+        onSelect={(key) => {
+          const example = EXAMPLES.find((item) => item.key === key);
+
+          if (example) { select(example); }
+        }}
+        selectedKey={selected.key}
+      >
             <div className={styles.heading}><div><Title order={2}>{selected.title}</Title><Text c="dimmed" size="sm">{selected.subtitle}</Text></div><Badge color="orange" variant="light">POST</Badge></div>
             <div className={styles.lesson}><div><h3>先预测</h3><Text size="sm">{selected.question}</Text></div><div><h3>关键 SQL（简化展示）</h3><pre>{selected.code}</pre></div><div><h3>运行后应看到</h3><Text size="sm">{selected.expected}</Text></div></div>
             <div className={styles.action}><code>POST /api/transactions/run</code><Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void run()}>运行实验</Button></div>
             {error && <Text c="red" role="alert">{error}</Text>}
-            {!result && !error && <div className={styles.empty}>{loading ? '正在执行事务…' : '等待运行'}</div>}
+            {!result && !error && <DemoEmpty>{loading ? '正在执行事务…' : '等待运行'}</DemoEmpty>}
             {result && <section aria-live="polite" className={styles.result}>
               <div className={styles.resultHeading}><h3>实际执行</h3><Badge color="teal" variant="light">{result.database}</Badge></div>
               <ol className={styles.timeline}>{result.steps.map((step) => <li key={`${step.session}-${step.action}`}><span className={styles.session}>{step.session}</span><div><strong>{step.action}</strong><p>{step.observation}</p></div>{step.sqlstate && <Badge color="red" variant="light">{step.sqlstate}</Badge>}</li>)}</ol>
               <div className={styles.final}><h3>最终数据</h3><div>{Object.entries(result.final).map(([name, value]) => <span key={name}><small>{name}</small><strong>{value}</strong></span>)}</div></div>
               <div className={styles.explanation}><h3>为什么得到这个结果</h3><Text size="sm">{result.outcome} {selected.explanation}</Text><Text c="dimmed" size="sm">{selected.comparison}</Text></div>
             </section>}
-          </section>
-      </div>
+          </DemoNavDetail>
     </DemoLayout>
   );
 };

@@ -4,6 +4,9 @@ import { IconPlayerPlay } from '@tabler/icons-react';
 
 import type { Example, Result } from './types';
 
+import DemoEmpty from '@/components/DemoEmpty';
+import DemoNavDetail from '@/components/DemoNavDetail';
+import DemoSteps from '@/components/DemoSteps';
 import DemoLayout from '@/layouts/DemoLayout';
 
 import { EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
@@ -77,31 +80,24 @@ const ErrorHandling = () => {
       structure={STRUCTURE}
       title="错误处理"
     >
-      <div className={styles.workspace}>
-          <nav aria-label="错误处理示例" className={styles.navigation}>
-            {EXAMPLES.map((example) => (
-              <button
-                aria-current={selected.slug === example.slug ? 'true' : undefined}
-                className={`${styles.navItem} ${selected.slug === example.slug ? styles.active : ''}`}
-                key={example.slug}
-                onClick={() => select(example)}
-                type="button"
-              >
-                <strong>{example.title}</strong><span>{example.subtitle}</span>
-              </button>
-            ))}
-          </nav>
+      <DemoNavDetail
+        detailAriaLabel="示例详情"
+        items={EXAMPLES.map((example) => ({ key: example.slug, title: example.title, subtitle: example.subtitle }))}
+        navAriaLabel="错误处理示例"
+        onSelect={(key) => {
+          const example = EXAMPLES.find((item) => item.slug === key);
 
-          <section aria-label="示例详情" className={styles.detail}>
+          if (example) { select(example); }
+        }}
+        selectedKey={selected.slug}
+      >
             <div className={styles.detailHeading}>
               <div><Title order={2}>{selected.title}</Title><Text c="dimmed" size="sm">{selected.purpose}</Text></div>
               <Badge color="green" variant="dot">GET</Badge>
             </div>
             <section className={styles.lesson}>
               <h3>这次请求会怎样走</h3>
-              <ol className={styles.steps}>
-                {selected.steps.map((step) => <li key={step}>{step}</li>)}
-              </ol>
+              <DemoSteps steps={selected.steps} />
               <div className={styles.notes}>
                 <div><h3>关键代码</h3><pre>{selected.code}</pre></div>
                 <div><h3>发送后应看到</h3><Text size="sm">{selected.observation}</Text></div>
@@ -124,7 +120,7 @@ const ErrorHandling = () => {
                 <Text size="sm">{selected.slug === 'headers-sent' ? selected.interpretation : '没有收到可供分析的响应；先检查后端是否运行，再重试。'}</Text>
               </div>
             )}
-            {!failure && !result && <div className={styles.empty}>{loading ? '请求中…' : '等待请求'}</div>}
+            {!failure && !result && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
             {result && (
               <div className={styles.result}>
                 <div className={styles.resultHeading}>
@@ -142,8 +138,7 @@ const ErrorHandling = () => {
                 <pre>{result.body || '响应体为空'}</pre>
               </div>
             )}
-          </section>
-      </div>
+          </DemoNavDetail>
     </DemoLayout>
   );
 };

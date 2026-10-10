@@ -6,59 +6,6 @@
   min-width: 0;
 }
 
-.workspace {
-  display: grid;
-  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
-  border: 1px solid var(--demo-line);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--demo-surface);
-  box-shadow: 0 1px 3px rgba(18, 35, 30, 0.05);
-}
-
-.navigation {
-  border-right: 1px solid var(--demo-line);
-  background: var(--demo-surface-subtle);
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 4px;
-  padding: 15px 20px;
-  border-bottom: 1px solid var(--demo-line-soft);
-  border-left: 3px solid transparent;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  transition: background 120ms ease;
-}
-
-.nav-item:hover {
-  background: var(--demo-surface-hover);
-}
-
-.nav-item.active {
-  border-left-color: var(--demo-accent);
-  background: var(--demo-accent-soft);
-}
-
-.nav-item strong {
-  font-size: 14px;
-  color: var(--demo-ink);
-}
-
-.nav-item span {
-  color: var(--demo-ink-soft);
-  font-size: 12px;
-}
-
-.detail {
-  min-width: 0;
-  padding: 28px;
-}
-
 .detail-heading,
 .result-heading {
   display: flex;
@@ -82,21 +29,6 @@
   margin: 24px 0;
   padding: 22px 0;
   border-block: 1px solid var(--demo-line);
-}
-
-.steps {
-  margin: 0;
-  padding-left: 24px;
-  line-height: 1.7;
-}
-
-.steps li {
-  padding: 0 0 12px 6px;
-}
-
-.steps li::marker {
-  color: var(--demo-accent);
-  font-weight: 700;
 }
 
 .notes {
@@ -155,15 +87,6 @@
   background: transparent;
 }
 
-.empty {
-  display: grid;
-  min-height: 180px;
-  place-items: center;
-  border: 1px dashed var(--demo-line-strong);
-  border-radius: 8px;
-  color: var(--demo-ink-faint);
-}
-
 .result {
   border-top: 1px solid var(--demo-line);
   padding-top: 20px;
@@ -201,35 +124,7 @@
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 900px) {
-  .workspace {
-    grid-template-columns: 1fr;
-  }
-
-  .navigation {
-    display: flex;
-    overflow-x: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--demo-line);
-  }
-
-  .nav-item {
-    flex: 0 0 180px;
-    border-bottom: 0;
-    border-left: 0;
-    border-top: 3px solid transparent;
-  }
-
-  .nav-item.active {
-    border-top-color: var(--demo-accent);
-  }
-}
-
 @media (max-width: 620px) {
-  .detail {
-    padding: 18px;
-  }
-
   .notes {
     grid-template-columns: 1fr;
     gap: 16px;

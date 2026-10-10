@@ -1,0 +1,14 @@
+.steps {
+  margin: 0;
+  padding-left: 24px;
+  line-height: 1.7;
+}
+
+.steps li {
+  padding: 0 0 12px 6px;
+}
+
+.steps li::marker {
+  color: var(--demo-accent);
+  font-weight: 700;
+}

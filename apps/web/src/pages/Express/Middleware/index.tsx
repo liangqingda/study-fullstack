@@ -4,6 +4,9 @@ import { IconPlayerPlay } from '@tabler/icons-react';
 
 import type { DemoResponse, Example } from './types';
 
+import DemoEmpty from '@/components/DemoEmpty';
+import DemoNavDetail from '@/components/DemoNavDetail';
+import DemoSteps from '@/components/DemoSteps';
 import DemoLayout from '@/layouts/DemoLayout';
 
 import { BASE_PATH, EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
@@ -70,28 +73,24 @@ const Middleware = () => {
       structure={STRUCTURE}
       title="五类中间件"
     >
-      <div className={styles.workspace}>
-          <nav aria-label="中间件类型" className={styles.navigation}>
-            {EXAMPLES.map((example) => (
-              <button
-                aria-current={selected.key === example.key ? 'true' : undefined}
-                className={`${styles.navItem} ${selected.key === example.key ? styles.active : ''}`}
-                key={example.key}
-                onClick={() => select(example)}
-                type="button"
-              >
-                <strong>{example.name}</strong><span>{example.summary}</span>
-              </button>
-            ))}
-          </nav>
-          <section aria-label="中间件示例" className={styles.detail}>
+      <DemoNavDetail
+        detailAriaLabel="中间件示例"
+        items={EXAMPLES.map((example) => ({ key: example.key, title: example.name, subtitle: example.summary }))}
+        navAriaLabel="中间件类型"
+        onSelect={(key) => {
+          const example = EXAMPLES.find((item) => item.key === key);
+
+          if (example) { select(example); }
+        }}
+        selectedKey={selected.key}
+      >
             <div className={styles.detailHeading}>
               <div><Title order={2}>{selected.name}</Title><Text c="dimmed" size="sm">{selected.explanation}</Text></div>
               <Badge color={selected.method === 'POST' ? 'orange' : 'teal'} variant="light">{selected.method}</Badge>
             </div>
             <section className={styles.lesson}>
               <h3>这次请求会怎样走</h3>
-              <ol className={styles.steps}>{selected.steps.map((step) => <li key={step}>{step}</li>)}</ol>
+              <DemoSteps steps={selected.steps} />
               <div className={styles.notes}>
                 <div><h3>关键代码</h3><pre>{selected.code}</pre></div>
                 <div><h3>发送后应看到</h3><Text size="sm">{selected.observation}</Text></div>
@@ -109,7 +108,7 @@ const Middleware = () => {
               <Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void run()}>发送请求</Button>
             </div>
             {error && <Text c="red" role="alert">{error}</Text>}
-            {!result && !error && <div className={styles.empty}>{loading ? '请求中…' : '等待请求'}</div>}
+            {!result && !error && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
             {result && (
               <div aria-live="polite" className={styles.result}>
                 <div className={styles.resultHeading}><h3>实际结果</h3><Badge color={result.status >= 400 ? 'red' : 'teal'} variant="light">HTTP {result.status}</Badge></div>
@@ -122,8 +121,7 @@ const Middleware = () => {
                 <h3>响应体</h3><pre>{JSON.stringify(result.data, null, 2)}</pre>
               </div>
             )}
-          </section>
-      </div>
+          </DemoNavDetail>
     </DemoLayout>
   );
 };
