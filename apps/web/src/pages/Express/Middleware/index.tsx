@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button, Code, Group, Text, Textarea, Title } from '@mantine/core';
+import { Badge, Button, Code, Text, Textarea, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
 import type { DemoResponse, Example } from './types';
 
-import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
-import DemoStructureDialog from '@/components/DemoStructureDialog';
+import DemoLayout from '@/layouts/DemoLayout';
 
 import { BASE_PATH, EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
 
@@ -65,19 +64,13 @@ const Middleware = () => {
   };
 
   return (
-    <main className={styles.page}>
-      <div className={styles.shell}>
-        <header className={styles.header}>
-          <div>
-            <Title order={1}>五类中间件</Title>
-            <Text c="dimmed">发送真实请求，对照中间件的执行链和响应。</Text>
-          </div>
-          <Group gap="sm" justify="flex-end">
-            <DemoStructureDialog structure={STRUCTURE} />
-            <DemoKnowledgeDialog content={KNOWLEDGE} demoName="五类中间件" />
-          </Group>
-        </header>
-        <div className={styles.workspace}>
+    <DemoLayout
+      description="发送真实请求，对照中间件的执行链和响应。"
+      knowledge={KNOWLEDGE}
+      structure={STRUCTURE}
+      title="五类中间件"
+    >
+      <div className={styles.workspace}>
           <nav aria-label="中间件类型" className={styles.navigation}>
             {EXAMPLES.map((example) => (
               <button
@@ -130,9 +123,8 @@ const Middleware = () => {
               </div>
             )}
           </section>
-        </div>
       </div>
-    </main>
+    </DemoLayout>
   );
 };
 

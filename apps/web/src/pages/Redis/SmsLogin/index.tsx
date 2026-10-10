@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { Button, Group, Text, Title } from '@mantine/core';
+import { Button, Text, Title } from '@mantine/core';
 import { IconRefresh } from '@tabler/icons-react';
 
 import type { SessionsResponse } from '@liangqingda/study-nodejs-schema';
 
 import { getApiSmsLoginSessions } from '@/apis';
-import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
-import DemoStructureDialog from '@/components/DemoStructureDialog';
+import DemoLayout from '@/layouts/DemoLayout';
 import { isAxiosError } from '@/utils/http';
 
 import ClientPanel from './components/ClientPanel';
@@ -39,14 +38,13 @@ const SmsLogin = () => {
   };
 
   return (
-    <main className={styles.page}>
-      <div className={styles.shell}>
-        <header className={styles.header}>
-          <div><Title order={1}>短信登录 · Redis 共享 Session</Title><Text c="dimmed">验证码限频、会话建续、集中式共享会话，全部由 Redis 承载。</Text></div>
-          <Group gap="sm"><DemoStructureDialog structure={STRUCTURE} /><DemoKnowledgeDialog content={KNOWLEDGE} demoName="短信登录 · Redis 共享 Session" /></Group>
-        </header>
-
-        <div className={styles.workspace}>
+    <DemoLayout
+      description="验证码限频、会话建续、集中式共享会话，全部由 Redis 承载。"
+      knowledge={KNOWLEDGE}
+      structure={STRUCTURE}
+      title="短信登录 · Redis 共享 Session"
+    >
+      <div className={styles.workspace}>
           <div className={styles.clients}>
             <ClientPanel accent="teal" label="A" onLoginStateChange={() => setDirty((value) => value + 1)} />
             <ClientPanel accent="grape" label="B" onLoginStateChange={() => setDirty((value) => value + 1)} />
@@ -74,11 +72,10 @@ const SmsLogin = () => {
               </>
             )}
           </section>
-        </div>
+      </div>
 
         <RedisExplainer />
-      </div>
-    </main>
+    </DemoLayout>
   );
 };
 

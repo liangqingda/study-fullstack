@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { Badge, Button, Code, Group, Loader, Text, Title } from '@mantine/core';
 import { IconDownload, IconExternalLink, IconPlayerPlay } from '@tabler/icons-react';
 
-import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
-import DemoStructureDialog from '@/components/DemoStructureDialog';
+import DemoLayout from '@/layouts/DemoLayout';
 
 import ResponseResult from './components/ResponseResult';
 import { BASE_PATH, KNOWLEDGE, METHODS, STRUCTURE } from './constants';
@@ -18,20 +17,13 @@ const ResponseMethods = () => {
   const url = methodUrl(selected.slug);
 
   return (
-    <main className={styles.page}>
-      <div className={styles.shell}>
-        <header className={styles.header}>
-          <div>
-            <Title order={1}>Response METHODS</Title>
-            <Text c="dimmed">选择方法并发送请求，观察状态、响应头和响应体。</Text>
-          </div>
-          <Group gap="sm" justify="flex-end">
-            <DemoStructureDialog structure={STRUCTURE} />
-            <DemoKnowledgeDialog content={KNOWLEDGE} demoName="Response METHODS" />
-          </Group>
-        </header>
-
-        <div className={styles.workspace}>
+    <DemoLayout
+      description="选择方法并发送请求，观察状态、响应头和响应体。"
+      knowledge={KNOWLEDGE}
+      structure={STRUCTURE}
+      title="Response METHODS"
+    >
+      <div className={styles.workspace}>
           <nav aria-label="Response METHODS" className={styles.methodList}>
             {METHODS.map((method) => (
               <button
@@ -97,9 +89,8 @@ const ResponseMethods = () => {
             {!result && !error && <div className={styles.empty}>{loading ? <Loader size="sm" /> : '等待请求'}</div>}
             {result && <ResponseResult interpretation={selected.interpretation} result={result} showPreview={selected.slug === 'render'} />}
           </section>
-        </div>
       </div>
-    </main>
+    </DemoLayout>
   );
 };
 

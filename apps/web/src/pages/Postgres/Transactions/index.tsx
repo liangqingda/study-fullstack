@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button, Group, Text, Title } from '@mantine/core';
+import { Badge, Button, Text, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
 import type { TransactionError } from '@liangqingda/study-nodejs-schema';
 import type { Example, Result } from './types';
 
 import { postApiTransactionsRun } from '@/apis';
-import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
-import DemoStructureDialog from '@/components/DemoStructureDialog';
+import DemoLayout from '@/layouts/DemoLayout';
 import { isAxiosError } from '@/utils/http';
 
 import { EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
@@ -60,13 +59,13 @@ const Transactions = () => {
   };
 
   return (
-    <main className={styles.page}>
-      <div className={styles.shell}>
-        <header className={styles.header}>
-          <div><Title order={1}>事务实验</Title><Text c="dimmed">在真实数据库中执行，比较事务边界、快照和并发冲突。</Text></div>
-          <Group gap="sm"><DemoStructureDialog structure={STRUCTURE} /><DemoKnowledgeDialog content={KNOWLEDGE} demoName="事务实验" /></Group>
-        </header>
-        <div className={styles.workspace}>
+    <DemoLayout
+      description="在真实数据库中执行，比较事务边界、快照和并发冲突。"
+      knowledge={KNOWLEDGE}
+      structure={STRUCTURE}
+      title="事务实验"
+    >
+      <div className={styles.workspace}>
           <nav aria-label="事务场景" className={styles.navigation}>{EXAMPLES.map((example) => <button aria-current={selected.key === example.key ? 'true' : undefined} className={`${styles.navItem} ${selected.key === example.key ? styles.active : ''}`} key={example.key} onClick={() => select(example)} type="button"><strong>{example.title}</strong><span>{example.subtitle}</span></button>)}</nav>
           <section aria-label="事务实验" className={styles.detail}>
             <div className={styles.heading}><div><Title order={2}>{selected.title}</Title><Text c="dimmed" size="sm">{selected.subtitle}</Text></div><Badge color="orange" variant="light">POST</Badge></div>
@@ -81,9 +80,8 @@ const Transactions = () => {
               <div className={styles.explanation}><h3>为什么得到这个结果</h3><Text size="sm">{result.outcome} {selected.explanation}</Text><Text c="dimmed" size="sm">{selected.comparison}</Text></div>
             </section>}
           </section>
-        </div>
       </div>
-    </main>
+    </DemoLayout>
   );
 };
 

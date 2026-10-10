@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button, Code, Group, Text, Title } from '@mantine/core';
+import { Badge, Button, Code, Text, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
 import type { Example, Result } from './types';
 
-import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
-import DemoStructureDialog from '@/components/DemoStructureDialog';
+import DemoLayout from '@/layouts/DemoLayout';
 
 import { EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
 
@@ -72,20 +71,13 @@ const ErrorHandling = () => {
   };
 
   return (
-    <main className={styles.page}>
-      <div className={styles.shell}>
-        <header className={styles.header}>
-          <div>
-            <Title order={1}>错误处理</Title>
-            <Text c="dimmed">从错误产生、进入错误处理链，到最终响应或连接中断，逐步对照每条路径。</Text>
-          </div>
-          <Group gap="sm" justify="flex-end">
-            <DemoStructureDialog structure={STRUCTURE} />
-            <DemoKnowledgeDialog content={KNOWLEDGE} demoName="错误处理" />
-          </Group>
-        </header>
-
-        <div className={styles.workspace}>
+    <DemoLayout
+      description="从错误产生、进入错误处理链，到最终响应或连接中断，逐步对照每条路径。"
+      knowledge={KNOWLEDGE}
+      structure={STRUCTURE}
+      title="错误处理"
+    >
+      <div className={styles.workspace}>
           <nav aria-label="错误处理示例" className={styles.navigation}>
             {EXAMPLES.map((example) => (
               <button
@@ -151,9 +143,8 @@ const ErrorHandling = () => {
               </div>
             )}
           </section>
-        </div>
       </div>
-    </main>
+    </DemoLayout>
   );
 };
 
