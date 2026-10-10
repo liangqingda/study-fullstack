@@ -50,14 +50,6 @@
   border-top: 1px solid var(--demo-line);
 }
 
-.example-code {
-  margin: 0;
-  color: var(--demo-ink);
-  font: 13px/1.7 var(--mantine-font-family-monospace);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 .request-bar {
   display: flex;
   align-items: center;
@@ -108,7 +100,6 @@
   font-family: var(--mantine-font-family-monospace);
 }
 
-.body,
 .no-body {
   min-height: 110px;
   margin: 0;

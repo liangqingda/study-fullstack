@@ -1,13 +1,13 @@
-import { Suspense, lazy, useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Button, Checkbox, Modal, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChevronRight, IconFileCode, IconFolder, IconHierarchy2 } from '@tabler/icons-react';
 
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
 
-import styles from './index.scss';
+import CodeBlock from '@/components/CodeBlock';
 
-const CodeViewer = lazy(() => import('./CodeViewer'));
+import styles from './index.scss';
 
 export type StructureFile = {
   path: string;
@@ -130,9 +130,7 @@ const FileReview = ({ file, repository, read, onReadChange }: {
           {source === null && <Text c="dimmed" size="sm">加载源码中…</Text>}
           {source === undefined && <Text c="red" size="sm">源码加载失败或当前构建未包含该文件。</Text>}
           {typeof source === 'string' && (
-            <Suspense fallback={<Text c="dimmed" size="sm">加载代码视图中…</Text>}>
-              <CodeViewer code={source} path={file.path} />
-            </Suspense>
+            <CodeBlock bare code={source} label={`${file.path} 源码`} path={file.path} />
           )}
         </div>
       )}

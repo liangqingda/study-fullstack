@@ -1,0 +1,136 @@
+/* ============================================================
+   CodeBlock — 公共代码展示组件
+   统一的深色代码卡片：无论亮/暗主题，代码区都使用
+   --demo-code-bg 深底 + GitHub Dark 风格语法色，
+   与 verdiis 设计系统（verdigris 深绿墨色）保持一致的观感。
+   ============================================================ */
+
+.code-block {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--demo-line-strong);
+  border-radius: 8px;
+  background: var(--demo-code-bg);
+}
+
+/* bare 模式：嵌入已有卡片时去掉边框/圆角，仅保留代码底色 */
+.code-block[data-bare] {
+  border: 0;
+  border-radius: 0;
+}
+
+/* ---- 覆盖 Mantine CodeHighlight，让代码贴合卡片、底色统一 ---- */
+.code-block :global(.mantine-CodeHighlight-codeHighlight) {
+  overflow: hidden;
+  background: transparent;
+}
+
+.code-block :global(.mantine-CodeHighlight-scrollarea) {
+  background: transparent;
+}
+
+.code-block :global(pre.mantine-CodeHighlight-pre) {
+  margin: 0;
+  padding: 14px 0;
+  background: transparent;
+}
+
+.code-block :global(code.mantine-CodeHighlight-code.hljs) {
+  padding: 0 18px;
+  background: transparent;
+  color: var(--demo-code-ink);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* 行号列 */
+.code-block :global(.mantine-CodeHighlight-lineNumbers) {
+  padding-top: 14px;
+  padding-left: 16px;
+  color: var(--demo-code-muted);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 13px;
+  line-height: 1.7;
+  user-select: none;
+}
+
+/* 复制按钮 */
+.code-block :global(.mantine-CodeHighlight-controls) {
+  background: var(--demo-code-bg);
+  opacity: 0.92;
+}
+
+.code-block :global(.mantine-CodeHighlight-control) {
+  color: var(--demo-code-ink);
+  border-radius: 6px;
+}
+
+.code-block :global(.mantine-CodeHighlight-control:hover) {
+  background: var(--demo-surface-hover);
+}
+
+/* ---- 语法配色：GitHub Dark 风格，深色底上的可读色板 ---- */
+.code-block :global(.hljs-keyword),
+.code-block :global(.hljs-selector-tag),
+.code-block :global(.hljs-type) {
+  color: #ff7b72;
+}
+
+.code-block :global(.hljs-title),
+.code-block :global(.hljs-title.function_),
+.code-block :global(.hljs-section) {
+  color: #d2a8ff;
+}
+
+.code-block :global(.hljs-attr),
+.code-block :global(.hljs-attribute),
+.code-block :global(.hljs-number),
+.code-block :global(.hljs-variable),
+.code-block :global(.hljs-literal),
+.code-block :global(.hljs-symbol),
+.code-block :global(.hljs-bullet) {
+  color: #79c0ff;
+}
+
+.code-block :global(.hljs-string),
+.code-block :global(.hljs-regexp),
+.code-block :global(.hljs-addition) {
+  color: #a5d6ff;
+}
+
+.code-block :global(.hljs-comment),
+.code-block :global(.hljs-quote),
+.code-block :global(.hljs-deletion) {
+  color: #8b949e;
+  font-style: italic;
+}
+
+.code-block :global(.hljs-built_in),
+.code-block :global(.hljs-builtin-name) {
+  color: #ffa657;
+}
+
+.code-block :global(.hljs-meta),
+.code-block :global(.hljs-name) {
+  color: #79c0ff;
+}
+
+.code-block :global(.hljs-tag),
+.code-block :global(.hljs-selector-id),
+.code-block :global(.hljs-selector-class) {
+  color: #7ee787;
+}
+
+.code-block :global(.hljs-params),
+.code-block :global(.hljs-template-variable) {
+  color: #ffa657;
+}
+
+.code-block :global(.hljs-emphasis) {
+  font-style: italic;
+}
+
+.code-block :global(.hljs-strong) {
+  font-weight: 700;
+}

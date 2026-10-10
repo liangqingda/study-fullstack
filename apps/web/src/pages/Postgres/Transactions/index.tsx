@@ -6,6 +6,7 @@ import type { TransactionError } from '@liangqingda/study-nodejs-schema';
 import type { Example, Result } from './types';
 
 import { postApiTransactionsRun } from '@/apis';
+import CodeBlock from '@/components/CodeBlock';
 import DemoEmpty from '@/components/DemoEmpty';
 import DemoNavDetail from '@/components/DemoNavDetail';
 import DemoLayout from '@/layouts/DemoLayout';
@@ -79,7 +80,7 @@ const Transactions = () => {
         selectedKey={selected.key}
       >
             <div className={styles.heading}><div><Title order={2}>{selected.title}</Title><Text c="dimmed" size="sm">{selected.subtitle}</Text></div><Badge color="orange" variant="light">POST</Badge></div>
-            <div className={styles.lesson}><div><h3>先预测</h3><Text size="sm">{selected.question}</Text></div><div><h3>关键 SQL（简化展示）</h3><pre>{selected.code}</pre></div><div><h3>运行后应看到</h3><Text size="sm">{selected.expected}</Text></div></div>
+            <div className={styles.lesson}><div><h3>先预测</h3><Text size="sm">{selected.question}</Text></div><div><h3>关键 SQL（简化展示）</h3><CodeBlock code={selected.code} language="sql" /></div><div><h3>运行后应看到</h3><Text size="sm">{selected.expected}</Text></div></div>
             <div className={styles.action}><code>POST /api/transactions/run</code><Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void run()}>运行实验</Button></div>
             {error && <Text c="red" role="alert">{error}</Text>}
             {!result && !error && <DemoEmpty>{loading ? '正在执行事务…' : '等待运行'}</DemoEmpty>}

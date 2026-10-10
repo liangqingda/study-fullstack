@@ -5,6 +5,7 @@ import { IconPlayerPlay } from '@tabler/icons-react';
 import type { Example, Result } from './types';
 
 import DemoEmpty from '@/components/DemoEmpty';
+import CodeBlock from '@/components/CodeBlock';
 import DemoNavDetail from '@/components/DemoNavDetail';
 import DemoSteps from '@/components/DemoSteps';
 import DemoLayout from '@/layouts/DemoLayout';
@@ -99,7 +100,7 @@ const ErrorHandling = () => {
               <h3>这次请求会怎样走</h3>
               <DemoSteps steps={selected.steps} />
               <div className={styles.notes}>
-                <div><h3>关键代码</h3><pre>{selected.code}</pre></div>
+                <div><h3>关键代码</h3><CodeBlock code={selected.code} language="typescript" /></div>
                 <div><h3>发送后应看到</h3><Text size="sm">{selected.observation}</Text></div>
               </div>
               <div className={styles.comparison}>
@@ -135,7 +136,7 @@ const ErrorHandling = () => {
                   <Text size="sm">{selected.interpretation}</Text>
                 </div>
                 <h3>响应体（原始文本）</h3>
-                <pre>{result.body || '响应体为空'}</pre>
+                <CodeBlock code={result.body || '响应体为空'} />
               </div>
             )}
           </DemoNavDetail>

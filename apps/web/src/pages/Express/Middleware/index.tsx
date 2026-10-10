@@ -5,6 +5,7 @@ import { IconPlayerPlay } from '@tabler/icons-react';
 import type { DemoResponse, Example } from './types';
 
 import DemoEmpty from '@/components/DemoEmpty';
+import CodeBlock from '@/components/CodeBlock';
 import DemoNavDetail from '@/components/DemoNavDetail';
 import DemoSteps from '@/components/DemoSteps';
 import DemoLayout from '@/layouts/DemoLayout';
@@ -92,7 +93,7 @@ const Middleware = () => {
               <h3>这次请求会怎样走</h3>
               <DemoSteps steps={selected.steps} />
               <div className={styles.notes}>
-                <div><h3>关键代码</h3><pre>{selected.code}</pre></div>
+                <div><h3>关键代码</h3><CodeBlock code={selected.code} language="typescript" /></div>
                 <div><h3>发送后应看到</h3><Text size="sm">{selected.observation}</Text></div>
               </div>
               <div className={styles.comparison}>
@@ -118,7 +119,7 @@ const Middleware = () => {
                   <h3>为什么得到这个结果</h3>
                   <Text size="sm">{selected.interpretation}</Text>
                 </div>
-                <h3>响应体</h3><pre>{JSON.stringify(result.data, null, 2)}</pre>
+                <h3>响应体</h3><CodeBlock code={JSON.stringify(result.data, null, 2)} language="json" />
               </div>
             )}
           </DemoNavDetail>

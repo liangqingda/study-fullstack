@@ -3,6 +3,7 @@ import { Badge, Button, Code, Group, Loader, Text, Title } from '@mantine/core';
 import { IconDownload, IconExternalLink, IconPlayerPlay } from '@tabler/icons-react';
 
 import DemoEmpty from '@/components/DemoEmpty';
+import CodeBlock from '@/components/CodeBlock';
 import DemoNavDetail from '@/components/DemoNavDetail';
 import DemoSteps from '@/components/DemoSteps';
 import DemoLayout from '@/layouts/DemoLayout';
@@ -52,7 +53,7 @@ const ResponseMethods = () => {
               <h3>这次请求会怎样走</h3>
               <DemoSteps steps={selected.steps} />
               <div className={styles.explanationGrid}>
-                <div><h3>关键代码</h3><pre className={styles.exampleCode}>{selected.code}</pre></div>
+                <div><h3>关键代码</h3><CodeBlock code={selected.code} language="typescript" /></div>
                 <div><h3>发送后应看到</h3><Text size="sm">{selected.observation}</Text></div>
               </div>
               <div className={styles.comparison}>

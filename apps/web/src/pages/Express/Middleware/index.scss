@@ -58,13 +58,6 @@
   line-height: 1.7;
 }
 
-.notes pre {
-  margin: 0;
-  font: 13px/1.7 var(--mantine-font-family-monospace);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 .comparison {
   padding-top: 18px;
   border-top: 1px solid var(--demo-line);
@@ -111,17 +104,6 @@
   margin-bottom: 22px;
   padding: 18px 0;
   border-block: 1px solid var(--demo-line);
-}
-
-.result pre {
-  margin: 0;
-  padding: 18px;
-  border-radius: 8px;
-  background: var(--demo-code-bg);
-  color: var(--demo-code-ink);
-  font: 13px/1.7 var(--mantine-font-family-monospace);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
 }
 
 @media (max-width: 620px) {

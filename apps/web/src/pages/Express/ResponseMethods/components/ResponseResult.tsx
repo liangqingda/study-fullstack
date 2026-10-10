@@ -2,6 +2,8 @@ import { Badge } from '@mantine/core';
 
 import type { Result } from '../hooks/useResponseRequest';
 
+import CodeBlock from '@/components/CodeBlock';
+
 import styles from '../index.scss';
 
 const statusColor = (status: number) => {
@@ -40,7 +42,7 @@ const ResponseResult = ({ interpretation, result, showPreview }: { interpretatio
       <p>{interpretation}</p>
     </div>
     <h3>Body</h3>
-    {result.body ? <pre className={styles.body}>{result.body}</pre> : <div className={styles.noBody}>响应体为空</div>}
+    {result.body ? <CodeBlock code={result.body} withLineNumbers={false} /> : <div className={styles.noBody}>响应体为空</div>}
     {showPreview && result.body && (
       <iframe className={styles.preview} sandbox="" srcDoc={result.body} title="渲染后的 HTML 预览" />
     )}

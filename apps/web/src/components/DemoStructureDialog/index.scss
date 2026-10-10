@@ -41,17 +41,8 @@
 .file-toggle:hover code, .file-toggle:focus-visible code { text-decoration: underline; }
 .file-role { margin: 0; padding: 8px 16px 12px 41px; }
 .code-panel { width: 100%; min-width: 0; overflow-x: auto; border-top: 1px solid var(--mantine-color-default-border); }
-.code-panel :global(.mantine-CodeHighlight-root) { min-width: 0; }
-.code-panel :global(pre code.hljs) { padding: 0; background: transparent; }
-.code-panel :global(.hljs) { background: transparent; }
 :global(html[data-mantine-color-scheme='dark']) {
   .folder:hover, .tree-file:hover, .file-toggle code { color: var(--mantine-color-teal-3); }
-  .code-panel :global(.hljs) { color: #c9d1d9; }
-  .code-panel :global(.hljs-keyword), .code-panel :global(.hljs-type) { color: #ff7b72; }
-  .code-panel :global(.hljs-title), .code-panel :global(.hljs-title.function_) { color: #d2a8ff; }
-  .code-panel :global(.hljs-attr), .code-panel :global(.hljs-number), .code-panel :global(.hljs-variable) { color: #79c0ff; }
-  .code-panel :global(.hljs-string), .code-panel :global(.hljs-regexp) { color: #a5d6ff; }
-  .code-panel :global(.hljs-comment) { color: #8b949e; }
 }
 @media (max-width: 800px) {
   .review-layout { grid-template-columns: minmax(0, 1fr); }

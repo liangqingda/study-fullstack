@@ -49,13 +49,6 @@
   border-top: 1px solid var(--demo-line);
 }
 
-.notes pre {
-  margin: 0;
-  font: 13px/1.7 var(--mantine-font-family-monospace);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 .comparison {
   padding-top: 18px;
   border-top: 1px solid var(--demo-line);
@@ -103,19 +96,6 @@
   margin: 0;
   overflow-wrap: anywhere;
   font-family: var(--mantine-font-family-monospace);
-}
-
-.result pre {
-  max-height: 360px;
-  margin: 0;
-  padding: 18px;
-  overflow: auto;
-  border-radius: 8px;
-  background: var(--demo-code-bg);
-  color: var(--demo-code-ink);
-  font: 13px/1.7 var(--mantine-font-family-monospace);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
 }
 
 .interpretation {
