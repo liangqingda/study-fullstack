@@ -33,11 +33,15 @@
 
 .notes {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   margin: 8px 0 20px;
   padding-top: 20px;
   border-top: 1px solid var(--demo-line);
+}
+
+.notes > * {
+  min-width: 0;
 }
 
 .notes h3,
@@ -108,7 +112,6 @@
 
 @media (max-width: 620px) {
   .notes {
-    grid-template-columns: 1fr;
     gap: 16px;
   }
 
