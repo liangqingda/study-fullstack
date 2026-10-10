@@ -24,25 +24,24 @@ type DemoLayoutProps = {
 };
 
 /**
- * 所有 demo 页面共用的外层布局：统一页面背景、内容宽度与页头。
+ * 所有 demo 页面共用的布局：统一内容宽度与页头。
+ * 页面背景由 BasicLayout 的 AppShell.Main 与全局样式提供，此处不再重复包裹。
  * 页头左侧为标题 + 副标题，右侧固定放置“代码结构”与“知识点讲解”两个弹窗入口。
  */
 const DemoLayout = ({ title, description, structure, knowledge, demoName, children }: DemoLayoutProps) => (
-  <main className={styles.page}>
-    <div className={styles.shell}>
-      <header className={styles.header}>
-        <div>
-          <Title order={1}>{title}</Title>
-          <Text c="dimmed">{description}</Text>
-        </div>
-        <Group gap="sm" justify="flex-end">
-          <DemoStructureDialog structure={structure} />
-          <DemoKnowledgeDialog content={knowledge} demoName={demoName ?? title} />
-        </Group>
-      </header>
-      {children}
-    </div>
-  </main>
+  <div className={styles.shell}>
+    <header className={styles.header}>
+      <div>
+        <Title order={1}>{title}</Title>
+        <Text c="dimmed">{description}</Text>
+      </div>
+      <Group gap="sm" justify="flex-end">
+        <DemoStructureDialog structure={structure} />
+        <DemoKnowledgeDialog content={knowledge} demoName={demoName ?? title} />
+      </Group>
+    </header>
+    {children}
+  </div>
 );
 
 export default DemoLayout;

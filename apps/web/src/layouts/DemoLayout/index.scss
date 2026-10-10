@@ -1,13 +1,7 @@
-.page {
-  min-height: calc(100vh - 56px);
-  padding: 36px;
-  background: var(--demo-bg);
-  color: var(--demo-ink);
-}
-
 .shell {
   max-width: 1240px;
   margin: 0 auto;
+  padding: 36px;
 }
 
 .header {
@@ -35,13 +29,13 @@
 }
 
 @media (max-width: 900px) {
-  .page {
+  .shell {
     padding: 20px;
   }
 }
 
 @media (max-width: 620px) {
-  .page {
+  .shell {
     padding: 16px;
   }
 
