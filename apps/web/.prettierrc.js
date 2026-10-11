@@ -1,3 +1,3 @@
-import prettierConfig from "@liangqingda/eslint-config/prettier.json" with { type: "json" };
+import prettierConfig from "@liangqingda/eslint-config/prettier.json";
 
 export default prettierConfig;
