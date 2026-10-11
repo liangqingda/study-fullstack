@@ -18,7 +18,7 @@ import styles from './index.scss';
 const ErrorHandling = () => {
   const [selected, setSelected] = useState<Example>(EXAMPLES[0]);
   const { result, error, loading, reset, run } = useDemoRequest<Result>();
-  const url = `/api/error-handling/${selected.slug}`;
+  const url = `/api/express/error-handling/${selected.slug}`;
 
   const select = (example: Example) => {
     setSelected(example);

@@ -47,7 +47,7 @@ router.get('/jsonp', (_req, res) => {
 
 router.get('/redirect', (_req, res) => {
   logResponse(res, 'res.redirect()', '返回 302，指向 JSON 示例');
-  res.redirect(302, '/api/response-methods/json');
+  res.redirect(302, '/api/express/response-methods/json');
 });
 
 router.get('/render', (_req, res) => {

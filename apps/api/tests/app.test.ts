@@ -38,11 +38,11 @@ describe('application routes', () => {
   });
 
   it('keeps existing learning routes available', async () => {
-    expect((await request(app).get('/api/response-methods/json')).status).toBe(200);
-    expect((await request(app).get('/api/middleware/application')).status).toBe(200);
-    const valid = await request(app).post('/api/middleware/built-in').send({ example: true });
+    expect((await request(app).get('/api/express/response-methods/json')).status).toBe(200);
+    expect((await request(app).get('/api/express/middleware/application')).status).toBe(200);
+    const valid = await request(app).post('/api/express/middleware/built-in').send({ example: true });
     const invalid = await request(app)
-      .post('/api/middleware/built-in')
+      .post('/api/express/middleware/built-in')
       .set('Content-Type', 'application/json')
       .send('{');
 

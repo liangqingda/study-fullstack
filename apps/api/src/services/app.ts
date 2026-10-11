@@ -48,7 +48,7 @@ export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial
   app.use(cors({ origin: config.corsOrigins.length ? config.corsOrigins : false }));
   app.use(compression());
   app.use((req, res, next) => {
-    if (req.path === '/api/middleware/built-in') {
+    if (req.path === '/api/express/middleware/built-in') {
       next();
       return;
     }
@@ -61,9 +61,9 @@ export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial
   app.use('/api/postgres', createPostgresRouter(postgres));
   app.use('/api/redis/sms-login', createSmsLoginRouter(redis));
   app.use('/api/postgres/transactions', createTransactionRouter(postgres?.connect ? postgres as Pick<Pool, 'connect'> : undefined));
-  app.use('/api/response-methods', responseMethodsRouter);
-  app.use('/api/middleware', applicationMiddleware, middlewareRouter);
-  app.use('/api/error-handling', errorHandlingRouter);
+  app.use('/api/express/response-methods', responseMethodsRouter);
+  app.use('/api/express/middleware', applicationMiddleware, middlewareRouter);
+  app.use('/api/express/error-handling', errorHandlingRouter);
   app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
   app.use(errorHandler);
 

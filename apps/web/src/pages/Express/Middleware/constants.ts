@@ -5,7 +5,7 @@ import type { DemoStructure } from '@/components/DemoStructureDialog';
 /**
  * 后端接口的基础路径。
  */
-export const BASE_PATH = '/api/middleware';
+export const BASE_PATH = '/api/express/middleware';
 
 /**
  * 中间件执行顺序的演示用例列表。
@@ -13,16 +13,16 @@ export const BASE_PATH = '/api/middleware';
 export const EXAMPLES: Example[] = [
   {
     key: 'application', name: '应用级中间件', summary: '挂载在 app 上',
-    explanation: 'app.use 挂载在 /api/middleware，五个示例都会先经过它。与路由级不同，它不属于某个 Router。',
+    explanation: 'app.use 挂载在 /api/express/middleware，五个示例都会先经过它。与路由级不同，它不属于某个 Router。',
     steps: [
-      '请求匹配 /api/middleware，先进入 app.use 上的 applicationMiddleware；它把第一步写进 res.locals.trace。',
+      '请求匹配 /api/express/middleware，先进入 app.use 上的 applicationMiddleware；它把第一步写进 res.locals.trace。',
       '中间件调用 next()，控制权才会传给 Router；/application 的路由处理器补记一步并返回 JSON。',
       '响应完成后，后端终端的 finish 日志会输出同一条执行链和 HTTP 状态。',
     ],
-    code: "app.use('/api/middleware', applicationMiddleware, router);\n// middleware: trace.push('app.use'); next();",
+    code: "app.use('/api/express/middleware', applicationMiddleware, router);\n// middleware: trace.push('app.use'); next();",
     observation: 'HTTP 200；trace 的第一步是 app.use，第二步是 app 路由处理器。其他四个请求也都以 app.use 开始。',
     interpretation: 'trace 是后端按执行先后写入的数组，不是前端推测的顺序；它证明挂载在应用上的中间件先于 Router 内的处理器运行。',
-    comparison: 'app.use 的路径前缀覆盖整个 /api/middleware 子树；router.use 只属于某个 Router，还可进一步限制为 /router。', method: 'GET',
+    comparison: 'app.use 的路径前缀覆盖整个 /api/express/middleware 子树；router.use 只属于某个 Router，还可进一步限制为 /router。', method: 'GET',
   },
   {
     key: 'router', name: '路由级中间件', summary: '挂载在 Router 上',
@@ -89,10 +89,10 @@ export const STRUCTURE: DemoStructure = {
     { path: 'apps/web/src/pages/Express/Middleware/index.scss', role: '页面布局与结果样式。' },
   ],
   backend: [
-    { path: 'apps/api/src/services/app.ts', role: '将应用级中间件和 Router 挂载到 /api/middleware，并配置通用请求处理。' },
+    { path: 'apps/api/src/services/app.ts', role: '将应用级中间件和 Router 挂载到 /api/express/middleware，并配置通用请求处理。' },
     { path: 'apps/api/src/express/middleware/index.ts', role: '实现应用级、路由级、错误处理、内置和第三方中间件示例；记录执行链及终端日志。' },
   ],
-  connection: '页面向 /api/middleware/{示例名} 发送 GET 或 POST；app.ts 先经过 applicationMiddleware，再由对应路由处理。后端返回的 trace 在页面按顺序展示。',
+  connection: '页面向 /api/express/middleware/{示例名} 发送 GET 或 POST；app.ts 先经过 applicationMiddleware，再由对应路由处理。后端返回的 trace 在页面按顺序展示。',
   database: '无。五个请求只使用请求体与 res.locals，不查询或修改数据库。',
 };
 
@@ -107,7 +107,7 @@ export const KNOWLEDGE = `## 中间件是什么
 
 | 类型 | 关键特征 | 本例 |
 | --- | --- | --- |
-| 应用级 | 挂在 \`app\` 上，前缀匹配整个子树 | \`app.use('/api/middleware', ...)\` |
+| 应用级 | 挂在 \`app\` 上，前缀匹配整个子树 | \`app.use('/api/express/middleware', ...)\` |
 | 路由级 | 挂在某个 \`Router\` 上，可限定路径 | \`router.use('/router', ...)\` |
 | 错误处理 | 四个参数，接收 \`next(error)\` | \`router.use((err, req, res, next) => ...)\` |
 | 内置 | Express 自带 | \`express.json()\` 解析请求体 |
