@@ -21,6 +21,38 @@ const toIdentifier = (method, route) => {
   return /^[a-zA-Z_$][\w$]*$/.test(name) ? name : `api${name[0]?.toUpperCase() ?? ''}${name.slice(1)}`;
 };
 
+/**
+ * 把任意标识串规范化为 kebab-case（用于 demo 文件名）。
+ */
+const toKebabCase = (value) =>
+  value
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+
+/**
+ * 从一条路由及其首个操作推导 demo 分组键：
+ * 优先取 OpenAPI 操作的 tags（与 demo 名对应），回退到 `/api/` 后的第一个路径段。
+ */
+const demoKeyFor = (route, pathItem) => {
+  const tags = Object.values(pathItem ?? {})
+    .filter((operation) => operation && typeof operation === 'object' && !('$ref' in operation))
+    .flatMap((operation) => operation.tags ?? [])
+    .map(toKebabCase)
+    .filter(Boolean);
+
+  if (tags.length) {
+    return tags[0];
+  }
+
+  const firstSegment = route.replace(/^\/api\/?/, '').split('/')[0];
+
+  return firstSegment ? toKebabCase(firstSegment) : 'api';
+};
+
 const responseType = async (operation, opType, schemaType) => {
   const responses = operation.responses ?? {};
   const success = Object.keys(responses).filter((status) => /^2\d\d$/.test(status)).sort();
@@ -52,7 +84,8 @@ export const generateApiClient = async (document) => {
     throw new Error('Expected an OpenAPI 3 document');
   }
 
-  const importedTypes = new Set();
+  // schemaType 在分组循环外定义，通过 activeImportedTypes 指向当前 demo 分组，收集该文件要导入的 schema 类型。
+  let activeImportedTypes = new Set();
   const schemaType = async (schema) => {
     const nodes = await openapiTS({
       openapi: '3.1.0',
@@ -75,7 +108,7 @@ export const generateApiClient = async (document) => {
             throw new Error(`Unsupported schema reference: ${name}`);
           }
 
-          importedTypes.add(name);
+          activeImportedTypes.add(name);
           return ts.factory.createTypeReferenceNode(name);
         }
 
@@ -96,11 +129,25 @@ export const generateApiClient = async (document) => {
     properties: Object.fromEntries(parameters.map((parameter) => [parameter.name, parameter.schema])),
     required: parameters.filter((parameter) => parameter.required).map((parameter) => parameter.name),
   });
-  const entries = [];
   const usedNames = new Set();
-  const httpImports = new Set();
+  // demoKey -> { entries, importedTypes, httpImports }
+  const demoGroups = new Map();
 
   for (const [route, pathItem] of Object.entries(document.paths ?? {}).sort(([a], [b]) => a.localeCompare(b))) {
+    const demoKey = demoKeyFor(route, pathItem);
+
+    if (!demoGroups.has(demoKey)) {
+      demoGroups.set(demoKey, {
+        entries: [],
+        importedTypes: new Set(),
+        httpImports: new Set(),
+      });
+    }
+
+    const group = demoGroups.get(demoKey);
+
+    activeImportedTypes = group.importedTypes;
+
     for (const [method, operation] of Object.entries(pathItem ?? {})) {
       if (!methods.has(method)) {
         continue;
@@ -160,41 +207,58 @@ export const generateApiClient = async (document) => {
       let call;
 
       if (fnName) {
-        httpImports.add(fnName);
+        group.httpImports.add(fnName);
         call = hasBody
           ? `\n  ${fnName}<${result}>(${url}, input.body, { ${fnConfigs.join(', ')} });`
           : `\n  ${fnName}<${result}>(${url}, { ${fnConfigs.join(', ')} });`;
       } else {
-        httpImports.add('request');
+        group.httpImports.add('request');
         call = `\n  request<${result}>({ ${configs.join(', ')} });`;
       }
 
-      entries.push(`export const ${name} = (input: { ${fields.join('; ')} }${required ? '' : ' = {}'}) =>${call}`);
+      group.entries.push(`export const ${name} = (input: { ${fields.join('; ')} }${required ? '' : ' = {}'}) =>${call}`);
     }
   }
 
-  const needsPath = entries.some((entry) => entry.includes('buildPath('));
+  // 每个 demo 单独成一个文件，index.ts 仅做聚合导出。
+  const files = [...demoGroups.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([demoKey, group]) => {
+      const needsPath = group.entries.some((entry) => entry.includes('buildPath('));
 
-  if (needsPath) {
-    httpImports.add('buildPath');
-  }
+      if (needsPath) {
+        group.httpImports.add('buildPath');
+      }
 
-  const schemaImport = importedTypes.size ? `import type { ${[...importedTypes].sort().join(', ')} } from '@liangqingda/study-nodejs-schema';\n` : '';
-  // 生成的函数省略返回类型标注，由 TypeScript 从便捷方法自动推导，故无需导入 AxiosResponse。
-  const imports = entries.length ? `${schemaImport}import { ${[...httpImports].sort().join(', ')} } from '@/utils/http';\n\n` : '';
-  const client = `/* eslint-disable */\n// Generated from study-nodejs-schema. Do not edit.\n${imports}${entries.join('\n\n')}${entries.length ? '\n' : ''}`;
+      const schemaImport = group.importedTypes.size
+        ? `import type { ${[...group.importedTypes].sort().join(', ')} } from '@liangqingda/study-nodejs-schema';\n`
+        : '';
+      // 生成的函数省略返回类型标注，由 TypeScript 从便捷方法自动推导，故无需导入 AxiosResponse。
+      const imports = group.entries.length
+        ? `${schemaImport}import { ${[...group.httpImports].sort().join(', ')} } from '@/utils/http';\n\n`
+        : '';
+      const content = `/* eslint-disable */\n// Generated from study-nodejs-schema. Do not edit.\n${imports}${group.entries.join('\n\n')}${group.entries.length ? '\n' : ''}`;
 
-  return { client };
+      return { name: `${demoKey}.ts`, content };
+    });
+  const index = `/* eslint-disable */\n// Generated from study-nodejs-schema. Do not edit.\n${files.map((file) => `export * from './${file.name.replace(/\.ts$/, '')}';`).join('\n')}\n`;
+
+  return { files, index };
 };
 
 const main = async () => {
   execFileSync('pnpm', ['generate:openapi'], { cwd: schemaRoot, stdio: 'inherit' });
   const document = JSON.parse(await readFile(path.join(schemaRoot, 'openApiJsonFile.json'), 'utf8'));
-  const { client } = await generateApiClient(document);
+  const { files, index } = await generateApiClient(document);
 
   await mkdir(outputDir, { recursive: true });
-  await writeFile(path.join(outputDir, 'index.ts'), client);
-  console.log(`Generated ${Object.keys(document.paths ?? {}).length} API path(s) in src/apis`);
+
+  for (const file of files) {
+    await writeFile(path.join(outputDir, file.name), file.content);
+  }
+
+  await writeFile(path.join(outputDir, 'index.ts'), index);
+  console.log(`Generated ${files.length} API module(s) + index in src/apis`);
 };
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

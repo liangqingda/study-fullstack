@@ -28,22 +28,25 @@ const spec = {
 };
 
 test('generates typed callers for path, query, JSON body, and empty success responses', async () => {
-  const { client } = await generateApiClient(spec);
+  const { files, index } = await generateApiClient(spec);
+  const orders = files.find((file) => file.name === 'orders.ts')?.content ?? '';
 
-  assert.match(client, /orderId: number/);
-  assert.match(client, /export const getApiOrdersOrderId/);
-  assert.match(client, /import \{ buildPath, get, post \} from '@\/utils\/http';/);
-  assert.match(client, /query\?: \{\s+details\?: boolean;/);
-  assert.match(client, /buildPath\("\/api\/orders\/\{orderId\}", input.path\)/);
-  assert.match(client, /body: \{\s+quantity: number;/);
+  assert.equal(files.length, 1);
+  assert.match(index, /export \* from '\.\/orders';/);
+  assert.match(orders, /orderId: number/);
+  assert.match(orders, /export const getApiOrdersOrderId/);
+  assert.match(orders, /import \{ buildPath, get, post \} from '@\/utils\/http';/);
+  assert.match(orders, /query\?: \{\s+details\?: boolean;/);
+  assert.match(orders, /buildPath\("\/api\/orders\/\{orderId\}", input.path\)/);
+  assert.match(orders, /body: \{\s+quantity: number;/);
   // 便捷方法已声明返回类型，生成的函数省略标注，由 TypeScript 自动推导。
-  assert.doesNotMatch(client, /Promise<AxiosResponse/);
-  assert.match(client, /=>\s+post<void>\(/);
-  assert.doesNotMatch(client, /\["responses"\]\["404"\]/);
+  assert.doesNotMatch(orders, /Promise<AxiosResponse/);
+  assert.match(orders, /=>\s+post<void>\(/);
+  assert.doesNotMatch(orders, /\["responses"\]\["404"\]/);
 });
 
 test('imports named payload types from the schema package without a local types module', async () => {
-  const { client, types } = await generateApiClient({
+  const { files } = await generateApiClient({
     ...spec,
     components: { schemas: { OrderRequest: { type: 'object' }, OrderResponse: { type: 'object' } } },
     paths: {
@@ -55,12 +58,39 @@ test('imports named payload types from the schema package without a local types 
       },
     },
   });
+  const orders = files.find((file) => file.name === 'orders.ts')?.content ?? '';
 
-  assert.equal(types, undefined);
-  assert.match(client, /import type \{ OrderRequest, OrderResponse \} from '@liangqingda\/study-nodejs-schema';/);
-  assert.match(client, /body: OrderRequest/);
-  assert.match(client, /=>\s+post<OrderResponse>\(/);
-  assert.doesNotMatch(client, /paths\[|components\[|from ['"]\.\/types/);
+  assert.match(orders, /import type \{ OrderRequest, OrderResponse \} from '@liangqingda\/study-nodejs-schema';/);
+  assert.match(orders, /body: OrderRequest/);
+  assert.match(orders, /=>\s+post<OrderResponse>\(/);
+  assert.doesNotMatch(orders, /paths\[|components\[|from ['"]\.\/types/);
+});
+
+test('splits callers into per-demo files and re-exports them from the index', async () => {
+  const { files, index } = await generateApiClient({
+    ...spec,
+    paths: {
+      '/api/orders': {
+        get: {
+          responses: { 200: { description: 'ok', content: { 'application/json': { schema: { type: 'object' } } } } },
+        },
+      },
+      '/api/users': {
+        get: {
+          responses: { 200: { description: 'ok', content: { 'application/json': { schema: { type: 'object' } } } } },
+        },
+      },
+    },
+  });
+
+  assert.deepEqual(files.map((file) => file.name), ['orders.ts', 'users.ts']);
+  assert.match(index, /export \* from '\.\/orders';/);
+  assert.match(index, /export \* from '\.\/users';/);
+  assert.match(files[0].content, /export const getApiOrders/);
+  assert.match(files[1].content, /export const getApiUsers/);
+  // 各 demo 文件只 import 自己用到的 http 便捷方法。
+  assert.doesNotMatch(files[0].content, /users/);
+  assert.doesNotMatch(files[1].content, /orders/);
 });
 
 test('rejects unsupported success payloads rather than generating wrong response types', async () => {
@@ -71,7 +101,7 @@ test('rejects unsupported success payloads rather than generating wrong response
 });
 
 test('preserves nested references and unions of successful responses', async () => {
-  const { client } = await generateApiClient({
+  const { files } = await generateApiClient({
     ...spec,
     components: { schemas: { Order: { type: 'object' } } },
     paths: {
@@ -85,7 +115,8 @@ test('preserves nested references and unions of successful responses', async () 
       },
     },
   });
+  const orders = files.find((file) => file.name === 'orders.ts')?.content ?? '';
 
-  assert.match(client, /import type \{ Order \} from '@liangqingda\/study-nodejs-schema';/);
-  assert.match(client, /=>\s+get<Order\[\] \| void>\(/);
+  assert.match(orders, /import type \{ Order \} from '@liangqingda\/study-nodejs-schema';/);
+  assert.match(orders, /=>\s+get<Order\[\] \| void>\(/);
 });
