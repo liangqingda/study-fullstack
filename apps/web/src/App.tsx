@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 
 import { defaultRoutePath, demoRoutes } from '@/generated/routes';
@@ -24,7 +25,9 @@ const DemoRoutes = () => {
 const App = () => (
   <BrowserRouter>
     <BasicLayout>
-      <DemoRoutes />
+      <Suspense fallback={null}>
+        <DemoRoutes />
+      </Suspense>
     </BasicLayout>
   </BrowserRouter>
 );

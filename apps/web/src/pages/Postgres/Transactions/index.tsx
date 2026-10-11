@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Badge, Button, Text, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
@@ -9,6 +9,7 @@ import { postApiTransactionsRun } from '@/apis';
 import CodeBlock from '@/components/CodeBlock';
 import DemoEmpty from '@/components/DemoEmpty';
 import DemoNavDetail from '@/components/DemoNavDetail';
+import { useDemoRequest } from '@/hooks/useDemoRequest';
 import DemoLayout from '@/layouts/DemoLayout';
 import { isAxiosError } from '@/utils/http';
 
@@ -18,47 +19,25 @@ import styles from './index.scss';
 
 const Transactions = () => {
   const [selected, setSelected] = useState<Example>(EXAMPLES[0]);
-  const [result, setResult] = useState<Result | null>(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const controller = useRef<AbortController | null>(null);
-
-  useEffect(() => () => controller.current?.abort(), []);
+  const { result, error, loading, reset, run } = useDemoRequest<Result>();
 
   const select = (example: Example) => {
-    controller.current?.abort();
-    controller.current = null;
     setSelected(example);
-    setResult(null);
-    setError('');
-    setLoading(false);
+    reset();
   };
 
-  const run = async () => {
-    controller.current?.abort();
-    const current = new AbortController();
+  const runExperiment = () => {
+    void run(async (signal) => {
+      try {
+        const response = await postApiTransactionsRun({ body: { scenario: selected.key }, signal });
 
-    controller.current = current;
-    setLoading(true);
-    setResult(null);
-    setError('');
-
-    try {
-      const response = await postApiTransactionsRun({ body: { scenario: selected.key }, signal: current.signal });
-
-      if (controller.current === current) { setResult(response.data); }
-    } catch (cause) {
-      if (controller.current === current && !current.signal.aborted) {
+        return response.data;
+      } catch (cause) {
         const message = isAxiosError<TransactionError>(cause) ? cause.response?.data.error : undefined;
 
-        setError(message ?? '请求失败；请确认后端和 study_nodejs 已启动。');
+        throw new Error(message ?? '请求失败；请确认后端和 study_nodejs 已启动。');
       }
-    } finally {
-      if (controller.current === current) {
-        controller.current = null;
-        setLoading(false);
-      }
-    }
+    });
   };
 
   return (
@@ -81,7 +60,7 @@ const Transactions = () => {
       >
             <div className={styles.heading}><div><Title order={2}>{selected.title}</Title><Text c="dimmed" size="sm">{selected.subtitle}</Text></div><Badge color="orange" variant="light">POST</Badge></div>
             <div className={styles.lesson}><div><h3>先预测</h3><Text size="sm">{selected.question}</Text></div><div><h3>关键 SQL（简化展示）</h3><CodeBlock code={selected.code} language="sql" /></div><div><h3>运行后应看到</h3><Text size="sm">{selected.expected}</Text></div></div>
-            <div className={styles.action}><code>POST /api/transactions/run</code><Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void run()}>运行实验</Button></div>
+            <div className={styles.action}><code>POST /api/transactions/run</code><Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void runExperiment()}>运行实验</Button></div>
             {error && <Text c="red" role="alert">{error}</Text>}
             {!result && !error && <DemoEmpty>{loading ? '正在执行事务…' : '等待运行'}</DemoEmpty>}
             {result && <section aria-live="polite" className={styles.result}>

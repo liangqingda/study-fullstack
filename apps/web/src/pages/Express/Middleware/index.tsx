@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Badge, Button, Code, Text, Textarea, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
@@ -8,6 +8,7 @@ import DemoEmpty from '@/components/DemoEmpty';
 import CodeBlock from '@/components/CodeBlock';
 import DemoNavDetail from '@/components/DemoNavDetail';
 import DemoSteps from '@/components/DemoSteps';
+import { useDemoRequest } from '@/hooks/useDemoRequest';
 import DemoLayout from '@/layouts/DemoLayout';
 
 import { BASE_PATH, EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
@@ -17,54 +18,32 @@ import styles from './index.scss';
 const Middleware = () => {
   const [selected, setSelected] = useState<Example>(EXAMPLES[0]);
   const [body, setBody] = useState('{"topic":"Express","count":2}');
-  const [result, setResult] = useState<{ status: number; data: DemoResponse } | null>(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const controllerRef = useRef<AbortController | null>(null);
-
-  useEffect(() => () => controllerRef.current?.abort(), []);
+  const { result, error, loading, reset, run } = useDemoRequest<{ status: number; data: DemoResponse }>();
 
   const select = (example: Example) => {
-    controllerRef.current?.abort();
-    controllerRef.current = null;
-
     setSelected(example);
-    setResult(null);
-    setError('');
-    setLoading(false);
+    reset();
   };
 
-  const run = async () => {
-    controllerRef.current?.abort();
+  const sendRequest = () => {
+    void run(async (signal) => {
+      try {
+        const response = await fetch(`${BASE_PATH}/${selected.key}`, {
+          method: selected.method,
+          signal,
+          ...(selected.method === 'POST' ? { headers: { 'Content-Type': 'application/json' }, body } : {}),
+        });
+        const data = await response.json() as DemoResponse;
 
-    const controller = new AbortController();
+        return { status: response.status, data };
+      } catch (cause) {
+        if (signal.aborted) {
+          throw cause;
+        }
 
-    controllerRef.current = controller;
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(`${BASE_PATH}/${selected.key}`, {
-        method: selected.method,
-        signal: controller.signal,
-        ...(selected.method === 'POST' ? { headers: { 'Content-Type': 'application/json' }, body } : {}),
-      });
-      const data = await response.json() as DemoResponse;
-
-      if (controllerRef.current === controller) {
-        setResult({ status: response.status, data });
+        throw new Error('请求失败，请确认后端已在 localhost:3000 启动。');
       }
-    } catch {
-      if (controllerRef.current === controller && !controller.signal.aborted) {
-        setResult(null);
-        setError('请求失败，请确认后端已在 localhost:3000 启动。');
-      }
-    } finally {
-      if (controllerRef.current === controller) {
-        controllerRef.current = null;
-        setLoading(false);
-      }
-    }
+    });
   };
 
   return (
@@ -106,7 +85,7 @@ const Middleware = () => {
             )}
             <div className={styles.action}>
               <Code>{selected.method} {BASE_PATH}/{selected.key}</Code>
-              <Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void run()}>发送请求</Button>
+              <Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void sendRequest()}>发送请求</Button>
             </div>
             {error && <Text c="red" role="alert">{error}</Text>}
             {!result && !error && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}

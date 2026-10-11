@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
+
+import { useDemoRequest } from '@/hooks/useDemoRequest';
 
 /**
  * 一次 fetch 请求的响应摘要。
@@ -24,63 +26,42 @@ export type Result = {
 
 /**
  * 发起 fetch 请求并管理 loading / error / result 状态，自动取消未完成的请求。
+ *
+ * 基于公共 hook `useDemoRequest` 封装：请求骨架（AbortController、竞态守卫、
+ * 卸载中止、三态）由公共 hook 提供，这里仅补充“把 URL 抓取为 Result”的页面逻辑。
  */
 export const useResponseRequest = () => {
-  const controllerRef = useRef<AbortController | null>(null);
-  const [result, setResult] = useState<Result | null>(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { result, error, loading, reset, run } = useDemoRequest<Result>();
 
-  useEffect(() => () => controllerRef.current?.abort(), []);
+  /** 发起一次 fetch 请求，自动 abort 上一个未完成的请求。 */
+  const runUrl = useCallback(
+    (url: string) => {
+      void run(async (signal) => {
+        try {
+          const response = await fetch(url, { signal });
+          const body = await response.text();
 
-  /** 取消当前请求并清空所有状态。 */
-  const reset = () => {
-    controllerRef.current?.abort();
-    controllerRef.current = null;
-    setResult(null);
-    setError('');
-    setLoading(false);
-  };
+          return {
+            status: response.status,
+            statusText: response.statusText,
+            contentType: response.headers.get('content-type') ?? '—',
+            disposition: response.headers.get('content-disposition') ?? '—',
+            location: response.headers.get('location') ?? '—',
+            body,
+            redirected: response.redirected,
+            finalUrl: response.url,
+          };
+        } catch (cause) {
+          if (signal.aborted) {
+            throw cause;
+          }
 
-  /** 发起一次请求，自动 abort 上一个未完成的请求。 */
-  const run = async (url: string) => {
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-
-    controllerRef.current = controller;
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(url, { signal: controller.signal });
-      const body = await response.text();
-
-      if (controllerRef.current !== controller) {
-        return;
-      }
-
-      setResult({
-        status: response.status,
-        statusText: response.statusText,
-        contentType: response.headers.get('content-type') ?? '—',
-        disposition: response.headers.get('content-disposition') ?? '—',
-        location: response.headers.get('location') ?? '—',
-        body,
-        redirected: response.redirected,
-        finalUrl: response.url,
+          throw new Error('请求失败。请确认后端已在 localhost:3000 启动。');
+        }
       });
-    } catch {
-      if (controllerRef.current === controller && !controller.signal.aborted) {
-        setResult(null);
-        setError('请求失败。请确认后端已在 localhost:3000 启动。');
-      }
-    } finally {
-      if (controllerRef.current === controller) {
-        controllerRef.current = null;
-        setLoading(false);
-      }
-    }
-  };
+    },
+    [run],
+  );
 
-  return { result, error, loading, reset, run };
+  return { result, error, loading, reset, run: runUrl };
 };

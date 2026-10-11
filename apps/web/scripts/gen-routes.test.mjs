@@ -31,7 +31,7 @@ test('generates aliases and nested menus while excluding helpers and error pages
   const { output, count } = await generateRoutes(root);
 
   assert.equal(count, 3);
-  assert.match(output, /from "@\/pages\/Express\/ResponseMethods\/index"/);
+  assert.match(output, /lazy\(\(\) => import\("@\/pages\/Express\/ResponseMethods\/index"\)\)/);
   assert.match(output, /path: "\/express\/response-methods\/details"/);
   assert.match(output, /"children":/);
   assert.doesNotMatch(output, /useRequest|helper|NotFound|types\.d|hidden/);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Badge, Button, Code, Text, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
@@ -8,6 +8,7 @@ import DemoEmpty from '@/components/DemoEmpty';
 import CodeBlock from '@/components/CodeBlock';
 import DemoNavDetail from '@/components/DemoNavDetail';
 import DemoSteps from '@/components/DemoSteps';
+import { useDemoRequest } from '@/hooks/useDemoRequest';
 import DemoLayout from '@/layouts/DemoLayout';
 
 import { EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
@@ -16,62 +17,47 @@ import styles from './index.scss';
 
 const ErrorHandling = () => {
   const [selected, setSelected] = useState<Example>(EXAMPLES[0]);
-  const [result, setResult] = useState<Result | null>(null);
-  const [failure, setFailure] = useState('');
-  const [loading, setLoading] = useState(false);
-  const controllerRef = useRef<AbortController | null>(null);
+  const { result, error, loading, reset, run } = useDemoRequest<Result>();
   const url = `/api/error-handling/${selected.slug}`;
 
-  useEffect(() => () => controllerRef.current?.abort(), []);
-
   const select = (example: Example) => {
-    controllerRef.current?.abort();
-    controllerRef.current = null;
     setSelected(example);
-    setResult(null);
-    setFailure('');
-    setLoading(false);
+    reset();
   };
 
-  const run = async () => {
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), 5000);
+  const sendRequest = () => {
+    void run(async (signal) => {
+      // 5s 超时：用一个内部 controller 触发 abort，并据此区分“超时”与“主动取消/切换”。
+      const timeout = new AbortController();
+      const onOuterAbort = () => timeout.abort();
 
-    controllerRef.current = controller;
-    setFailure('');
-    setLoading(true);
+      signal.addEventListener('abort', onOuterAbort, { once: true });
+      const timeoutId = window.setTimeout(() => timeout.abort(), 5000);
 
-    try {
-      const response = await fetch(url, { signal: controller.signal });
-      const body = await response.text();
+      try {
+        const response = await fetch(url, { signal: timeout.signal });
+        const body = await response.text();
 
-      if (controllerRef.current !== controller) {
-        return;
+        return {
+          status: response.status,
+          statusText: response.statusText,
+          contentType: response.headers.get('content-type') ?? '无',
+          demoHeader: response.headers.get('x-demo-error') ?? '无',
+          body,
+        };
+      } catch (cause) {
+        if (timeout.signal.aborted && !signal.aborted) {
+          throw new Error(selected.slug === 'headers-sent'
+            ? '响应未完整结束（连接中断或代理仍在等待），无法读取完整响应。查看后端终端的 headersSent 和连接关闭日志。'
+            : '请求失败或超时。请检查 localhost:3000 后端是否已启动。');
+        }
+
+        throw cause;
+      } finally {
+        window.clearTimeout(timeoutId);
+        signal.removeEventListener('abort', onOuterAbort);
       }
-
-      setResult({
-        status: response.status,
-        statusText: response.statusText,
-        contentType: response.headers.get('content-type') ?? '无',
-        demoHeader: response.headers.get('x-demo-error') ?? '无',
-        body,
-      });
-    } catch {
-      if (controllerRef.current === controller) {
-        setResult(null);
-        setFailure(selected.slug === 'headers-sent'
-          ? '响应未完整结束（连接中断或代理仍在等待），无法读取完整响应。查看后端终端的 headersSent 和连接关闭日志。'
-          : '请求失败或超时。请检查 localhost:3000 后端是否已启动。');
-      }
-    } finally {
-      window.clearTimeout(timeoutId);
-
-      if (controllerRef.current === controller) {
-        controllerRef.current = null;
-        setLoading(false);
-      }
-    }
+    });
   };
 
   return (
@@ -110,18 +96,18 @@ const ErrorHandling = () => {
             </section>
             <div className={styles.action}>
               <Code>{url}</Code>
-              <Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void run()}>发送请求</Button>
+              <Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void sendRequest()}>发送请求</Button>
             </div>
 
-            {failure && (
+            {error && (
               <div className={styles.failure} role="alert">
                 <h3>实际结果：没有完整响应</h3>
-                <Text size="sm">{failure}</Text>
+                <Text size="sm">{error}</Text>
                 <h3>为什么会这样</h3>
                 <Text size="sm">{selected.slug === 'headers-sent' ? selected.interpretation : '没有收到可供分析的响应；先检查后端是否运行，再重试。'}</Text>
               </div>
             )}
-            {!failure && !result && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
+            {!error && !result && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
             {result && (
               <div className={styles.result}>
                 <div className={styles.resultHeading}>

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Button, Checkbox, Modal, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChevronRight, IconFileCode, IconFolder, IconHierarchy2 } from '@tabler/icons-react';
@@ -168,9 +168,9 @@ const TreeBranches = ({ directory, repository, readFiles }: TreeProps) => (
   </ul>
 );
 
-const StructureTree = ({ files, repository, readFiles }: Omit<TreeProps, 'directory'> & { files: StructureFile[] }) => (
+const StructureTree = ({ directory, repository, readFiles }: TreeProps) => (
   <div className={styles.tree}>
-    <TreeBranches directory={buildTree(files)} readFiles={readFiles} repository={repository} />
+    <TreeBranches directory={directory} readFiles={readFiles} repository={repository} />
   </div>
 );
 
@@ -180,10 +180,24 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
   const [sidebarWidth, setSidebarWidth] = useState(360);
   const dragStart = useRef<{ x: number; width: number } | null>(null);
   const onReadChange = (key: string, read: boolean) => setReadFiles((current) => ({ ...current, [key]: read }));
-  const totalFiles = structure.frontend.length + (structure.backend?.length ?? 0) + (structure.schema?.length ?? 0);
-  const viewedFiles = [...structure.frontend.map((file) => fileKey('frontend', file.path)),
-    ...(structure.backend?.map((file) => fileKey('backend', file.path)) ?? []),
-    ...(structure.schema?.map((file) => fileKey('schema', file.path)) ?? [])].filter((key) => readFiles[key]).length;
+
+  // 文件树在 structure 稳定时只构建一次；已读勾选、拖动宽度等重渲染不再重建整棵树。
+  const frontendTree = useMemo(() => buildTree(structure.frontend), [structure.frontend]);
+  const backendTree = useMemo(() => (structure.backend ? buildTree(structure.backend) : null), [structure.backend]);
+  const schemaTree = useMemo(() => (structure.schema ? buildTree(structure.schema) : null), [structure.schema]);
+
+  const totalFiles = useMemo(
+    () => structure.frontend.length + (structure.backend?.length ?? 0) + (structure.schema?.length ?? 0),
+    [structure],
+  );
+  const viewedFiles = useMemo(
+    () => [
+      ...structure.frontend.map((file) => fileKey('frontend', file.path)),
+      ...(structure.backend?.map((file) => fileKey('backend', file.path)) ?? []),
+      ...(structure.schema?.map((file) => fileKey('schema', file.path)) ?? []),
+    ].filter((key) => readFiles[key]).length,
+    [structure, readFiles],
+  );
 
   useEffect(() => {
     const onResize = () => {
@@ -251,18 +265,18 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
             <div className={styles.sidebarInner}>
               <div className={styles.sidebarGroup}>
                 <Text fw={700} size="sm">前端 · apps/web</Text>
-                <StructureTree files={structure.frontend} readFiles={readFiles} repository="frontend" />
+                <StructureTree directory={frontendTree} readFiles={readFiles} repository="frontend" />
               </div>
-              {structure.backend && (
+              {structure.backend && backendTree && (
                 <div className={styles.sidebarGroup}>
                   <Text fw={700} size="sm">后端 · apps/api</Text>
-                  <StructureTree files={structure.backend} readFiles={readFiles} repository="backend" />
+                  <StructureTree directory={backendTree} readFiles={readFiles} repository="backend" />
                 </div>
               )}
-              {structure.schema && (
+              {structure.schema && schemaTree && (
                 <div className={styles.sidebarGroup}>
                   <Text fw={700} size="sm">契约 · packages/schema</Text>
-                  <StructureTree files={structure.schema} readFiles={readFiles} repository="schema" />
+                  <StructureTree directory={schemaTree} readFiles={readFiles} repository="schema" />
                 </div>
               )}
             </div>
