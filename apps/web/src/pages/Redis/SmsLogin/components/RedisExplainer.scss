@@ -1,0 +1,37 @@
+.explainer {
+  padding: 22px;
+  border: 1px solid var(--demo-line);
+  border-radius: 10px;
+  background: var(--demo-surface);
+  box-shadow: 0 1px 2px rgba(18, 35, 30, 0.04);
+}
+
+.explainer h3 {
+  margin: 0 0 14px;
+  color: var(--demo-accent-strong);
+}
+
+.primitive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.primitive-grid > div {
+  padding: 12px;
+  border: 1px solid var(--demo-line);
+  border-radius: 8px;
+  background: var(--demo-surface-subtle);
+}
+
+.primitive-grid p {
+  margin: 8px 0 0;
+  color: var(--demo-ink-soft);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.explainer > .mantine-Text-root {
+  line-height: 1.7;
+}

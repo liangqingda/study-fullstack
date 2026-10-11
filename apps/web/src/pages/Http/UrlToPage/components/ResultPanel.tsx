@@ -1,6 +1,6 @@
 import type { ServerResult } from '../types';
 
-import styles from '../index.scss';
+import styles from './ResultPanel.scss';
 
 type ResultPanelProps = {
   /** 服务端返回摘要。 */

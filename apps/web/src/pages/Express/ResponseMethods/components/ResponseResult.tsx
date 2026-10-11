@@ -4,7 +4,7 @@ import type { Result } from '../hooks/useResponseRequest';
 
 import CodeBlock from '@/components/CodeBlock';
 
-import styles from '../index.scss';
+import styles from './ResponseResult.scss';
 
 const statusColor = (status: number) => {
   if (status >= 400) {

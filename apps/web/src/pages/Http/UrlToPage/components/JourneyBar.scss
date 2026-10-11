@@ -1,0 +1,15 @@
+/* 横向链路条：每段宽度按实测耗时比例。 */
+.journey {
+  display: flex;
+  height: 14px;
+  overflow: hidden;
+  margin: 4px 0 18px;
+  border: 1px solid var(--demo-line);
+  border-radius: 7px;
+  background: var(--demo-surface-subtle);
+}
+
+.journey-segment {
+  display: block;
+  height: 100%;
+}

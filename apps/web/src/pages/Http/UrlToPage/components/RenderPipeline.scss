@@ -1,0 +1,74 @@
+/* 浏览器渲染流程示意。 */
+.render-section {
+  padding: 16px;
+  border: 1px dashed var(--demo-line-strong);
+  border-radius: 10px;
+  background: var(--demo-surface-subtle);
+}
+
+.render-header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.render-header strong {
+  font-size: 15px;
+}
+
+.render-hint {
+  font-size: 12px;
+  color: var(--demo-ink-faint);
+}
+
+.render-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.render-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--demo-line-soft);
+  border-radius: 6px;
+  background: var(--demo-surface);
+}
+
+.render-index {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--demo-accent-soft);
+  color: var(--demo-accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.render-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.render-text strong {
+  font-size: 13px;
+}
+
+.render-text span {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--demo-ink-soft);
+}

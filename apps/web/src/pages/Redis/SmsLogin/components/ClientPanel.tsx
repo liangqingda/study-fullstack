@@ -29,7 +29,7 @@ import {
   persistToken,
 } from '../utils';
 
-import styles from '../index.scss';
+import styles from './ClientPanel.scss';
 
 const CodeValue = ({ children }: { children: ReactNode }) => (
   <code className={styles.codeValue}>{children}</code>

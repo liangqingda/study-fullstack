@@ -1,0 +1,91 @@
+/* 纵向链路列表。 */
+.phase-list {
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--demo-line);
+  border-radius: 10px;
+  background: var(--demo-surface);
+  overflow: hidden;
+}
+
+.phase-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--demo-line-soft);
+}
+
+.phase-row:last-child {
+  border-bottom: 0;
+}
+
+.phase-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  border-radius: 50%;
+  opacity: 0.25;
+}
+
+.status-done .phase-dot {
+  opacity: 1;
+}
+
+.status-error .phase-dot {
+  opacity: 1;
+  outline: 2px solid var(--demo-line);
+  outline-offset: 1px;
+}
+
+.status-idle .phase-label {
+  color: var(--demo-ink-faint);
+}
+
+.status-idle .phase-note {
+  color: var(--demo-ink-faint);
+}
+
+.status-error .phase-label {
+  color: var(--demo-ink);
+}
+
+.status-error .phase-note {
+  color: var(--demo-ink-soft);
+}
+
+.status-error .phase-meta {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.phase-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.phase-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--demo-ink);
+}
+
+.phase-note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--demo-ink-soft);
+}
+
+.phase-meta {
+  flex-shrink: 0;
+  padding-top: 2px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 12px;
+  color: var(--demo-ink-faint);
+  white-space: nowrap;
+}

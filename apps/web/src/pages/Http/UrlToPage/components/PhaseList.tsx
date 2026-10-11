@@ -2,7 +2,7 @@ import type { RevealedPhase } from '../types';
 
 import { PHASE_COLORS } from '../constants';
 
-import styles from '../index.scss';
+import styles from './PhaseList.scss';
 
 type PhaseListProps = {
   /** 已揭示状态的网络阶段（按链路顺序）。 */
