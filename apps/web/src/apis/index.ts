@@ -1,4 +1,4 @@
-/* eslint-disable */
 // Generated from study-nodejs-schema. Do not edit.
-export * from './sms-login';
-export * from './transactions';
+export * from './postgres';
+
+export * from './redis';

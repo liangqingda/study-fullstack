@@ -66,8 +66,8 @@ test('imports named payload types from the schema package without a local types 
   assert.doesNotMatch(orders, /paths\[|components\[|from ['"]\.\/types/);
 });
 
-test('splits callers into per-demo files and re-exports them from the index', async () => {
-  const { files, index } = await generateApiClient({
+test('splits callers into per-demo files, groups them by category, and re-exports from indexes', async () => {
+  const { files, categoryIndexes, index } = await generateApiClient({
     ...spec,
     paths: {
       '/api/orders': {
@@ -81,16 +81,28 @@ test('splits callers into per-demo files and re-exports them from the index', as
         },
       },
     },
-  });
+  }, { demoCategories: { orders: 'shop', users: 'identity' } });
 
-  assert.deepEqual(files.map((file) => file.name), ['orders.ts', 'users.ts']);
-  assert.match(index, /export \* from '\.\/orders';/);
-  assert.match(index, /export \* from '\.\/users';/);
+  // 有分类的 demo 归入 `category/<demo>.ts`，形成最多两层结构。
+  assert.deepEqual(files.map((file) => file.path), ['shop/orders.ts', 'identity/users.ts']);
+  assert.deepEqual(categoryIndexes.map((file) => file.path), ['identity/index.ts', 'shop/index.ts']);
+  assert.match(categoryIndexes[0].content, /export \* from '\.\/users';/);
+  assert.match(categoryIndexes[1].content, /export \* from '\.\/orders';/);
+  assert.match(index, /export \* from '\.\/identity';/);
+  assert.match(index, /export \* from '\.\/shop';/);
   assert.match(files[0].content, /export const getApiOrders/);
   assert.match(files[1].content, /export const getApiUsers/);
   // 各 demo 文件只 import 自己用到的 http 便捷方法。
   assert.doesNotMatch(files[0].content, /users/);
   assert.doesNotMatch(files[1].content, /orders/);
+});
+
+test('falls back to a top-level demo file when no category maps to a demo', async () => {
+  const { files, categoryIndexes, index } = await generateApiClient(spec);
+
+  assert.deepEqual(files.map((file) => file.path), ['orders.ts']);
+  assert.equal(categoryIndexes.length, 0);
+  assert.match(index, /export \* from '\.\/orders';/);
 });
 
 test('rejects unsupported success payloads rather than generating wrong response types', async () => {
