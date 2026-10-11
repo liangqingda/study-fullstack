@@ -3,5 +3,7 @@ import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
 extendZodWithOpenApi(z);
 
-// An empty generated module has no named exports until an API is registered.
-export * from './api-types';
+// start of generated exports
+export * from './postgres/transactions';
+
+export * from './redis/sms-login';
