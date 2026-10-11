@@ -36,7 +36,9 @@ test('generates typed callers for path, query, JSON body, and empty success resp
   assert.match(client, /query\?: \{\s+details\?: boolean;/);
   assert.match(client, /buildPath\("\/api\/orders\/\{orderId\}", input.path\)/);
   assert.match(client, /body: \{\s+quantity: number;/);
-  assert.match(client, /Promise<AxiosResponse<void>>/);
+  // 便捷方法已声明返回类型，生成的函数省略标注，由 TypeScript 自动推导。
+  assert.doesNotMatch(client, /Promise<AxiosResponse/);
+  assert.match(client, /=>\s+post<void>\(/);
   assert.doesNotMatch(client, /\["responses"\]\["404"\]/);
 });
 
@@ -57,7 +59,7 @@ test('imports named payload types from the schema package without a local types 
   assert.equal(types, undefined);
   assert.match(client, /import type \{ OrderRequest, OrderResponse \} from '@liangqingda\/study-nodejs-schema';/);
   assert.match(client, /body: OrderRequest/);
-  assert.match(client, /Promise<AxiosResponse<OrderResponse>>/);
+  assert.match(client, /=>\s+post<OrderResponse>\(/);
   assert.doesNotMatch(client, /paths\[|components\[|from ['"]\.\/types/);
 });
 
@@ -85,5 +87,5 @@ test('preserves nested references and unions of successful responses', async () 
   });
 
   assert.match(client, /import type \{ Order \} from '@liangqingda\/study-nodejs-schema';/);
-  assert.match(client, /Promise<AxiosResponse<Order\[\] \| void>>/);
+  assert.match(client, /=>\s+get<Order\[\] \| void>\(/);
 });

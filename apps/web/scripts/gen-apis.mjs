@@ -169,7 +169,7 @@ export const generateApiClient = async (document) => {
         call = `\n  request<${result}>({ ${configs.join(', ')} });`;
       }
 
-      entries.push(`export const ${name} = (input: { ${fields.join('; ')} }${required ? '' : ' = {}'}): Promise<AxiosResponse<${result}>> =>${call}`);
+      entries.push(`export const ${name} = (input: { ${fields.join('; ')} }${required ? '' : ' = {}'}) =>${call}`);
     }
   }
 
@@ -180,7 +180,8 @@ export const generateApiClient = async (document) => {
   }
 
   const schemaImport = importedTypes.size ? `import type { ${[...importedTypes].sort().join(', ')} } from '@liangqingda/study-nodejs-schema';\n` : '';
-  const imports = entries.length ? `import type { AxiosResponse } from 'axios';\n${schemaImport}import { ${[...httpImports].sort().join(', ')} } from '@/utils/http';\n\n` : '';
+  // 生成的函数省略返回类型标注，由 TypeScript 从便捷方法自动推导，故无需导入 AxiosResponse。
+  const imports = entries.length ? `${schemaImport}import { ${[...httpImports].sort().join(', ')} } from '@/utils/http';\n\n` : '';
   const client = `/* eslint-disable */\n// Generated from study-nodejs-schema. Do not edit.\n${imports}${entries.join('\n\n')}${entries.length ? '\n' : ''}`;
 
   return { client };
