@@ -43,7 +43,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@liangqingda/eslint-config": "^1.2.14",
+    "@liangqingda/eslint-config": "^1.3.0",
     "@liangqingda/tsconfig": "^1.0.1",
     "@types/node": "^26.6.2",
     "eslint": "^9.39.5",
