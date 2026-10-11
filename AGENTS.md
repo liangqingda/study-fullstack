@@ -9,7 +9,7 @@ Backend PostgreSQL development and integration use only `study_nodejs` via
 confirm `current_database()`; do not clear or rebuild existing data. Unit tests
 use injection or mocks by default; explicitly opt in to real database tests.
 
-For learning demos, use the repository-level `.agents/skills/study-demo/SKILL.md`.
+For learning demos, use the repository-level `.agents/skills/study-demo/SKILL.md`. API 路由路径统一为两层 `/api/<分类>/<demo>/...`（如 `/api/redis/sms-login/login`），对应 schema `apis/<分类>/<demo>/` 与生成的客户端 `src/apis/<分类>/<demo>.ts`，详见该 skill 的接口契约部分。
 
 ## Code documentation
 

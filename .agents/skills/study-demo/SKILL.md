@@ -28,7 +28,11 @@ description: Implement runnable, observable learning demos in the study-react, s
 
 ## 前后端接口契约（涉及跨仓库接口时）
 
-- 新增供 `study-react` 调用的 `study-nodejs` 接口前，检查 `study-nodejs-schema` 的现有契约；在其 `apis/<功能>/` 定义或扩展请求参数、请求体、成功响应及预期错误响应的 Zod schema 和接口描述。无请求体的接口也要明确响应结构，不要因 demo 简单就省略契约。
+- 新增供 `study-react` 调用的 `study-nodejs` 接口前，检查 `study-nodejs-schema` 的现有契约；在其 `apis/<分类>/<demo>/` 定义或扩展请求参数、请求体、成功响应及预期错误响应的 Zod schema 和接口描述。无请求体的接口也要明确响应结构，不要因 demo 简单就省略契约。
+- **API 路径统一为 `/api/<分类>/<demo>/<动作>` 两层**，全用小写 kebab-case；分类是业务域（如 `redis`、`postgres`、`express`），与前端 `pages/<分类>/<demo>`、schema `apis/<分类>/<demo>/`、生成的客户端 `src/apis/<分类>/<demo>.ts` 一一对应。示例：`/api/redis/sms-login/login`、`/api/postgres/transactions/run`、`/api/express/middleware/built-in`。不要使用无分类的扁平路径（如 `/api/<demo>/...`）。
+- 跨 demo 共享的契约辅助（如 `defineApiInfo`）放 `apis/model/`，不要放进某个 demo 目录。
+- `pnpm gen:apis` 按路径前两段自动生成 `src/apis/<分类>/<demo>.ts` 与各层 `index.ts` 聚合导出（最多两层；单段路径留在顶层）。新接口只要把路径写成带分类前缀，客户端会自动归类，**无需手动建目录或改生成器**；生成的函数名不包含分类段（如 `postApiSmsLoginLogin`）。
+- 新增或改名 demo 时，同步更新 web 侧对 `packages/schema/apis/<分类>/<demo>/` 的引用：vite 预览白名单、代码结构弹窗里的 schema 源码 glob、以及页面 `constants.ts` 里的源码路径说明，避免残留旧路径。
 - 后端用契约校验输入并保持输出一致；前端从同一契约获得类型和结果解释，避免两端各自维护不一致的手写请求/响应模型。验证契约生成、构建和两端的实际接入，不要只添加未被消费的 schema 文件。
 - 若用户明确将工作限定为单仓库，或契约包的构建、依赖接入确实阻碍当前任务，在实施前告知用户影响与替代方案，不要默默绕开共享契约。无需跨仓库接口的纯单端 demo 不因此补造接口或 schema。
 
