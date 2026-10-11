@@ -1,6 +1,10 @@
 import '@mantine/code-highlight/styles.css';
 
-import { CodeHighlight, CodeHighlightAdapterProvider, createHighlightJsAdapter } from '@mantine/code-highlight';
+import {
+  CodeHighlight,
+  CodeHighlightAdapterProvider,
+  createHighlightJsAdapter,
+} from '@mantine/code-highlight';
 import hljs from 'highlight.js/lib/core';
 import json from 'highlight.js/lib/languages/json';
 import plaintext from 'highlight.js/lib/languages/plaintext';
@@ -74,11 +78,24 @@ type CodeBlockProps = {
   label?: string;
 };
 
-const CodeBlock = ({ code, path, language, withLineNumbers = true, withCopyButton = true, bare = false, label }: CodeBlockProps) => {
+const CodeBlock = ({
+  code,
+  path,
+  language,
+  withLineNumbers = true,
+  withCopyButton = true,
+  bare = false,
+  label,
+}: CodeBlockProps) => {
   const resolved = language ?? (path ? languageForPath(path) : detectLanguage(code));
 
   return (
-    <div aria-label={label} className={`${styles.codeBlock} ${bare ? styles.bare : ''}`} data-bare={bare || undefined} role="group">
+    <div
+      aria-label={label}
+      className={`${styles.codeBlock} ${bare ? styles.bare : ''}`}
+      data-bare={bare || undefined}
+      role="group"
+    >
       <CodeHighlightAdapterProvider adapter={highlightAdapter}>
         <CodeHighlight
           code={code}

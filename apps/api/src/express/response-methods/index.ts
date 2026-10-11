@@ -21,7 +21,9 @@ const logResponse = (res: Response, method: string, observation: string) => {
       ...(disposition ? [`Content-Disposition=${disposition}`] : []),
     ];
 
-    console.info(`[response-methods] ${method}: ${observation} | HTTP ${res.statusCode} | ${headers.join(', ')}`);
+    console.info(
+      `[response-methods] ${method}: ${observation} | HTTP ${res.statusCode} | ${headers.join(', ')}`,
+    );
   });
 };
 

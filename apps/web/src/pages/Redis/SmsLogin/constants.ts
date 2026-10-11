@@ -5,12 +5,27 @@ import type { DemoStructure } from '@/components/DemoStructureDialog';
  */
 export const STRUCTURE: DemoStructure = {
   frontend: [
-    { path: 'apps/web/src/pages/Redis/SmsLogin/index.tsx', role: '双客户端登录、共享会话视图与 Redis 操作日志。' },
-    { path: 'apps/web/src/pages/Redis/SmsLogin/components/ClientPanel.tsx', role: '单个客户端的发码、登录、退出和 TTL 倒计时。' },
-    { path: 'apps/web/src/pages/Redis/SmsLogin/components/RedisExplainer.tsx', role: 'Redis 原语说明区块。' },
-    { path: 'apps/web/src/pages/Redis/SmsLogin/utils.ts', role: 'localStorage token/cooldown 读写与操作日志构造。' },
+    {
+      path: 'apps/web/src/pages/Redis/SmsLogin/index.tsx',
+      role: '双客户端登录、共享会话视图与 Redis 操作日志。',
+    },
+    {
+      path: 'apps/web/src/pages/Redis/SmsLogin/components/ClientPanel.tsx',
+      role: '单个客户端的发码、登录、退出和 TTL 倒计时。',
+    },
+    {
+      path: 'apps/web/src/pages/Redis/SmsLogin/components/RedisExplainer.tsx',
+      role: 'Redis 原语说明区块。',
+    },
+    {
+      path: 'apps/web/src/pages/Redis/SmsLogin/utils.ts',
+      role: 'localStorage token/cooldown 读写与操作日志构造。',
+    },
     { path: 'apps/web/src/pages/Redis/SmsLogin/constants.ts', role: '代码结构和知识点配置。' },
-    { path: 'apps/web/src/pages/Redis/SmsLogin/types.ts', role: 'RedisOp 和 ClientPanelProps 类型定义。' },
+    {
+      path: 'apps/web/src/pages/Redis/SmsLogin/types.ts',
+      role: 'RedisOp 和 ClientPanelProps 类型定义。',
+    },
     { path: 'apps/web/src/pages/Redis/SmsLogin/index.scss', role: '工作台与响应式布局。' },
     { path: 'apps/web/src/apis/index.ts', role: '从 OpenAPI 生成的调用方法，含 Bearer 头。' },
     { path: 'apps/web/src/utils/http/index.ts', role: 'axios 请求实例。' },
@@ -18,14 +33,22 @@ export const STRUCTURE: DemoStructure = {
   backend: [
     { path: 'apps/api/src/services/app.ts', role: '挂载短信登录 Router。' },
     { path: 'apps/api/src/services/redis.ts', role: '创建 ioredis 客户端。' },
-    { path: 'apps/api/src/express/sms-login/index.ts', role: '验证码、限频、会话建立与共享视图的全部 Redis 操作。' },
+    {
+      path: 'apps/api/src/express/sms-login/index.ts',
+      role: '验证码、限频、会话建立与共享视图的全部 Redis 操作。',
+    },
   ],
   schema: [
-    { path: 'packages/schema/apis/sms-login/index.ts', role: '发码、登录、校验、退出与会话列表契约。' },
+    {
+      path: 'packages/schema/apis/sms-login/index.ts',
+      role: '发码、登录、校验、退出与会话列表契约。',
+    },
     { path: 'packages/schema/apis/model/api-info.ts', role: '接口描述的数据结构。' },
   ],
-  connection: '页面调用 POST send-code/login/logout、GET me/sessions；后端按共享契约校验，用 ioredis 读写同一份 Redis，会话集中存储、多端可见。',
-  database: '不使用 PostgreSQL。验证码与会话全部存于 Redis：sms:code:{phone}（EX 60s）、sms:send:{phone}（限频 NX+EX）、session:{token}（EX 30min，访问时滑动续期）。',
+  connection:
+    '页面调用 POST send-code/login/logout、GET me/sessions；后端按共享契约校验，用 ioredis 读写同一份 Redis，会话集中存储、多端可见。',
+  database:
+    '不使用 PostgreSQL。验证码与会话全部存于 Redis：sms:code:{phone}（EX 60s）、sms:send:{phone}（限频 NX+EX）、session:{token}（EX 30min，访问时滑动续期）。',
 };
 
 /**

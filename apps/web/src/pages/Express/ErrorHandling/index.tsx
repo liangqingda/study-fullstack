@@ -47,9 +47,11 @@ const ErrorHandling = () => {
         };
       } catch (cause) {
         if (timeout.signal.aborted && !signal.aborted) {
-          throw new Error(selected.slug === 'headers-sent'
-            ? '响应未完整结束（连接中断或代理仍在等待），无法读取完整响应。查看后端终端的 headersSent 和连接关闭日志。'
-            : '请求失败或超时。请检查 localhost:3000 后端是否已启动。');
+          throw new Error(
+            selected.slug === 'headers-sent'
+              ? '响应未完整结束（连接中断或代理仍在等待），无法读取完整响应。查看后端终端的 headersSent 和连接关闭日志。'
+              : '请求失败或超时。请检查 localhost:3000 后端是否已启动。',
+          );
         }
 
         throw cause;
@@ -69,63 +71,97 @@ const ErrorHandling = () => {
     >
       <DemoNavDetail
         detailAriaLabel="示例详情"
-        items={EXAMPLES.map((example) => ({ key: example.slug, title: example.title, subtitle: example.subtitle }))}
+        items={EXAMPLES.map((example) => ({
+          key: example.slug,
+          title: example.title,
+          subtitle: example.subtitle,
+        }))}
         navAriaLabel="错误处理示例"
         onSelect={(key) => {
           const example = EXAMPLES.find((item) => item.slug === key);
 
-          if (example) { select(example); }
+          if (example) {
+            select(example);
+          }
         }}
         selectedKey={selected.slug}
       >
-            <div className={styles.detailHeading}>
-              <div><Title order={2}>{selected.title}</Title><Text c="dimmed" size="sm">{selected.purpose}</Text></div>
-              <Badge color="green" variant="dot">GET</Badge>
+        <div className={styles.detailHeading}>
+          <div>
+            <Title order={2}>{selected.title}</Title>
+            <Text c="dimmed" size="sm">
+              {selected.purpose}
+            </Text>
+          </div>
+          <Badge color="green" variant="dot">
+            GET
+          </Badge>
+        </div>
+        <section className={styles.lesson}>
+          <h3>这次请求会怎样走</h3>
+          <DemoSteps steps={selected.steps} />
+          <div className={styles.notes}>
+            <div>
+              <h3>关键代码</h3>
+              <CodeBlock code={selected.code} language="typescript" />
             </div>
-            <section className={styles.lesson}>
-              <h3>这次请求会怎样走</h3>
-              <DemoSteps steps={selected.steps} />
-              <div className={styles.notes}>
-                <div><h3>关键代码</h3><CodeBlock code={selected.code} language="typescript" /></div>
-                <div><h3>发送后应看到</h3><Text size="sm">{selected.observation}</Text></div>
-              </div>
-              <div className={styles.comparison}>
-                <h3>和相近做法有什么不同</h3>
-                <Text size="sm">{selected.comparison}</Text>
-              </div>
-            </section>
-            <div className={styles.action}>
-              <Code>{url}</Code>
-              <Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void sendRequest()}>发送请求</Button>
+            <div>
+              <h3>发送后应看到</h3>
+              <Text size="sm">{selected.observation}</Text>
             </div>
+          </div>
+          <div className={styles.comparison}>
+            <h3>和相近做法有什么不同</h3>
+            <Text size="sm">{selected.comparison}</Text>
+          </div>
+        </section>
+        <div className={styles.action}>
+          <Code>{url}</Code>
+          <Button
+            leftSection={<IconPlayerPlay size={16} />}
+            loading={loading}
+            onClick={() => void sendRequest()}
+          >
+            发送请求
+          </Button>
+        </div>
 
-            {error && (
-              <div className={styles.failure} role="alert">
-                <h3>实际结果：没有完整响应</h3>
-                <Text size="sm">{error}</Text>
-                <h3>为什么会这样</h3>
-                <Text size="sm">{selected.slug === 'headers-sent' ? selected.interpretation : '没有收到可供分析的响应；先检查后端是否运行，再重试。'}</Text>
-              </div>
-            )}
-            {!error && !result && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
-            {result && (
-              <div className={styles.result}>
-                <div className={styles.resultHeading}>
-                  <h3>实际响应</h3><Badge color="red" variant="light">HTTP {result.status} {result.statusText}</Badge>
-                </div>
-                <dl className={styles.headers}>
-                  <dt>Content-Type</dt><dd>{result.contentType}</dd>
-                  <dt>X-Demo-Error</dt><dd>{result.demoHeader}</dd>
-                </dl>
-                <div className={styles.interpretation}>
-                  <h3>为什么得到这个结果</h3>
-                  <Text size="sm">{selected.interpretation}</Text>
-                </div>
-                <h3>响应体（原始文本）</h3>
-                <CodeBlock code={result.body || '响应体为空'} />
-              </div>
-            )}
-          </DemoNavDetail>
+        {error && (
+          <div className={styles.failure} role="alert">
+            <h3>实际结果：没有完整响应</h3>
+            <Text size="sm">{error}</Text>
+            <h3>为什么会这样</h3>
+            <Text size="sm">
+              {selected.slug === 'headers-sent'
+                ? selected.interpretation
+                : '没有收到可供分析的响应；先检查后端是否运行，再重试。'}
+            </Text>
+          </div>
+        )}
+        {!error && !result && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
+        {result && (
+          <div className={styles.result}>
+            <div className={styles.resultHeading}>
+              <h3>实际响应</h3>
+              <Badge color="red" variant="light">
+                HTTP {result.status} {result.statusText}
+              </Badge>
+            </div>
+            <dl className={styles.headers}>
+              <dt>Content-Type</dt>
+              <dd>{result.contentType}</dd>
+              <dt>X-Demo-Error</dt>
+              <dd>{result.demoHeader}</dd>
+            </dl>
+            <div className={styles.interpretation}>
+              <h3>为什么得到这个结果</h3>
+              <Text size="sm">{selected.interpretation}</Text>
+            </div>
+            <h3>响应体（原始文本）</h3>
+            <CodeBlock code={result.body || '响应体为空'} />
+          </div>
+        )}
+      </DemoNavDetail>
     </DemoLayout>
   );
 };

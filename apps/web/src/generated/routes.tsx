@@ -3,12 +3,14 @@
 import { lazy } from 'react';
 import type { ComponentType } from 'react';
 
-const CssDemosVerticalCenteringPage = lazy(() => import("@/pages/CssDemos/VerticalCentering/index"));
-const ExpressErrorHandlingPage = lazy(() => import("@/pages/Express/ErrorHandling/index"));
-const ExpressMiddlewarePage = lazy(() => import("@/pages/Express/Middleware/index"));
-const ExpressResponseMethodsPage = lazy(() => import("@/pages/Express/ResponseMethods/index"));
-const PostgresTransactionsPage = lazy(() => import("@/pages/Postgres/Transactions/index"));
-const RedisSmsLoginPage = lazy(() => import("@/pages/Redis/SmsLogin/index"));
+const CssDemosVerticalCenteringPage = lazy(
+  () => import('@/pages/CssDemos/VerticalCentering/index'),
+);
+const ExpressErrorHandlingPage = lazy(() => import('@/pages/Express/ErrorHandling/index'));
+const ExpressMiddlewarePage = lazy(() => import('@/pages/Express/Middleware/index'));
+const ExpressResponseMethodsPage = lazy(() => import('@/pages/Express/ResponseMethods/index'));
+const PostgresTransactionsPage = lazy(() => import('@/pages/Postgres/Transactions/index'));
+const RedisSmsLoginPage = lazy(() => import('@/pages/Redis/SmsLogin/index'));
 
 export type DemoRoute = {
   path: string;
@@ -25,113 +27,113 @@ export type DemoMenuItem = {
   children?: DemoMenuItem[];
 };
 
-export const defaultRoutePath = "/css-demos/vertical-centering";
+export const defaultRoutePath = '/css-demos/vertical-centering';
 
 export const demoRoutes: DemoRoute[] = [
   {
-    path: "/css-demos/vertical-centering",
-    menuKey: "/css-demos/vertical-centering",
-    topLevelKey: "/css-demos",
-    label: "vertical-centering",
+    path: '/css-demos/vertical-centering',
+    menuKey: '/css-demos/vertical-centering',
+    topLevelKey: '/css-demos',
+    label: 'vertical-centering',
     Component: CssDemosVerticalCenteringPage,
   },
   {
-    path: "/express/error-handling",
-    menuKey: "/express/error-handling",
-    topLevelKey: "/express",
-    label: "error-handling",
+    path: '/express/error-handling',
+    menuKey: '/express/error-handling',
+    topLevelKey: '/express',
+    label: 'error-handling',
     Component: ExpressErrorHandlingPage,
   },
   {
-    path: "/express/middleware",
-    menuKey: "/express/middleware",
-    topLevelKey: "/express",
-    label: "middleware",
+    path: '/express/middleware',
+    menuKey: '/express/middleware',
+    topLevelKey: '/express',
+    label: 'middleware',
     Component: ExpressMiddlewarePage,
   },
   {
-    path: "/express/response-methods",
-    menuKey: "/express/response-methods",
-    topLevelKey: "/express",
-    label: "response-methods",
+    path: '/express/response-methods',
+    menuKey: '/express/response-methods',
+    topLevelKey: '/express',
+    label: 'response-methods',
     Component: ExpressResponseMethodsPage,
   },
   {
-    path: "/postgres/transactions",
-    menuKey: "/postgres/transactions",
-    topLevelKey: "/postgres",
-    label: "transactions",
+    path: '/postgres/transactions',
+    menuKey: '/postgres/transactions',
+    topLevelKey: '/postgres',
+    label: 'transactions',
     Component: PostgresTransactionsPage,
   },
   {
-    path: "/redis/sms-login",
-    menuKey: "/redis/sms-login",
-    topLevelKey: "/redis",
-    label: "sms-login",
+    path: '/redis/sms-login',
+    menuKey: '/redis/sms-login',
+    topLevelKey: '/redis',
+    label: 'sms-login',
     Component: RedisSmsLoginPage,
   },
 ];
 
 export const headerMenus: DemoMenuItem[] = [
   {
-    "key": "/css-demos",
-    "label": "css-demos",
-    "path": "/css-demos/vertical-centering"
+    key: '/css-demos',
+    label: 'css-demos',
+    path: '/css-demos/vertical-centering',
   },
   {
-    "key": "/express",
-    "label": "express",
-    "path": "/express/error-handling"
+    key: '/express',
+    label: 'express',
+    path: '/express/error-handling',
   },
   {
-    "key": "/postgres",
-    "label": "postgres",
-    "path": "/postgres/transactions"
+    key: '/postgres',
+    label: 'postgres',
+    path: '/postgres/transactions',
   },
   {
-    "key": "/redis",
-    "label": "redis",
-    "path": "/redis/sms-login"
-  }
+    key: '/redis',
+    label: 'redis',
+    path: '/redis/sms-login',
+  },
 ];
 
 export const sidebarMenusByTopLevel: Record<string, DemoMenuItem[]> = {
-  "/css-demos": [
+  '/css-demos': [
     {
-      "key": "/css-demos/vertical-centering",
-      "label": "vertical-centering",
-      "path": "/css-demos/vertical-centering"
-    }
+      key: '/css-demos/vertical-centering',
+      label: 'vertical-centering',
+      path: '/css-demos/vertical-centering',
+    },
   ],
-  "/express": [
+  '/express': [
     {
-      "key": "/express/error-handling",
-      "label": "error-handling",
-      "path": "/express/error-handling"
+      key: '/express/error-handling',
+      label: 'error-handling',
+      path: '/express/error-handling',
     },
     {
-      "key": "/express/middleware",
-      "label": "middleware",
-      "path": "/express/middleware"
+      key: '/express/middleware',
+      label: 'middleware',
+      path: '/express/middleware',
     },
     {
-      "key": "/express/response-methods",
-      "label": "response-methods",
-      "path": "/express/response-methods"
-    }
+      key: '/express/response-methods',
+      label: 'response-methods',
+      path: '/express/response-methods',
+    },
   ],
-  "/postgres": [
+  '/postgres': [
     {
-      "key": "/postgres/transactions",
-      "label": "transactions",
-      "path": "/postgres/transactions"
-    }
+      key: '/postgres/transactions',
+      label: 'transactions',
+      path: '/postgres/transactions',
+    },
   ],
-  "/redis": [
+  '/redis': [
     {
-      "key": "/redis/sms-login",
-      "label": "sms-login",
-      "path": "/redis/sms-login"
-    }
-  ]
+      key: '/redis/sms-login',
+      label: 'sms-login',
+      path: '/redis/sms-login',
+    },
+  ],
 };

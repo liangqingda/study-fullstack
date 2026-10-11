@@ -22,14 +22,20 @@ const DemoKnowledgeDialog = ({ content, demoName }: DemoKnowledgeDialogProps) =>
         知识点讲解
       </Button>
       <Modal
-        classNames={{ body: styles.modalBody, content: styles.modalContent, header: styles.modalHeader }}
+        classNames={{
+          body: styles.modalBody,
+          content: styles.modalContent,
+          header: styles.modalHeader,
+        }}
         fullScreen
         onClose={close}
         opened={opened}
         title={
           <div className={styles.modalTitle}>
             <strong>{demoName} · 知识点讲解</strong>
-            <Text c="dimmed" size="sm">Markdown</Text>
+            <Text c="dimmed" size="sm">
+              Markdown
+            </Text>
           </div>
         }
       >

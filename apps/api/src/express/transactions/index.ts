@@ -1,12 +1,19 @@
 import { Router } from 'express';
-import { TransactionErrorSchema, TransactionRunRequestSchema, TransactionRunResponseSchema } from '@liangqingda/study-nodejs-schema/apis';
+import {
+  TransactionErrorSchema,
+  TransactionRunRequestSchema,
+  TransactionRunResponseSchema,
+} from '@liangqingda/study-nodejs-schema/apis';
 
 import type { Pool } from 'pg';
 import type { Router as ExpressRouter } from 'express';
 
 import { runTransaction } from './run';
 
-export const createTransactionRouter = (pool?: Pick<Pool, 'connect'>, execute = runTransaction): ExpressRouter => {
+export const createTransactionRouter = (
+  pool?: Pick<Pool, 'connect'>,
+  execute = runTransaction,
+): ExpressRouter => {
   const router: ExpressRouter = Router();
 
   router.post('/run', async (req, res) => {
@@ -30,8 +37,14 @@ export const createTransactionRouter = (pool?: Pick<Pool, 'connect'>, execute = 
       console.info(`[transactions/${input.data.scenario}] complete: ${result.outcome}`);
       res.json(TransactionRunResponseSchema.parse(result));
     } catch (error) {
-      console.error(`[transactions/${input.data.scenario}] failed: ${(error as { code?: string }).code ?? 'unknown'}`);
-      res.status(503).json(TransactionErrorSchema.parse({ error: 'Transaction demo failed; check the database and server logs' }));
+      console.error(
+        `[transactions/${input.data.scenario}] failed: ${(error as { code?: string }).code ?? 'unknown'}`,
+      );
+      res.status(503).json(
+        TransactionErrorSchema.parse({
+          error: 'Transaction demo failed; check the database and server logs',
+        }),
+      );
     }
   });
 

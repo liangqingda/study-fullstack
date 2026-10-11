@@ -43,36 +43,84 @@ const SmsLogin = () => {
       title="短信登录 · Redis 共享 Session"
     >
       <div className={styles.workspace}>
-          <div className={styles.clients}>
-            <ClientPanel accent="teal" label="A" onLoginStateChange={() => setDirty((value) => value + 1)} />
-            <ClientPanel accent="grape" label="B" onLoginStateChange={() => setDirty((value) => value + 1)} />
-          </div>
+        <div className={styles.clients}>
+          <ClientPanel
+            accent="teal"
+            label="A"
+            onLoginStateChange={() => setDirty((value) => value + 1)}
+          />
+          <ClientPanel
+            accent="grape"
+            label="B"
+            onLoginStateChange={() => setDirty((value) => value + 1)}
+          />
+        </div>
 
-          <section className={styles.registry}>
-            <div className={styles.registryHeading}>
-              <div><Title order={2}>共享 Session 视图</Title><Text c="dimmed" size="sm">GET /api/redis/sms-login/sessions · 集中存储在 Redis</Text></div>
-              <Button leftSection={<IconRefresh size={16} />} loading={loading} onClick={() => void refreshSessions()} variant="default">刷新（dirty={dirty}）</Button>
+        <section className={styles.registry}>
+          <div className={styles.registryHeading}>
+            <div>
+              <Title order={2}>共享 Session 视图</Title>
+              <Text c="dimmed" size="sm">
+                GET /api/redis/sms-login/sessions · 集中存储在 Redis
+              </Text>
             </div>
-            {error && <Text c="red" role="alert" size="sm">{error}</Text>}
-            {!sessions && !error && <Text c="dimmed" size="sm">点击&ldquo;刷新&rdquo;查看当前 Redis 中所有在线会话。</Text>}
-            {sessions && (
-              <>
-                <Text c="dimmed" size="sm">在线会话 {sessions.count} 个（客户端 A/B 登录后都应出现在这里，登出则消失）。</Text>
-                <table className={styles.table}>
-                  <thead><tr><th>手机号</th><th>会话 Token</th><th>剩余 TTL</th></tr></thead>
-                  <tbody>
-                    {sessions.sessions.length === 0 && <tr><td className={styles.emptyRow} colSpan={3}>暂无在线会话</td></tr>}
-                    {sessions.sessions.map((session) => (
-                      <tr key={session.token}><td>{session.phone}</td><td><code className={styles.codeValue}>{session.token.slice(0, 12)}…</code></td><td>{session.remainingSeconds}s</td></tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            )}
-          </section>
+            <Button
+              leftSection={<IconRefresh size={16} />}
+              loading={loading}
+              onClick={() => void refreshSessions()}
+              variant="default"
+            >
+              刷新（dirty={dirty}）
+            </Button>
+          </div>
+          {error && (
+            <Text c="red" role="alert" size="sm">
+              {error}
+            </Text>
+          )}
+          {!sessions && !error && (
+            <Text c="dimmed" size="sm">
+              点击&ldquo;刷新&rdquo;查看当前 Redis 中所有在线会话。
+            </Text>
+          )}
+          {sessions && (
+            <>
+              <Text c="dimmed" size="sm">
+                在线会话 {sessions.count} 个（客户端 A/B 登录后都应出现在这里，登出则消失）。
+              </Text>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>手机号</th>
+                    <th>会话 Token</th>
+                    <th>剩余 TTL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessions.sessions.length === 0 && (
+                    <tr>
+                      <td className={styles.emptyRow} colSpan={3}>
+                        暂无在线会话
+                      </td>
+                    </tr>
+                  )}
+                  {sessions.sessions.map((session) => (
+                    <tr key={session.token}>
+                      <td>{session.phone}</td>
+                      <td>
+                        <code className={styles.codeValue}>{session.token.slice(0, 12)}…</code>
+                      </td>
+                      <td>{session.remainingSeconds}s</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+        </section>
       </div>
 
-        <RedisExplainer />
+      <RedisExplainer />
     </DemoLayout>
   );
 };

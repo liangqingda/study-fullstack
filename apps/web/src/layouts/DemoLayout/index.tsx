@@ -28,7 +28,14 @@ type DemoLayoutProps = {
  * 页面背景由 BasicLayout 的 AppShell.Main 与全局样式提供，此处不再重复包裹。
  * 页头左侧为标题 + 副标题，右侧固定放置“代码结构”与“知识点讲解”两个弹窗入口。
  */
-const DemoLayout = ({ title, description, structure, knowledge, demoName, children }: DemoLayoutProps) => (
+const DemoLayout = ({
+  title,
+  description,
+  structure,
+  knowledge,
+  demoName,
+  children,
+}: DemoLayoutProps) => (
   <div className={styles.shell}>
     <header className={styles.header}>
       <div>

@@ -32,7 +32,8 @@ type SessionValue = { phone: string; createdAt: number };
 
 const error = (message: string) => SmsLoginErrorSchema.parse({ error: message });
 
-const step = (name: string, message: string): void => console.info(`[sms-login] ${name}: ${message}`);
+const step = (name: string, message: string): void =>
+  console.info(`[sms-login] ${name}: ${message}`);
 
 export const createSmsLoginRouter = (redis?: Redis): ExpressRouter => {
   const router: ExpressRouter = Router();
@@ -65,8 +66,16 @@ export const createSmsLoginRouter = (redis?: Redis): ExpressRouter => {
     if (allowed !== 'OK') {
       const retryAfter = await redis!.ttl(sendRateKey(phone));
 
-      step('send-code', `${phone} 在 ${SEND_RATE_TTL_SECONDS}s 内重复请求，拒绝（SET NX + EX 未过期）`);
-      res.status(429).json(SendCodeRateLimitedSchema.parse({ error: '请求过于频繁，请稍后再试', retryAfterSeconds: retryAfter }));
+      step(
+        'send-code',
+        `${phone} 在 ${SEND_RATE_TTL_SECONDS}s 内重复请求，拒绝（SET NX + EX 未过期）`,
+      );
+      res.status(429).json(
+        SendCodeRateLimitedSchema.parse({
+          error: '请求过于频繁，请稍后再试',
+          retryAfterSeconds: retryAfter,
+        }),
+      );
       return;
     }
 
@@ -93,7 +102,10 @@ export const createSmsLoginRouter = (redis?: Redis): ExpressRouter => {
     const stored = await redis!.get(smsCodeKey(phone));
 
     if (stored !== code) {
-      step('login', `${phone} 验证码不匹配或已过期（GET ${smsCodeKey(phone)} -> ${stored ?? 'nil'}）`);
+      step(
+        'login',
+        `${phone} 验证码不匹配或已过期（GET ${smsCodeKey(phone)} -> ${stored ?? 'nil'}）`,
+      );
       res.status(400).json(error('验证码错误或已过期'));
       return;
     }
@@ -136,7 +148,14 @@ export const createSmsLoginRouter = (redis?: Redis): ExpressRouter => {
     // 滑动过期：每次访问续期，活跃用户不会掉线。
     await redis!.expire(sessionKey(token), SESSION_TTL_SECONDS);
     step('me', `${sessionKey(token)} 命中，EXPIRE 续期至 ${SESSION_TTL_SECONDS}s`);
-    res.json(MeResponseSchema.parse({ phone: session.phone, token, remainingSeconds: SESSION_TTL_SECONDS, refreshed: true }));
+    res.json(
+      MeResponseSchema.parse({
+        phone: session.phone,
+        token,
+        remainingSeconds: SESSION_TTL_SECONDS,
+        refreshed: true,
+      }),
+    );
   });
 
   router.post('/logout', async (req, res) => {
@@ -173,18 +192,24 @@ export const createSmsLoginRouter = (redis?: Redis): ExpressRouter => {
     }
 
     const keys = await collectSessionKeys('0');
-    const entries = await Promise.all(keys.map(async (key) => {
-      const raw = await redis!.get(key);
-      const remaining = await redis!.ttl(key);
+    const entries = await Promise.all(
+      keys.map(async (key) => {
+        const raw = await redis!.get(key);
+        const remaining = await redis!.ttl(key);
 
-      if (!raw) {
-        return undefined;
-      }
+        if (!raw) {
+          return undefined;
+        }
 
-      const session = JSON.parse(raw) as SessionValue;
+        const session = JSON.parse(raw) as SessionValue;
 
-      return SessionEntrySchema.parse({ phone: session.phone, token: key.slice('session:'.length), remainingSeconds: remaining });
-    }));
+        return SessionEntrySchema.parse({
+          phone: session.phone,
+          token: key.slice('session:'.length),
+          remainingSeconds: remaining,
+        });
+      }),
+    );
     const sessions = entries.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
     step('sessions', `扫描到 ${sessions.length} 个活跃会话（SCAN session:*）`);

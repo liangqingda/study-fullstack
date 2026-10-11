@@ -18,7 +18,9 @@ import { loadCooldownEnd, loadStoredToken, newOp, persistToken } from '../utils'
 
 import styles from '../index.scss';
 
-const CodeValue = ({ children }: { children: ReactNode }) => <code className={styles.codeValue}>{children}</code>;
+const CodeValue = ({ children }: { children: ReactNode }) => (
+  <code className={styles.codeValue}>{children}</code>
+);
 
 const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) => {
   const [phone, setPhone] = useState('13800138000');
@@ -47,23 +49,26 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     }
   }, []);
 
-  const startMeCountdown = useCallback((seconds: number) => {
-    meExpiresAtRef.current = Date.now() + seconds * 1000;
-    setMeRemaining(seconds);
-    clearMeTimer();
-    meTimerRef.current = window.setInterval(() => {
-      const remaining = Math.max(0, Math.round((meExpiresAtRef.current - Date.now()) / 1000));
+  const startMeCountdown = useCallback(
+    (seconds: number) => {
+      meExpiresAtRef.current = Date.now() + seconds * 1000;
+      setMeRemaining(seconds);
+      clearMeTimer();
+      meTimerRef.current = window.setInterval(() => {
+        const remaining = Math.max(0, Math.round((meExpiresAtRef.current - Date.now()) / 1000));
 
-      setMeRemaining(remaining);
+        setMeRemaining(remaining);
 
-      if (remaining <= 0) {
-        clearMeTimer();
-        persistToken(label, null);
-        setToken(null);
-        setMe(null);
-      }
-    }, 1000);
-  }, [clearMeTimer, label]);
+        if (remaining <= 0) {
+          clearMeTimer();
+          persistToken(label, null);
+          setToken(null);
+          setMe(null);
+        }
+      }, 1000);
+    },
+    [clearMeTimer, label],
+  );
 
   const clearCooldownTimer = useCallback(() => {
     if (timerRef.current !== null) {
@@ -82,27 +87,30 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     }
   }, [clearCooldownTimer, label]);
 
-  const startCooldown = useCallback((seconds: number) => {
-    cooldownEndRef.current = Date.now() + seconds * 1000;
+  const startCooldown = useCallback(
+    (seconds: number) => {
+      cooldownEndRef.current = Date.now() + seconds * 1000;
 
-    try {
-      localStorage.setItem(`sms-login:cooldown-end:${label}`, String(cooldownEndRef.current));
-    } catch {
-      // 忽略存储失败，倒计时退化为纯内存态。
-    }
-
-    setCooldown(seconds);
-    clearCooldownTimer();
-    timerRef.current = window.setInterval(() => {
-      const remaining = Math.max(0, Math.round((cooldownEndRef.current - Date.now()) / 1000));
-
-      setCooldown(remaining);
-
-      if (remaining <= 0) {
-        stopCooldown();
+      try {
+        localStorage.setItem(`sms-login:cooldown-end:${label}`, String(cooldownEndRef.current));
+      } catch {
+        // 忽略存储失败，倒计时退化为纯内存态。
       }
-    }, 1000);
-  }, [clearCooldownTimer, stopCooldown, label]);
+
+      setCooldown(seconds);
+      clearCooldownTimer();
+      timerRef.current = window.setInterval(() => {
+        const remaining = Math.max(0, Math.round((cooldownEndRef.current - Date.now()) / 1000));
+
+        setCooldown(remaining);
+
+        if (remaining <= 0) {
+          stopCooldown();
+        }
+      }, 1000);
+    },
+    [clearCooldownTimer, stopCooldown, label],
+  );
 
   useEffect(() => {
     // 刷新后恢复发码倒计时：后端限频在 60s 内仍会拒绝，界面保持一致。
@@ -155,11 +163,13 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
 
       setSent(response.data);
       startCooldown(response.data.ttlSeconds);
-      setOps((current) => [
-        newOp('SET', `sms:send:${phone}`, 'NX + EX 60s：限频标记'),
-        newOp('SET', `sms:code:${phone}`, `EX ${response.data.ttlSeconds}s：写入验证码`),
-        ...current,
-      ].slice(0, 12));
+      setOps((current) =>
+        [
+          newOp('SET', `sms:send:${phone}`, 'NX + EX 60s：限频标记'),
+          newOp('SET', `sms:code:${phone}`, `EX ${response.data.ttlSeconds}s：写入验证码`),
+          ...current,
+        ].slice(0, 12),
+      );
     } catch (cause) {
       const apiError = isApiError(cause) ? cause : null;
 
@@ -182,14 +192,25 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
 
       persistToken(label, response.data.token);
       setToken(response.data.token);
-      setMe({ phone, token: response.data.token, remainingSeconds: response.data.expiresInSeconds, refreshed: false });
+      setMe({
+        phone,
+        token: response.data.token,
+        remainingSeconds: response.data.expiresInSeconds,
+        refreshed: false,
+      });
       startMeCountdown(response.data.expiresInSeconds);
-      setOps((current) => [
-        newOp('GET', `sms:code:${phone}`, '比对验证码'),
-        newOp('DEL', `sms:code:${phone}`, '一次性使用'),
-        newOp('SET', `session:${token?.slice(0, 8)}…`, `EX ${response.data.expiresInSeconds}s：建立共享会话`),
-        ...current,
-      ].slice(0, 12));
+      setOps((current) =>
+        [
+          newOp('GET', `sms:code:${phone}`, '比对验证码'),
+          newOp('DEL', `sms:code:${phone}`, '一次性使用'),
+          newOp(
+            'SET',
+            `session:${token?.slice(0, 8)}…`,
+            `EX ${response.data.expiresInSeconds}s：建立共享会话`,
+          ),
+          ...current,
+        ].slice(0, 12),
+      );
       setSent(null);
       setCodeInput('');
       onLoginStateChange();
@@ -209,11 +230,13 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
 
       setMe(response.data);
       startMeCountdown(response.data.remainingSeconds);
-      setOps((current) => [
-        newOp('GET', `session:${token?.slice(0, 8)}…`, '读取共享会话'),
-        newOp('EXPIRE', `session:${token?.slice(0, 8)}…`, '滑动续期 30min'),
-        ...current,
-      ].slice(0, 12));
+      setOps((current) =>
+        [
+          newOp('GET', `session:${token?.slice(0, 8)}…`, '读取共享会话'),
+          newOp('EXPIRE', `session:${token?.slice(0, 8)}…`, '滑动续期 30min'),
+          ...current,
+        ].slice(0, 12),
+      );
     } catch (cause) {
       setError(isApiError(cause) ? cause.message : '会话校验失败。');
     } finally {
@@ -228,7 +251,16 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     try {
       const response = await postApiSmsLoginLogout({ headers: auth });
 
-      setOps((current) => [newOp('DEL', `session:${token?.slice(0, 8)}…`, response.data.ok ? '会话已删除' : '会话不存在'), ...current].slice(0, 12));
+      setOps((current) =>
+        [
+          newOp(
+            'DEL',
+            `session:${token?.slice(0, 8)}…`,
+            response.data.ok ? '会话已删除' : '会话不存在',
+          ),
+          ...current,
+        ].slice(0, 12),
+      );
       persistToken(label, null);
       clearMeTimer();
       setMeRemaining(0);
@@ -246,12 +278,28 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     <section className={styles.client}>
       <header className={styles.clientHeading}>
         <Text fw={700}>客户 {label}</Text>
-        <Badge color={accent} variant="light">{token ? '已登录' : '未登录'}</Badge>
+        <Badge color={accent} variant="light">
+          {token ? '已登录' : '未登录'}
+        </Badge>
       </header>
 
       <div className={styles.row}>
-        <TextInput aria-label={`客户${label} 手机号`} disabled={Boolean(token)} label="手机号" onChange={(event) => setPhone(event.currentTarget.value)} value={phone} />
-        <Button disabled={Boolean(token) || cooldown > 0} leftSection={<IconBrandGoogle size={16} />} loading={busy === 'send'} onClick={() => void sendCode()} variant="default">{cooldown > 0 ? `${cooldown}s 后重试` : '发送验证码'}</Button>
+        <TextInput
+          aria-label={`客户${label} 手机号`}
+          disabled={Boolean(token)}
+          label="手机号"
+          onChange={(event) => setPhone(event.currentTarget.value)}
+          value={phone}
+        />
+        <Button
+          disabled={Boolean(token) || cooldown > 0}
+          leftSection={<IconBrandGoogle size={16} />}
+          loading={busy === 'send'}
+          onClick={() => void sendCode()}
+          variant="default"
+        >
+          {cooldown > 0 ? `${cooldown}s 后重试` : '发送验证码'}
+        </Button>
       </div>
 
       {sent && (
@@ -261,28 +309,73 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       )}
 
       <div className={styles.row}>
-        <TextInput aria-label={`客户${label} 验证码`} disabled={!sent || Boolean(token)} label="验证码" onChange={(event) => setCodeInput(event.currentTarget.value)} placeholder="6 位数字" value={codeInput} />
-        <Button color={accent} disabled={!sent || !codeInput || Boolean(token)} leftSection={<IconLogin size={16} />} loading={busy === 'login'} onClick={() => void login()}>登录</Button>
+        <TextInput
+          aria-label={`客户${label} 验证码`}
+          disabled={!sent || Boolean(token)}
+          label="验证码"
+          onChange={(event) => setCodeInput(event.currentTarget.value)}
+          placeholder="6 位数字"
+          value={codeInput}
+        />
+        <Button
+          color={accent}
+          disabled={!sent || !codeInput || Boolean(token)}
+          leftSection={<IconLogin size={16} />}
+          loading={busy === 'login'}
+          onClick={() => void login()}
+        >
+          登录
+        </Button>
       </div>
 
       {token && me && (
         <div className={styles.sessionBox}>
-          <div><small>共享会话</small><CodeValue>{me.token.slice(0, 12)}…</CodeValue></div>
-          <div><small>剩余 TTL</small><strong>{meRemaining}s</strong><small>（每秒递减 · 刷新 /me 续期）</small></div>
+          <div>
+            <small>共享会话</small>
+            <CodeValue>{me.token.slice(0, 12)}…</CodeValue>
+          </div>
+          <div>
+            <small>剩余 TTL</small>
+            <strong>{meRemaining}s</strong>
+            <small>（每秒递减 · 刷新 /me 续期）</small>
+          </div>
           <div className={styles.sessionActions}>
-            <Button leftSection={<IconRefresh size={15} />} loading={busy === 'me'} onClick={() => void refresh()} size="xs" variant="default">刷新会话 /me</Button>
-            <Button color="red" leftSection={<IconX size={15} />} loading={busy === 'logout'} onClick={() => void logout()} size="xs" variant="outline">退出</Button>
+            <Button
+              leftSection={<IconRefresh size={15} />}
+              loading={busy === 'me'}
+              onClick={() => void refresh()}
+              size="xs"
+              variant="default"
+            >
+              刷新会话 /me
+            </Button>
+            <Button
+              color="red"
+              leftSection={<IconX size={15} />}
+              loading={busy === 'logout'}
+              onClick={() => void logout()}
+              size="xs"
+              variant="outline"
+            >
+              退出
+            </Button>
           </div>
         </div>
       )}
 
-      {error && <Text c="red" role="alert" size="sm">{error}</Text>}
+      {error && (
+        <Text c="red" role="alert" size="sm">
+          {error}
+        </Text>
+      )}
 
       {ops.length > 0 && (
         <ol className={styles.ops}>
           {ops.map((item) => (
             <li key={`${label}-${item.id}`}>
-              <Badge color="gray" size="xs" variant="outline">{item.op}</Badge>
+              <Badge color="gray" size="xs" variant="outline">
+                {item.op}
+              </Badge>
               <code>{item.key}</code>
               <span>{item.note}</span>
             </li>

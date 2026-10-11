@@ -11,12 +11,10 @@ const theme = createTheme({
   defaultRadius: 'md',
   fontFamily:
     'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-  fontFamilyMonospace:
-    'ui-monospace, SFMono-Regular, Menlo, Monaco, "Cascadia Code", monospace',
+  fontFamilyMonospace: 'ui-monospace, SFMono-Regular, Menlo, Monaco, "Cascadia Code", monospace',
   primaryColor: 'teal',
   headings: {
-    fontFamily:
-      '"Space Grotesk", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif',
+    fontFamily: '"Space Grotesk", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif',
     fontWeight: '700',
     sizes: {
       h1: { fontSize: '2rem', lineHeight: '1.15' },

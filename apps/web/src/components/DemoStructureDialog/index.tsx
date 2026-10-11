@@ -66,12 +66,19 @@ type TreeProps = {
 };
 
 const fileKey = (repository: TreeProps['repository'], path: string) => `${repository}:${path}`;
-const fileId = (repository: TreeProps['repository'], path: string) => `demo-source-${encodeURIComponent(fileKey(repository, path))}`;
+const fileId = (repository: TreeProps['repository'], path: string) =>
+  `demo-source-${encodeURIComponent(fileKey(repository, path))}`;
 const minSidebarWidth = 240;
 const maxSidebarWidth = () => Math.max(minSidebarWidth, Math.min(720, window.innerWidth - 320));
-const clampSidebarWidth = (width: number) => Math.min(maxSidebarWidth(), Math.max(minSidebarWidth, width));
+const clampSidebarWidth = (width: number) =>
+  Math.min(maxSidebarWidth(), Math.max(minSidebarWidth, width));
 
-const FileReview = ({ file, repository, read, onReadChange }: {
+const FileReview = ({
+  file,
+  repository,
+  read,
+  onReadChange,
+}: {
   file: StructureFile;
   repository: TreeProps['repository'];
   read: boolean;
@@ -88,15 +95,18 @@ const FileReview = ({ file, repository, read, onReadChange }: {
 
     let active = true;
 
-    void import('./utils/source-files').then(({ getSourceFile }) => getSourceFile(repository, file.path)).then((code) => {
-      if (active) {
-        setSource(code);
-      }
-    }).catch(() => {
-      if (active) {
-        setSource(undefined);
-      }
-    });
+    void import('./utils/source-files')
+      .then(({ getSourceFile }) => getSourceFile(repository, file.path))
+      .then((code) => {
+        if (active) {
+          setSource(code);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setSource(undefined);
+        }
+      });
 
     return () => {
       active = false;
@@ -106,8 +116,17 @@ const FileReview = ({ file, repository, read, onReadChange }: {
   return (
     <section className={styles.fileReview} id={fileId(repository, file.path)}>
       <div className={styles.fileHeading}>
-        <button aria-controls={codeId} aria-expanded={expanded} className={styles.fileToggle} onClick={() => setExpanded(!expanded)} type="button">
-          <IconChevronRight className={`${styles.chevron} ${expanded ? styles.expanded : ''}`} size={15} />
+        <button
+          aria-controls={codeId}
+          aria-expanded={expanded}
+          className={styles.fileToggle}
+          onClick={() => setExpanded(!expanded)}
+          type="button"
+        >
+          <IconChevronRight
+            className={`${styles.chevron} ${expanded ? styles.expanded : ''}`}
+            size={15}
+          />
           <IconFileCode size={16} />
           <code>{file.path}</code>
         </button>
@@ -124,11 +143,21 @@ const FileReview = ({ file, repository, read, onReadChange }: {
           size="xs"
         />
       </div>
-      <Text c="dimmed" className={styles.fileRole} size="sm">{file.role}</Text>
+      <Text c="dimmed" className={styles.fileRole} size="sm">
+        {file.role}
+      </Text>
       {expanded && (
         <div className={styles.codePanel} id={codeId}>
-          {source === null && <Text c="dimmed" size="sm">加载源码中…</Text>}
-          {source === undefined && <Text c="red" size="sm">源码加载失败或当前构建未包含该文件。</Text>}
+          {source === null && (
+            <Text c="dimmed" size="sm">
+              加载源码中…
+            </Text>
+          )}
+          {source === undefined && (
+            <Text c="red" size="sm">
+              源码加载失败或当前构建未包含该文件。
+            </Text>
+          )}
           {typeof source === 'string' && (
             <CodeBlock bare code={source} label={`${file.path} 源码`} path={file.path} />
           )}
@@ -156,7 +185,11 @@ const TreeBranches = ({ directory, repository, readFiles }: TreeProps) => (
       <li key={name}>
         <button
           className={`${styles.treeFile} ${readFiles[fileKey(repository, file.path)] ? styles.viewed : ''}`}
-          onClick={() => document.getElementById(fileId(repository, file.path))?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          onClick={() =>
+            document
+              .getElementById(fileId(repository, file.path))
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
           title={file.path}
           type="button"
         >
@@ -179,23 +212,34 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
   const [readFiles, setReadFiles] = useState<Record<string, boolean>>({});
   const [sidebarWidth, setSidebarWidth] = useState(360);
   const dragStart = useRef<{ x: number; width: number } | null>(null);
-  const onReadChange = (key: string, read: boolean) => setReadFiles((current) => ({ ...current, [key]: read }));
+  const onReadChange = (key: string, read: boolean) =>
+    setReadFiles((current) => ({ ...current, [key]: read }));
 
   // 文件树在 structure 稳定时只构建一次；已读勾选、拖动宽度等重渲染不再重建整棵树。
   const frontendTree = useMemo(() => buildTree(structure.frontend), [structure.frontend]);
-  const backendTree = useMemo(() => (structure.backend ? buildTree(structure.backend) : null), [structure.backend]);
-  const schemaTree = useMemo(() => (structure.schema ? buildTree(structure.schema) : null), [structure.schema]);
+  const backendTree = useMemo(
+    () => (structure.backend ? buildTree(structure.backend) : null),
+    [structure.backend],
+  );
+  const schemaTree = useMemo(
+    () => (structure.schema ? buildTree(structure.schema) : null),
+    [structure.schema],
+  );
 
   const totalFiles = useMemo(
-    () => structure.frontend.length + (structure.backend?.length ?? 0) + (structure.schema?.length ?? 0),
+    () =>
+      structure.frontend.length +
+      (structure.backend?.length ?? 0) +
+      (structure.schema?.length ?? 0),
     [structure],
   );
   const viewedFiles = useMemo(
-    () => [
-      ...structure.frontend.map((file) => fileKey('frontend', file.path)),
-      ...(structure.backend?.map((file) => fileKey('backend', file.path)) ?? []),
-      ...(structure.schema?.map((file) => fileKey('schema', file.path)) ?? []),
-    ].filter((key) => readFiles[key]).length,
+    () =>
+      [
+        ...structure.frontend.map((file) => fileKey('frontend', file.path)),
+        ...(structure.backend?.map((file) => fileKey('backend', file.path)) ?? []),
+        ...(structure.schema?.map((file) => fileKey('schema', file.path)) ?? []),
+      ].filter((key) => readFiles[key]).length,
     [structure, readFiles],
   );
 
@@ -222,7 +266,9 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
 
   const moveResize = (event: PointerEvent<HTMLDivElement>) => {
     if (dragStart.current) {
-      setSidebarWidth(clampSidebarWidth(dragStart.current.width + event.clientX - dragStart.current.x));
+      setSidebarWidth(
+        clampSidebarWidth(dragStart.current.width + event.clientX - dragStart.current.x),
+      );
     }
   };
 
@@ -254,28 +300,56 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
         代码结构
       </Button>
       <Modal
-        classNames={{ body: styles.modalBody, content: styles.modalContent, header: styles.modalHeader }}
+        classNames={{
+          body: styles.modalBody,
+          content: styles.modalContent,
+          header: styles.modalHeader,
+        }}
         fullScreen
         onClose={close}
         opened={opened}
-        title={<div className={styles.modalTitle}><strong>本次 Demo 的代码结构</strong><Text c="dimmed" size="sm">已读 {viewedFiles} / {totalFiles}</Text></div>}
+        title={
+          <div className={styles.modalTitle}>
+            <strong>本次 Demo 的代码结构</strong>
+            <Text c="dimmed" size="sm">
+              已读 {viewedFiles} / {totalFiles}
+            </Text>
+          </div>
+        }
       >
-        <div className={styles.reviewLayout} style={{ '--sidebar-width': `${sidebarWidth}px` } as CSSProperties}>
+        <div
+          className={styles.reviewLayout}
+          style={{ '--sidebar-width': `${sidebarWidth}px` } as CSSProperties}
+        >
           <nav aria-label="源码文件" className={styles.sidebar}>
             <div className={styles.sidebarInner}>
               <div className={styles.sidebarGroup}>
-                <Text fw={700} size="sm">前端 · apps/web</Text>
-                <StructureTree directory={frontendTree} readFiles={readFiles} repository="frontend" />
+                <Text fw={700} size="sm">
+                  前端 · apps/web
+                </Text>
+                <StructureTree
+                  directory={frontendTree}
+                  readFiles={readFiles}
+                  repository="frontend"
+                />
               </div>
               {structure.backend && backendTree && (
                 <div className={styles.sidebarGroup}>
-                  <Text fw={700} size="sm">后端 · apps/api</Text>
-                  <StructureTree directory={backendTree} readFiles={readFiles} repository="backend" />
+                  <Text fw={700} size="sm">
+                    后端 · apps/api
+                  </Text>
+                  <StructureTree
+                    directory={backendTree}
+                    readFiles={readFiles}
+                    repository="backend"
+                  />
                 </div>
               )}
               {structure.schema && schemaTree && (
                 <div className={styles.sidebarGroup}>
-                  <Text fw={700} size="sm">契约 · packages/schema</Text>
+                  <Text fw={700} size="sm">
+                    契约 · packages/schema
+                  </Text>
                   <StructureTree directory={schemaTree} readFiles={readFiles} repository="schema" />
                 </div>
               )}
@@ -301,17 +375,23 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
             <section className={styles.overview}>
               {structure.connection && (
                 <div>
-                  <Title order={3} size="h5">前后端如何对应</Title>
+                  <Title order={3} size="h5">
+                    前后端如何对应
+                  </Title>
                   <Text size="sm">{structure.connection}</Text>
                 </div>
               )}
               <div>
-                <Title order={3} size="h5">数据库变更</Title>
+                <Title order={3} size="h5">
+                  数据库变更
+                </Title>
                 <Text size="sm">{structure.database}</Text>
               </div>
             </section>
             <section className={styles.fileGroup}>
-              <Title order={3} size="h5">前端 · apps/web</Title>
+              <Title order={3} size="h5">
+                前端 · apps/web
+              </Title>
               {structure.frontend.map((file) => (
                 <FileReview
                   file={file}
@@ -324,7 +404,9 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
             </section>
             {structure.backend && (
               <section className={styles.fileGroup}>
-                <Title order={3} size="h5">后端 · apps/api</Title>
+                <Title order={3} size="h5">
+                  后端 · apps/api
+                </Title>
                 {structure.backend.map((file) => (
                   <FileReview
                     file={file}
@@ -338,7 +420,9 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
             )}
             {structure.schema && (
               <section className={styles.fileGroup}>
-                <Title order={3} size="h5">契约 · packages/schema</Title>
+                <Title order={3} size="h5">
+                  契约 · packages/schema
+                </Title>
                 {structure.schema.map((file) => (
                   <FileReview
                     file={file}

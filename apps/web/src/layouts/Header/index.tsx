@@ -8,12 +8,7 @@ import {
   useComputedColorScheme,
   useMantineColorScheme,
 } from '@mantine/core';
-import {
-  IconBrandGithub,
-  IconMoon,
-  IconSun,
-  IconTerminal2,
-} from '@tabler/icons-react';
+import { IconBrandGithub, IconMoon, IconSun, IconTerminal2 } from '@tabler/icons-react';
 
 import type { DemoMenuItem } from '@/generated/routes';
 

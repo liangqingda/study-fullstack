@@ -1,7 +1,12 @@
 import express, { Router } from 'express';
 import morgan from 'morgan';
 
-import type { ErrorRequestHandler, RequestHandler, Response, Router as ExpressRouter } from 'express';
+import type {
+  ErrorRequestHandler,
+  RequestHandler,
+  Response,
+  Router as ExpressRouter,
+} from 'express';
 
 const router: ExpressRouter = Router();
 
@@ -18,7 +23,9 @@ export const applicationMiddleware: RequestHandler = (req, res, next) => {
 
   locals.trace = ['app.use: 应用级中间件进入'];
   res.once('finish', () => {
-    console.info(`[middleware] ${req.method} ${req.baseUrl}${req.path} -> ${res.statusCode} | ${trace(res).join(' -> ')}`);
+    console.info(
+      `[middleware] ${req.method} ${req.baseUrl}${req.path} -> ${res.statusCode} | ${trace(res).join(' -> ')}`,
+    );
   });
   next();
 };
@@ -49,10 +56,16 @@ router.post('/built-in', express.json(), (req, res) => {
 });
 
 // immediate 让日志在响应前产生，这样页面也能观察到执行顺序。
-router.use('/third-party', morgan((tokens, req, res) => {
-  record(res as Response, 'morgan: 第三方日志中间件记录请求');
-  return `middleware demo ${tokens.method?.(req, res) ?? req.method} ${req.url?.split('?')[0] ?? '/'}`;
-}, { immediate: true }));
+router.use(
+  '/third-party',
+  morgan(
+    (tokens, req, res) => {
+      record(res as Response, 'morgan: 第三方日志中间件记录请求');
+      return `middleware demo ${tokens.method?.(req, res) ?? req.method} ${req.url?.split('?')[0] ?? '/'}`;
+    },
+    { immediate: true },
+  ),
+);
 
 router.get('/third-party', (_req, res) => {
   record(res, 'router.get: 路由处理器发送响应');

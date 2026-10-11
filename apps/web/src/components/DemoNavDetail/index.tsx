@@ -30,7 +30,14 @@ type DemoNavDetailProps = {
  * 左侧可选中导航 + 右侧详情区的双栏框架，供需要“在多个示例间切换”的 demo 复用。
  * 窄屏下导航自动改为横向滑动，详情区置于其下方。
  */
-const DemoNavDetail = ({ items, navAriaLabel, selectedKey, onSelect, detailAriaLabel, children }: DemoNavDetailProps) => (
+const DemoNavDetail = ({
+  items,
+  navAriaLabel,
+  selectedKey,
+  onSelect,
+  detailAriaLabel,
+  children,
+}: DemoNavDetailProps) => (
   <div className={styles.workspace}>
     <nav aria-label={navAriaLabel} className={styles.nav}>
       {items.map((item) => (

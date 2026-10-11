@@ -16,9 +16,11 @@ export const errorHandler: ErrorRequestHandler = (error: unknown, req, res, next
     'request.aborted': { status: 400, message: 'Request aborted' },
     'request.size.invalid': { status: 400, message: 'Invalid request size' },
   };
-  const response = typeof parserError === 'string' && Object.prototype.hasOwnProperty.call(parserResponses, parserError)
-    ? parserResponses[parserError]!
-    : { status: 500, message: 'Internal server error' };
+  const response =
+    typeof parserError === 'string' &&
+    Object.prototype.hasOwnProperty.call(parserResponses, parserError)
+      ? parserResponses[parserError]!
+      : { status: 500, message: 'Internal server error' };
 
   if (response.status === 500) {
     req.log.error({ err: error }, 'Unhandled request error');
