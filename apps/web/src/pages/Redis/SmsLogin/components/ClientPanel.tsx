@@ -12,7 +12,7 @@ import {
   postApiSmsLoginLogout,
   postApiSmsLoginSendCode,
 } from '@/apis';
-import { isAxiosError } from '@/utils/http';
+import { bearerAuth, isApiError } from '@/utils/http';
 
 import { loadCooldownEnd, loadStoredToken, newOp, persistToken } from '../utils';
 
@@ -125,7 +125,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     const storedToken = loadStoredToken(label);
 
     if (storedToken) {
-      getApiSmsLoginMe({ headers: { authorization: `Bearer ${storedToken}` } })
+      getApiSmsLoginMe({ headers: bearerAuth(storedToken) })
         .then((response) => {
           setToken(storedToken);
           setMe(response.data);
@@ -144,7 +144,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     };
   }, [clearCooldownTimer, stopCooldown, label, startMeCountdown, clearMeTimer]);
 
-  const auth = token ? { headers: { authorization: `Bearer ${token}` } } : undefined;
+  const auth = bearerAuth(token);
 
   const sendCode = async () => {
     setBusy('send');
@@ -161,12 +161,12 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
         ...current,
       ].slice(0, 12));
     } catch (cause) {
-      const data = isAxiosError<{ error: string; retryAfterSeconds?: number }>(cause) ? cause.response?.data : undefined;
+      const apiError = isApiError(cause) ? cause : null;
 
-      setError(data?.error ?? '发码失败；请确认后端与 Redis 已启动。');
+      setError(apiError?.message ?? '发码失败；请确认后端与 Redis 已启动。');
 
-      if (data?.retryAfterSeconds) {
-        startCooldown(data.retryAfterSeconds);
+      if (apiError?.data?.retryAfterSeconds) {
+        startCooldown(apiError.data.retryAfterSeconds);
       }
     } finally {
       setBusy('');
@@ -194,9 +194,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       setCodeInput('');
       onLoginStateChange();
     } catch (cause) {
-      const data = isAxiosError<{ error: string }>(cause) ? cause.response?.data : undefined;
-
-      setError(data?.error ?? '登录失败；请确认后端与 Redis 已启动。');
+      setError(isApiError(cause) ? cause.message : '登录失败；请确认后端与 Redis 已启动。');
     } finally {
       setBusy('');
     }
@@ -207,7 +205,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     setError('');
 
     try {
-      const response = await getApiSmsLoginMe(auth ?? { signal: undefined });
+      const response = await getApiSmsLoginMe({ headers: auth });
 
       setMe(response.data);
       startMeCountdown(response.data.remainingSeconds);
@@ -217,9 +215,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
         ...current,
       ].slice(0, 12));
     } catch (cause) {
-      const data = isAxiosError<{ error: string }>(cause) ? cause.response?.data : undefined;
-
-      setError(data?.error ?? '会话校验失败。');
+      setError(isApiError(cause) ? cause.message : '会话校验失败。');
     } finally {
       setBusy('');
     }
@@ -230,7 +226,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     setError('');
 
     try {
-      const response = await postApiSmsLoginLogout(auth ?? { signal: undefined });
+      const response = await postApiSmsLoginLogout({ headers: auth });
 
       setOps((current) => [newOp('DEL', `session:${token?.slice(0, 8)}…`, response.data.ok ? '会话已删除' : '会话不存在'), ...current].slice(0, 12));
       persistToken(label, null);
@@ -240,9 +236,7 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       setMe(null);
       onLoginStateChange();
     } catch (cause) {
-      const data = isAxiosError<{ error: string }>(cause) ? cause.response?.data : undefined;
-
-      setError(data?.error ?? '退出失败。');
+      setError(isApiError(cause) ? cause.message : '退出失败。');
     } finally {
       setBusy('');
     }

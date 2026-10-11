@@ -6,7 +6,7 @@ import type { SessionsResponse } from '@liangqingda/study-nodejs-schema';
 
 import { getApiSmsLoginSessions } from '@/apis';
 import DemoLayout from '@/layouts/DemoLayout';
-import { isAxiosError } from '@/utils/http';
+import { isApiError } from '@/utils/http';
 
 import ClientPanel from './components/ClientPanel';
 import RedisExplainer from './components/RedisExplainer';
@@ -29,9 +29,7 @@ const SmsLogin = () => {
 
       setSessions(response.data);
     } catch (cause) {
-      const data = isAxiosError<{ error: string }>(cause) ? cause.response?.data : undefined;
-
-      setError(data?.error ?? '获取共享会话失败；请确认后端与 Redis 已启动。');
+      setError(isApiError(cause) ? cause.message : '获取共享会话失败；请确认后端与 Redis 已启动。');
     } finally {
       setLoading(false);
     }

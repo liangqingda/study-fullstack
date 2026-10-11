@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Badge, Button, Text, Title } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
-import type { TransactionError } from '@liangqingda/study-nodejs-schema';
 import type { Example, Result } from './types';
 
 import { postApiTransactionsRun } from '@/apis';
@@ -11,7 +10,7 @@ import DemoEmpty from '@/components/DemoEmpty';
 import DemoNavDetail from '@/components/DemoNavDetail';
 import { useDemoRequest } from '@/hooks/useDemoRequest';
 import DemoLayout from '@/layouts/DemoLayout';
-import { isAxiosError } from '@/utils/http';
+import { isApiError } from '@/utils/http';
 
 import { EXAMPLES, KNOWLEDGE, STRUCTURE } from './constants';
 
@@ -33,9 +32,7 @@ const Transactions = () => {
 
         return response.data;
       } catch (cause) {
-        const message = isAxiosError<TransactionError>(cause) ? cause.response?.data.error : undefined;
-
-        throw new Error(message ?? '请求失败；请确认后端和 study_nodejs 已启动。');
+        throw new Error(isApiError(cause) ? cause.message : '请求失败；请确认后端和 study_nodejs 已启动。');
       }
     });
   };
