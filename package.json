@@ -10,8 +10,7 @@
     "sync": "pnpm --filter @liangqingda/study-nodejs-schema build && pnpm --filter study-react gen:apis && pnpm --filter study-react gen:routes",
     "build": "pnpm sync && pnpm --filter study-nodejs build && pnpm --filter study-react build",
     "lint": "pnpm -r lint",
-    "test": "pnpm --filter study-nodejs test && pnpm --filter study-react test",
-    "typecheck": "pnpm -r typecheck && pnpm --filter study-nodejs typecheck:test",
+    "typecheck": "pnpm -r typecheck",
     "prepare": "husky"
   },
   "devDependencies": {

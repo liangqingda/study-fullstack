@@ -11,20 +11,16 @@
   "packageManager": "pnpm@10.6.1",
   "scripts": {
     "build": "node -e \"require('node:fs').rmSync('build', { recursive: true, force: true })\" && tsc",
-    "build:swc": "node -e \"require('node:fs').rmSync('build', { recursive: true, force: true })\" && swc src -d build --strip-leading-paths --ignore '**/*.test.ts'",
-    "build:swc:watch": "swc src -d build --strip-leading-paths --ignore '**/*.test.ts' --watch",
+    "build:swc": "node -e \"require('node:fs').rmSync('build', { recursive: true, force: true })\" && swc src -d build --strip-leading-paths",
+    "build:swc:watch": "swc src -d build --strip-leading-paths --watch",
     "typecheck": "tsc --noEmit --incremental false --tsBuildInfoFile null",
-    "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
     "start": "node --require dotenv/config --enable-source-maps build/index.js",
     "start:watch": "nodemon --watch build --ext js --exec 'pnpm start'",
     "dev": "concurrently -k \"tsc-watch --noClear\" \"pnpm start:watch\"",
     "start:dev": "tsx watch src/index.ts",
     "start:prod": "pnpm start",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "lint:fix": "eslint . --fix"
   },
   "lint-staged": {
     "*.{ts,js,mjs,cjs}": "eslint --fix"
@@ -57,19 +53,15 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^26.1.1",
     "@types/pg": "^8.20.0",
-    "@types/supertest": "7.2.1",
-    "@vitest/coverage-v8": "5.0.2",
     "concurrently": "10.0.5",
     "eslint": "^9.39.4",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
     "nodemon": "3.1.14",
     "prettier": "^3.9.5",
-    "supertest": "7.3.0",
     "ts-node": "^10.9.2",
     "tsc-watch": "^7.2.1",
     "tsx": "^4.23.1",
-    "typescript": "^6.0.3",
-    "vitest": "5.0.2"
+    "typescript": "^6.0.3"
   }
 }

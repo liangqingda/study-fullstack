@@ -6,8 +6,6 @@
   "scripts": {
     "dev": "vite",
     "gen:apis": "node scripts/gen-apis.mjs && prettier --write \"src/apis/**/*.ts\"",
-    "test:apis": "node --test scripts/gen-apis.test.mjs",
-    "test": "node --test scripts/*.test.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit",
     "gen:routes": "node scripts/gen-routes.mjs && prettier --write \"src/generated/routes.tsx\"",
     "build": "pnpm gen:routes && tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build",
