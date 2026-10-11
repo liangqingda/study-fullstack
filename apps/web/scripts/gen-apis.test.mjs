@@ -32,7 +32,7 @@ test('generates typed callers for path, query, JSON body, and empty success resp
 
   assert.match(client, /orderId: number/);
   assert.match(client, /export const getApiOrdersOrderId/);
-  assert.match(client, /import \{ buildPath, request \} from '@\/utils\/http';/);
+  assert.match(client, /import \{ buildPath, get, post \} from '@\/utils\/http';/);
   assert.match(client, /query\?: \{\s+details\?: boolean;/);
   assert.match(client, /buildPath\("\/api\/orders\/\{orderId\}", input.path\)/);
   assert.match(client, /body: \{\s+quantity: number;/);

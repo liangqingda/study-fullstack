@@ -78,6 +78,42 @@ export const request = <T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>
   http.request<T>(config);
 
 /**
+ * 除 method / url / data 之外可下发给单个请求的选项（如 params、headers、signal、timeout）。
+ */
+export type HttpOptions = Omit<AxiosRequestConfig, 'method' | 'url' | 'data'>;
+
+/**
+ * 便捷方法：基于 `request` 按 HTTP 动词封装，供页面与生成的 API 客户端复用。
+ * 返回类型与 `request` 一致（`AxiosResponse<T>`），可透传 signal / params / headers 等选项。
+ */
+export const get = <T>(url: string, config?: HttpOptions): Promise<AxiosResponse<T>> =>
+  request<T>({ ...config, method: 'GET', url });
+
+export const post = <T>(
+  url: string,
+  data?: unknown,
+  config?: HttpOptions,
+): Promise<AxiosResponse<T>> => request<T>({ ...config, method: 'POST', url, data });
+
+export const put = <T>(
+  url: string,
+  data?: unknown,
+  config?: HttpOptions,
+): Promise<AxiosResponse<T>> => request<T>({ ...config, method: 'PUT', url, data });
+
+export const patch = <T>(
+  url: string,
+  data?: unknown,
+  config?: HttpOptions,
+): Promise<AxiosResponse<T>> => request<T>({ ...config, method: 'PATCH', url, data });
+
+/**
+ * DELETE 请求。命名用 `del` 而非 `delete`，因为 `delete` 是 JavaScript 保留字。
+ */
+export const del = <T>(url: string, config?: HttpOptions): Promise<AxiosResponse<T>> =>
+  request<T>({ ...config, method: 'DELETE', url });
+
+/**
  * 构造带 Bearer 认证的 headers。
  *
  * 本项目的登录 token 按客户端 label 分开存储、由页面本地管理（SmsLogin 的 A/B

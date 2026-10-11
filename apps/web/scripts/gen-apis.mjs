@@ -98,6 +98,7 @@ export const generateApiClient = async (document) => {
   });
   const entries = [];
   const usedNames = new Set();
+  const httpImports = new Set();
 
   for (const [route, pathItem] of Object.entries(document.paths ?? {}).sort(([a], [b]) => a.localeCompare(b))) {
     for (const [method, operation] of Object.entries(pathItem ?? {})) {
@@ -146,14 +147,40 @@ export const generateApiClient = async (document) => {
         ...(hasAuth ? ['headers: input.headers'] : []),
         'signal: input.signal',
       ];
+      // get/post/put/patch 复用 http 便捷方法；delete 用 del（delete 为保留字）。
+      // head/options 没有便捷方法，回退到通用的 request。
+      const methodFns = { get: 'get', post: 'post', put: 'put', patch: 'patch', delete: 'del' };
+      const fnName = methodFns[method] ?? null;
+      const fnConfigs = [
+        ...(hasQuery ? ['params: input.query'] : []),
+        ...(hasAuth ? ['headers: input.headers'] : []),
+        'signal: input.signal',
+      ];
 
-      entries.push(`export const ${name} = (input: { ${fields.join('; ')} }${required ? '' : ' = {}'}): Promise<AxiosResponse<${result}>> =>\n  request<${result}>({ ${configs.join(', ')} });`);
+      let call;
+
+      if (fnName) {
+        httpImports.add(fnName);
+        call = hasBody
+          ? `\n  ${fnName}<${result}>(${url}, input.body, { ${fnConfigs.join(', ')} });`
+          : `\n  ${fnName}<${result}>(${url}, { ${fnConfigs.join(', ')} });`;
+      } else {
+        httpImports.add('request');
+        call = `\n  request<${result}>({ ${configs.join(', ')} });`;
+      }
+
+      entries.push(`export const ${name} = (input: { ${fields.join('; ')} }${required ? '' : ' = {}'}): Promise<AxiosResponse<${result}>> =>${call}`);
     }
   }
 
   const needsPath = entries.some((entry) => entry.includes('buildPath('));
+
+  if (needsPath) {
+    httpImports.add('buildPath');
+  }
+
   const schemaImport = importedTypes.size ? `import type { ${[...importedTypes].sort().join(', ')} } from '@liangqingda/study-nodejs-schema';\n` : '';
-  const imports = entries.length ? `import type { AxiosResponse } from 'axios';\n${schemaImport}import { ${needsPath ? 'buildPath, ' : ''}request } from '@/utils/http';\n\n` : '';
+  const imports = entries.length ? `import type { AxiosResponse } from 'axios';\n${schemaImport}import { ${[...httpImports].sort().join(', ')} } from '@/utils/http';\n\n` : '';
   const client = `/* eslint-disable */\n// Generated from study-nodejs-schema. Do not edit.\n${imports}${entries.join('\n\n')}${entries.length ? '\n' : ''}`;
 
   return { client };
