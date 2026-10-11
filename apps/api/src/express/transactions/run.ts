@@ -12,7 +12,8 @@ type Result = z.infer<typeof TransactionRunResponseSchema>;
 type Step = Result['steps'][number];
 type Client = Pick<PoolClient, 'query' | 'release'>;
 
-const errorCode = (error: unknown): string => (error as { code?: string }).code ?? 'unknown';
+const errorCode = (error: unknown): string =>
+  (error as { code?: string }).code ?? 'unknown';
 
 const assertDatabase = async (client: Client) => {
   const { rows } = await client.query<{ database: string }>(
@@ -33,7 +34,12 @@ const add = (
 ) => {
   // Ordered trace is local to this request and never shared with another transaction.
   // eslint-disable-next-line no-restricted-syntax
-  steps.push({ session, action, observation, ...(sqlstate ? { sqlstate } : {}) });
+  steps.push({
+    session,
+    action,
+    observation,
+    ...(sqlstate ? { sqlstate } : {}),
+  });
   console.info(
     `[transactions] ${session}: ${action} -> ${observation}${sqlstate ? ` (${sqlstate})` : ''}`,
   );
@@ -50,7 +56,9 @@ const singleConnection = async (
     await client.query(
       'CREATE TEMP TABLE demo_transactions_accounts (id integer PRIMARY KEY, balance integer NOT NULL)',
     );
-    await client.query('INSERT INTO demo_transactions_accounts VALUES (1, 500), (2, 200)');
+    await client.query(
+      'INSERT INTO demo_transactions_accounts VALUES (1, 500), (2, 200)',
+    );
     await client.query(
       'CREATE TEMP TABLE demo_transactions_entries (id integer PRIMARY KEY, item integer NOT NULL)',
     );
@@ -59,7 +67,9 @@ const singleConnection = async (
 
     if (savepoint) {
       await client.query('SAVEPOINT before_items');
-      await client.query('INSERT INTO demo_transactions_entries VALUES (2, 10)');
+      await client.query(
+        'INSERT INTO demo_transactions_entries VALUES (2, 10)',
+      );
       add(steps, 'A', 'SAVEPOINT 后插入商品 10', '当前事务内可见，尚未提交');
     } else {
       await client.query(
@@ -68,30 +78,51 @@ const singleConnection = async (
       await client.query(
         'UPDATE demo_transactions_accounts SET balance = balance + 100 WHERE id = 2',
       );
-      add(steps, 'A', 'BEGIN；扣 A 100、加 B 100', '当前事务内余额为 400 / 300');
+      add(
+        steps,
+        'A',
+        'BEGIN；扣 A 100、加 B 100',
+        '当前事务内余额为 400 / 300',
+      );
     }
 
     try {
-      await client.query('INSERT INTO demo_transactions_entries VALUES (1, 99)');
+      await client.query(
+        'INSERT INTO demo_transactions_entries VALUES (1, 99)',
+      );
       throw new Error('Expected a primary-key violation');
     } catch (error) {
       if (errorCode(error) !== '23505') {
         throw error;
       }
 
-      add(steps, 'A', '重复插入主键 1', '唯一约束失败，事务进入中止状态', '23505');
+      add(
+        steps,
+        'A',
+        '重复插入主键 1',
+        '唯一约束失败，事务进入中止状态',
+        '23505',
+      );
     }
 
     if (!savepoint) {
       try {
-        await client.query('SELECT balance FROM demo_transactions_accounts WHERE id = 1');
+        await client.query(
+          'SELECT balance FROM demo_transactions_accounts WHERE id = 1',
+        );
         throw new Error('Expected aborted transaction state');
       } catch (error) {
         if (errorCode(error) !== '25P02') {
           throw error;
         }
 
-        add(steps, 'A', '错误后继续 SELECT', '普通 SQL 被拒绝，必须先回滚', '25P02');
+        add(
+          steps,
+          'A',
+          '错误后继续 SELECT',
+          '普通 SQL 被拒绝，必须先回滚',
+          '25P02',
+        );
       }
 
       await client.query('ROLLBACK');
@@ -113,7 +144,12 @@ const singleConnection = async (
     }
 
     await client.query('ROLLBACK TO SAVEPOINT before_items');
-    add(steps, 'A', 'ROLLBACK TO SAVEPOINT', '商品 10 与失败语句一并撤销，保存点之前的工作保留');
+    add(
+      steps,
+      'A',
+      'ROLLBACK TO SAVEPOINT',
+      '商品 10 与失败语句一并撤销，保存点之前的工作保留',
+    );
     await client.query('INSERT INTO demo_transactions_entries VALUES (3, 11)');
     await client.query('RELEASE SAVEPOINT before_items');
     await client.query('COMMIT');
@@ -121,7 +157,12 @@ const singleConnection = async (
       'SELECT item FROM demo_transactions_entries WHERE id <> 1 ORDER BY id',
     );
 
-    add(steps, 'A', '插入商品 11；COMMIT 后查询', `仅留下商品 ${rows[0]?.item}`);
+    add(
+      steps,
+      'A',
+      '插入商品 11；COMMIT 后查询',
+      `仅留下商品 ${rows[0]?.item}`,
+    );
 
     return {
       final: { item10: 0, item11: rows.length },
@@ -129,8 +170,12 @@ const singleConnection = async (
     };
   } finally {
     await client.query('ROLLBACK');
-    await client.query('DROP TABLE IF EXISTS pg_temp.demo_transactions_entries');
-    await client.query('DROP TABLE IF EXISTS pg_temp.demo_transactions_accounts');
+    await client.query(
+      'DROP TABLE IF EXISTS pg_temp.demo_transactions_entries',
+    );
+    await client.query(
+      'DROP TABLE IF EXISTS pg_temp.demo_transactions_accounts',
+    );
   }
 };
 
@@ -141,7 +186,8 @@ const snapshot = async (
   steps: Step[],
 ): Promise<Pick<Result, 'final' | 'outcome'>> => {
   const id = randomInt(100_000_000, 2_000_000_000);
-  const level = scenario === 'read-committed' ? 'READ COMMITTED' : 'REPEATABLE READ';
+  const level =
+    scenario === 'read-committed' ? 'READ COMMITTED' : 'REPEATABLE READ';
   let seeded = false;
 
   try {
@@ -167,9 +213,22 @@ const snapshot = async (
         )
       ).rows[0]?.stock ?? 0;
 
-    add(steps, 'A', `BEGIN ${level}；首次 SELECT`, `库存 ${first}；此时建立快照`);
-    await b.query('UPDATE demo_transactions_stock SET stock = 9 WHERE id = $1', [id]);
-    add(steps, 'B', 'UPDATE stock = 9（自动提交）', '另一个连接已提交，新行版本可见');
+    add(
+      steps,
+      'A',
+      `BEGIN ${level}；首次 SELECT`,
+      `库存 ${first}；此时建立快照`,
+    );
+    await b.query(
+      'UPDATE demo_transactions_stock SET stock = 9 WHERE id = $1',
+      [id],
+    );
+    add(
+      steps,
+      'B',
+      'UPDATE stock = 9（自动提交）',
+      '另一个连接已提交，新行版本可见',
+    );
     const second =
       (
         await a.query<{ stock: number }>(
@@ -214,37 +273,45 @@ const writeSkew = async (
 ): Promise<Pick<Result, 'final' | 'outcome'>> => {
   const tag = randomUUID();
   const doctors = [`${tag}-A`, `${tag}-B`];
-  const level = scenario === 'serializable' ? 'SERIALIZABLE' : 'REPEATABLE READ';
+  const level =
+    scenario === 'serializable' ? 'SERIALIZABLE' : 'REPEATABLE READ';
   let seeded = false;
 
   try {
     await a.query(
       'CREATE TABLE IF NOT EXISTS demo_transactions_on_call (doctor text PRIMARY KEY, active boolean NOT NULL)',
     );
-    await a.query('INSERT INTO demo_transactions_on_call VALUES ($1, true), ($2, true)', doctors);
+    await a.query(
+      'INSERT INTO demo_transactions_on_call VALUES ($1, true), ($2, true)',
+      doctors,
+    );
     seeded = true;
     await a.query(`BEGIN ISOLATION LEVEL ${level}`);
     await b.query(`BEGIN ISOLATION LEVEL ${level}`);
 
     const query =
       'SELECT count(*)::int AS count FROM demo_transactions_on_call WHERE active AND doctor = ANY($1::text[])';
-    const aCount = (await a.query<{ count: number }>(query, [doctors])).rows[0]?.count;
+    const aCount = (await a.query<{ count: number }>(query, [doctors])).rows[0]
+      ?.count;
 
     add(steps, 'A', '读取值班人数', `${aCount} 人；认为另一人仍在岗`);
-    const bCount = (await b.query<{ count: number }>(query, [doctors])).rows[0]?.count;
+    const bCount = (await b.query<{ count: number }>(query, [doctors])).rows[0]
+      ?.count;
 
     add(steps, 'B', '读取值班人数', `${bCount} 人；认为另一人仍在岗`);
 
-    await a.query('UPDATE demo_transactions_on_call SET active = false WHERE doctor = $1', [
-      doctors[0],
-    ]);
+    await a.query(
+      'UPDATE demo_transactions_on_call SET active = false WHERE doctor = $1',
+      [doctors[0]],
+    );
     add(steps, 'A', '修改医生 A', '只写入自己的行');
     let bFailed = false;
 
     try {
-      await b.query('UPDATE demo_transactions_on_call SET active = false WHERE doctor = $1', [
-        doctors[1],
-      ]);
+      await b.query(
+        'UPDATE demo_transactions_on_call SET active = false WHERE doctor = $1',
+        [doctors[1]],
+      );
       add(steps, 'B', '修改医生 B', '只写入另一行');
     } catch (error) {
       if (errorCode(error) !== '40001') {
@@ -268,7 +335,13 @@ const writeSkew = async (
           throw error;
         }
 
-        add(steps, 'B', 'COMMIT', '序列化冲突；整个事务须重新读取、判断并重试', '40001');
+        add(
+          steps,
+          'B',
+          'COMMIT',
+          '序列化冲突；整个事务须重新读取、判断并重试',
+          '40001',
+        );
         await b.query('ROLLBACK');
       }
     }
@@ -294,9 +367,10 @@ const writeSkew = async (
     await Promise.all([a.query('ROLLBACK'), b.query('ROLLBACK')]);
 
     if (seeded) {
-      await a.query('DELETE FROM demo_transactions_on_call WHERE doctor = ANY($1::text[])', [
-        doctors,
-      ]);
+      await a.query(
+        'DELETE FROM demo_transactions_on_call WHERE doctor = ANY($1::text[])',
+        [doctors],
+      );
     }
   }
 };
@@ -322,7 +396,10 @@ export const runTransaction = async (
 
     if (scenario === 'atomicity' || scenario === 'savepoint') {
       result = await singleConnection(a, scenario, steps);
-    } else if (scenario === 'read-committed' || scenario === 'repeatable-read') {
+    } else if (
+      scenario === 'read-committed' ||
+      scenario === 'repeatable-read'
+    ) {
       result = await snapshot(a, b!, scenario, steps);
     } else {
       result = await writeSkew(a, b!, scenario, steps);

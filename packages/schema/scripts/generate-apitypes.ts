@@ -3,7 +3,13 @@ import { dirname, join, resolve } from 'node:path';
 
 import { getRefId } from '@asteasolutions/zod-to-openapi';
 import { z } from 'zod';
-import { createAuxiliaryTypeStore, createTypeAlias, printNode, zodToTs, type TypeOverrideMap } from 'zod-to-ts';
+import {
+  createAuxiliaryTypeStore,
+  createTypeAlias,
+  printNode,
+  zodToTs,
+  type TypeOverrideMap,
+} from 'zod-to-ts';
 import * as ts from 'typescript';
 
 import * as apis from '../apis';
@@ -21,7 +27,12 @@ const apisDir = resolve(__dirname, '../apis');
  * 仅在生成的正文里实际出现双引号字符串（enum/union 字面量）时才写入 `eslint-disable quotes`，
  * 避免对无字面量的文件产生 unused-disable 告警。
  */
-const writeGenerated = (target: string, fileMarker: string, generated: string, quotesDisable = true): void => {
+const writeGenerated = (
+  target: string,
+  fileMarker: string,
+  generated: string,
+  quotesDisable = true,
+): void => {
   let original = '';
 
   try {
@@ -31,7 +42,10 @@ const writeGenerated = (target: string, fileMarker: string, generated: string, q
   }
 
   const idx = original.indexOf(fileMarker);
-  const leading = quotesDisable && generated.includes('"') ? '/* eslint-disable quotes */\n' : '';
+  const leading =
+    quotesDisable && generated.includes('"')
+      ? '/* eslint-disable quotes */\n'
+      : '';
   const body = generated ? `${leading}${generated}` : 'export {};';
 
   let next: string;
@@ -59,10 +73,16 @@ const writeGenerated = (target: string, fileMarker: string, generated: string, q
 const nameToDemo = new Map<string, string>();
 
 for (const category of readdirSync(apisDir, { withFileTypes: true })) {
-  if (!category.isDirectory() || category.name === 'model') { continue; }
+  if (!category.isDirectory() || category.name === 'model') {
+    continue;
+  }
 
-  for (const demo of readdirSync(join(apisDir, category.name), { withFileTypes: true })) {
-    if (!demo.isDirectory()) { continue; }
+  for (const demo of readdirSync(join(apisDir, category.name), {
+    withFileTypes: true,
+  })) {
+    if (!demo.isDirectory()) {
+      continue;
+    }
 
     const indexPath = join(apisDir, category.name, demo.name, 'index.ts');
     let source: string;
@@ -88,15 +108,26 @@ const names = new Set<string>();
 const visited = new Set<z.core.$ZodType>();
 
 function visit(schema: z.core.$ZodType): void {
-  if (visited.has(schema)) { return; }
+  if (visited.has(schema)) {
+    return;
+  }
 
   visited.add(schema);
   const name = getRefId(schema as z.ZodType);
 
   if (name && (schema instanceof z.ZodObject || schema instanceof z.ZodEnum)) {
-    const scanner = ts.createScanner(ts.ScriptTarget.ES2015, false, ts.LanguageVariant.Standard, name);
+    const scanner = ts.createScanner(
+      ts.ScriptTarget.ES2015,
+      false,
+      ts.LanguageVariant.Standard,
+      name,
+    );
 
-    if (scanner.scan() !== ts.SyntaxKind.Identifier || scanner.scan() !== ts.SyntaxKind.EndOfFileToken || names.has(name)) {
+    if (
+      scanner.scan() !== ts.SyntaxKind.Identifier ||
+      scanner.scan() !== ts.SyntaxKind.EndOfFileToken ||
+      names.has(name)
+    ) {
       throw new Error(`Invalid or duplicate OpenAPI type name: ${name}`);
     }
 
@@ -108,7 +139,11 @@ function visit(schema: z.core.$ZodType): void {
     Object.values(schema.shape).forEach(visit);
   } else if (schema instanceof z.ZodArray) {
     visit(schema.element);
-  } else if (schema instanceof z.ZodOptional || schema instanceof z.ZodNullable || schema instanceof z.ZodDefault) {
+  } else if (
+    schema instanceof z.ZodOptional ||
+    schema instanceof z.ZodNullable ||
+    schema instanceof z.ZodDefault
+  ) {
     visit(schema.unwrap());
   } else if (schema instanceof z.ZodUnion) {
     schema.options.forEach(visit);
@@ -116,9 +151,13 @@ function visit(schema: z.core.$ZodType): void {
 }
 
 for (const [, value] of Object.entries(apis)) {
-  if (!isZodObject(value)) { continue; }
+  if (!isZodObject(value)) {
+    continue;
+  }
 
-  if (!getRefId(value)) { throw new Error('Top-level ZodObject is missing .openapi(name)'); }
+  if (!getRefId(value)) {
+    throw new Error('Top-level ZodObject is missing .openapi(name)');
+  }
 
   visit(value);
 }
@@ -143,18 +182,30 @@ for (const [demo, groupNamed] of groups) {
   const overrides: TypeOverrideMap = new Map();
 
   for (const [schema, name] of groupNamed) {
-    overrides.set(schema, (typescript) => typescript.factory.createTypeReferenceNode(name));
+    overrides.set(schema, (typescript) =>
+      typescript.factory.createTypeReferenceNode(name),
+    );
   }
 
   const auxiliaryTypeStore = createAuxiliaryTypeStore();
   const declarations = Array.from(groupNamed, ([schema, name]) => {
-    const nestedOverrides: TypeOverrideMap = new Map(Array.from(overrides).filter(([other]) => other !== schema));
-    const { node } = zodToTs(schema, { auxiliaryTypeStore, overrides: nestedOverrides });
+    const nestedOverrides: TypeOverrideMap = new Map(
+      Array.from(overrides).filter(([other]) => other !== schema),
+    );
+    const { node } = zodToTs(schema, {
+      auxiliaryTypeStore,
+      overrides: nestedOverrides,
+    });
 
     return `export ${printNode(createTypeAlias(node, name))}`;
   });
-  const auxiliary = Array.from(auxiliaryTypeStore.definitions.values(), ({ node }) => printNode(node));
-  const generated = [...auxiliary, ...declarations].join('\n\n').replace(/\s*\| undefined\b/g, '');
+  const auxiliary = Array.from(
+    auxiliaryTypeStore.definitions.values(),
+    ({ node }) => printNode(node),
+  );
+  const generated = [...auxiliary, ...declarations]
+    .join('\n\n')
+    .replace(/\s*\| undefined\b/g, '');
 
   writeGenerated(join(typesDir, `${demo}.ts`), marker, generated);
 }
@@ -166,7 +217,10 @@ const sortStrings = (values: readonly string[]): string[] => {
   for (const value of values) {
     const index = sorted.findIndex((entry) => entry.localeCompare(value) > 0);
 
-    sorted = index < 0 ? [...sorted, value] : [...sorted.slice(0, index), value, ...sorted.slice(index)];
+    sorted =
+      index < 0
+        ? [...sorted, value]
+        : [...sorted.slice(0, index), value, ...sorted.slice(index)];
   }
 
   return sorted;
@@ -180,6 +234,8 @@ writeGenerated(join(typesDir, 'index.ts'), exportMarker, indexExports, false);
 
 let total = 0;
 
-for (const group of groups.values()) { total += group.size; }
+for (const group of groups.values()) {
+  total += group.size;
+}
 
 console.info(`Generated ${total} named types across ${groups.size} file(s)`);

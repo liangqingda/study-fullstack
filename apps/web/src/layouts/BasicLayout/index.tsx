@@ -4,7 +4,11 @@ import { AppShell } from '@mantine/core';
 
 import type { ReactNode } from 'react';
 
-import { demoRoutes, headerMenus, sidebarMenusByTopLevel } from '@/generated/routes';
+import {
+  demoRoutes,
+  headerMenus,
+  sidebarMenusByTopLevel,
+} from '@/generated/routes';
 import Header from '@/layouts/Header';
 import Sidebar from '@/layouts/Sidebar';
 

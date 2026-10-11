@@ -21,13 +21,22 @@ export const STRUCTURE: DemoStructure = {
       path: 'apps/web/src/pages/Redis/SmsLogin/utils.ts',
       role: 'localStorage token/cooldown 读写与操作日志构造。',
     },
-    { path: 'apps/web/src/pages/Redis/SmsLogin/constants.ts', role: '代码结构和知识点配置。' },
+    {
+      path: 'apps/web/src/pages/Redis/SmsLogin/constants.ts',
+      role: '代码结构和知识点配置。',
+    },
     {
       path: 'apps/web/src/pages/Redis/SmsLogin/types.ts',
       role: 'RedisOp 和 ClientPanelProps 类型定义。',
     },
-    { path: 'apps/web/src/pages/Redis/SmsLogin/index.scss', role: '工作台与响应式布局。' },
-    { path: 'apps/web/src/apis/index.ts', role: '从 OpenAPI 生成的调用方法，含 Bearer 头。' },
+    {
+      path: 'apps/web/src/pages/Redis/SmsLogin/index.scss',
+      role: '工作台与响应式布局。',
+    },
+    {
+      path: 'apps/web/src/apis/index.ts',
+      role: '从 OpenAPI 生成的调用方法，含 Bearer 头。',
+    },
     { path: 'apps/web/src/utils/http/index.ts', role: 'axios 请求实例。' },
   ],
   backend: [
@@ -43,7 +52,10 @@ export const STRUCTURE: DemoStructure = {
       path: 'packages/schema/apis/redis/sms-login/index.ts',
       role: '发码、登录、校验、退出与会话列表契约。',
     },
-    { path: 'packages/schema/apis/model/api-info.ts', role: '接口描述的数据结构。' },
+    {
+      path: 'packages/schema/apis/model/api-info.ts',
+      role: '接口描述的数据结构。',
+    },
   ],
   connection:
     '页面调用 POST send-code/login/logout、GET me/sessions；后端按共享契约校验，用 ioredis 读写同一份 Redis，会话集中存储、多端可见。',

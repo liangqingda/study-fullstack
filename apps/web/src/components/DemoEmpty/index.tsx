@@ -10,6 +10,8 @@ type DemoEmptyProps = {
 /**
  * 虚线框占位，用于请求尚未执行时的等待态。
  */
-const DemoEmpty = ({ children }: DemoEmptyProps) => <div className={styles.empty}>{children}</div>;
+const DemoEmpty = ({ children }: DemoEmptyProps) => (
+  <div className={styles.empty}>{children}</div>
+);
 
 export default DemoEmpty;

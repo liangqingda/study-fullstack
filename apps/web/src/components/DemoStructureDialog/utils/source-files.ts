@@ -39,7 +39,10 @@ const rootPrefixes: Record<'frontend' | 'backend' | 'schema', string> = {
   schema: 'packages/schema/',
 };
 
-const stripRoot = (repository: 'frontend' | 'backend' | 'schema', path: string): string => {
+const stripRoot = (
+  repository: 'frontend' | 'backend' | 'schema',
+  path: string,
+): string => {
   const prefix = rootPrefixes[repository];
 
   return path.startsWith(prefix) ? path.slice(prefix.length) : path;

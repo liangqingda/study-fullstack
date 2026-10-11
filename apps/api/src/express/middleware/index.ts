@@ -72,7 +72,12 @@ router.get('/third-party', (_req, res) => {
   res.json({ kind: 'third-party', trace: trace(res) });
 });
 
-const handleError: ErrorRequestHandler = (error: Error & { status?: number }, _req, res, _next) => {
+const handleError: ErrorRequestHandler = (
+  error: Error & { status?: number },
+  _req,
+  res,
+  _next,
+) => {
   record(res, '错误处理中间件: 捕获错误并响应');
   res.status(error.status ?? 500).json({
     kind: 'error',

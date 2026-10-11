@@ -6,11 +6,16 @@ import { createPostgresPool } from './services/postgres';
 import { createRedisClient } from './services/redis';
 
 const config = readConfig();
-const postgres = config.databaseUrl ? createPostgresPool(config.databaseUrl) : undefined;
+const postgres = config.databaseUrl
+  ? createPostgresPool(config.databaseUrl)
+  : undefined;
 const redis = createRedisClient(config.redisUrl);
-const server = createApp(config, postgres, redis).listen(config.httpPort, () => {
-  console.info(`Server running at http://localhost:${config.httpPort}`);
-});
+const server = createApp(config, postgres, redis).listen(
+  config.httpPort,
+  () => {
+    console.info(`Server running at http://localhost:${config.httpPort}`);
+  },
+);
 
 let shuttingDown = false;
 

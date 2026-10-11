@@ -41,7 +41,8 @@ const RedisExplainer = () => (
     </div>
     <Text c="dimmed" size="sm">
       为什么&ldquo;共享 session&rdquo;用 Redis？因为会话存在 Redis
-      这一份集中数据里，多个后端实例指向同一个 Redis 都能校验同一 token， 而不是各自进程内的内存
+      这一份集中数据里，多个后端实例指向同一个 Redis 都能校验同一 token，
+      而不是各自进程内的内存
       Session。页面右侧的视图就是这份共享状态，任何登录终端都能看到全部在线会话。
     </Text>
   </section>

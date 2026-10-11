@@ -5,8 +5,10 @@ const storagePrefix = 'sms-login:';
 /**
  * 构造某个客户端 token 在 localStorage 中的 key。
  */
-export const tokenKey = (label: string): string => `${storagePrefix}token:${label}`;
-const cooldownKey = (label: string): string => `${storagePrefix}cooldown-end:${label}`;
+export const tokenKey = (label: string): string =>
+  `${storagePrefix}token:${label}`;
+const cooldownKey = (label: string): string =>
+  `${storagePrefix}cooldown-end:${label}`;
 
 /**
  * 从 localStorage 读取已保存的 token，隐私模式下静默返回 null。

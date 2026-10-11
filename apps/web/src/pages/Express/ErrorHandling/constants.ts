@@ -47,7 +47,8 @@ export const EXAMPLES: Example[] = [
     slug: 'callback',
     title: '回调中的错误',
     subtitle: 'next(error) -> 默认处理器',
-    purpose: '读取一个不存在的文件，演示 Node 风格回调在路由函数返回之后才报告错误的情况。',
+    purpose:
+      '读取一个不存在的文件，演示 Node 风格回调在路由函数返回之后才报告错误的情况。',
     steps: [
       'GET /callback 发起 readFile；路由函数先返回，此时文件读取还没有完成。',
       '操作系统报告文件不存在，回调收到带 ENOENT 代码的错误；回调调用 next(error)。',

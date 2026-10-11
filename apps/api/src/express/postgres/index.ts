@@ -8,7 +8,9 @@ import { pingPostgres } from './queries';
 
 const PING_QUERY = z.object({ value: z.string().trim().min(1).max(100) });
 
-export const createPostgresRouter = (client?: PostgresClient): ExpressRouter => {
+export const createPostgresRouter = (
+  client?: PostgresClient,
+): ExpressRouter => {
   const router: ExpressRouter = Router();
 
   router.get('/ping', async (req, res) => {

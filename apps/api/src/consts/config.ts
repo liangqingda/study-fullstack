@@ -2,8 +2,12 @@ import { z } from 'zod';
 
 const ENVIRONMENT = z.object({
   HTTP_PORT: z.coerce.number().int().min(1).max(65535).default(3000),
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
+  LOG_LEVEL: z
+    .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+    .default('info'),
   CORS_ORIGINS: z.string().optional(),
   DATABASE_URL: z.string().trim().min(1).optional(),
   REDIS_URL: z.string().trim().min(1).default('redis://127.0.0.1:6379'),
@@ -30,13 +34,18 @@ export const readConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
   const CORS_ORIGINS =
     RESULT.data.CORS_ORIGINS?.split(',')
       .map((origin) => origin.trim())
-      .filter(Boolean) ?? (RESULT.data.NODE_ENV === 'development' ? ['http://localhost:5173'] : []);
+      .filter(Boolean) ??
+    (RESULT.data.NODE_ENV === 'development' ? ['http://localhost:5173'] : []);
 
   if (RESULT.data.NODE_ENV === 'production' && CORS_ORIGINS.length === 0) {
     throw new Error('CORS_ORIGINS is required in production');
   }
 
-  if (CORS_ORIGINS.some((origin) => origin === '*' || !/^https?:\/\/[^/]+$/.test(origin))) {
+  if (
+    CORS_ORIGINS.some(
+      (origin) => origin === '*' || !/^https?:\/\/[^/]+$/.test(origin),
+    )
+  ) {
     throw new Error('CORS_ORIGINS must contain explicit HTTP origins');
   }
 

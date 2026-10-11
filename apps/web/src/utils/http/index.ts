@@ -74,8 +74,9 @@ http.interceptors.response.use(
   (error: unknown) => Promise.reject(toApiError(error)),
 );
 
-export const request = <T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
-  http.request<T>(config);
+export const request = <T>(
+  config: AxiosRequestConfig,
+): Promise<AxiosResponse<T>> => http.request<T>(config);
 
 /**
  * 除 method / url / data 之外可下发给单个请求的选项（如 params、headers、signal、timeout）。
@@ -86,31 +87,39 @@ export type HttpOptions = Omit<AxiosRequestConfig, 'method' | 'url' | 'data'>;
  * 便捷方法：基于 `request` 按 HTTP 动词封装，供页面与生成的 API 客户端复用。
  * 返回类型与 `request` 一致（`AxiosResponse<T>`），可透传 signal / params / headers 等选项。
  */
-export const get = <T>(url: string, config?: HttpOptions): Promise<AxiosResponse<T>> =>
-  request<T>({ ...config, method: 'GET', url });
+export const get = <T>(
+  url: string,
+  config?: HttpOptions,
+): Promise<AxiosResponse<T>> => request<T>({ ...config, method: 'GET', url });
 
 export const post = <T>(
   url: string,
   data?: unknown,
   config?: HttpOptions,
-): Promise<AxiosResponse<T>> => request<T>({ ...config, method: 'POST', url, data });
+): Promise<AxiosResponse<T>> =>
+  request<T>({ ...config, method: 'POST', url, data });
 
 export const put = <T>(
   url: string,
   data?: unknown,
   config?: HttpOptions,
-): Promise<AxiosResponse<T>> => request<T>({ ...config, method: 'PUT', url, data });
+): Promise<AxiosResponse<T>> =>
+  request<T>({ ...config, method: 'PUT', url, data });
 
 export const patch = <T>(
   url: string,
   data?: unknown,
   config?: HttpOptions,
-): Promise<AxiosResponse<T>> => request<T>({ ...config, method: 'PATCH', url, data });
+): Promise<AxiosResponse<T>> =>
+  request<T>({ ...config, method: 'PATCH', url, data });
 
 /**
  * DELETE 请求。命名用 `del` 而非 `delete`，因为 `delete` 是 JavaScript 保留字。
  */
-export const del = <T>(url: string, config?: HttpOptions): Promise<AxiosResponse<T>> =>
+export const del = <T>(
+  url: string,
+  config?: HttpOptions,
+): Promise<AxiosResponse<T>> =>
   request<T>({ ...config, method: 'DELETE', url });
 
 /**

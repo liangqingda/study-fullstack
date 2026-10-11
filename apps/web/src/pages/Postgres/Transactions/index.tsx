@@ -28,12 +28,17 @@ const Transactions = () => {
   const runExperiment = () => {
     void run(async (signal) => {
       try {
-        const response = await postApiTransactionsRun({ body: { scenario: selected.key }, signal });
+        const response = await postApiTransactionsRun({
+          body: { scenario: selected.key },
+          signal,
+        });
 
         return response.data;
       } catch (cause) {
         throw new Error(
-          isApiError(cause) ? cause.message : '请求失败；请确认后端和 study_nodejs 已启动。',
+          isApiError(cause)
+            ? cause.message
+            : '请求失败；请确认后端和 study_nodejs 已启动。',
         );
       }
     });
@@ -103,7 +108,9 @@ const Transactions = () => {
             {error}
           </Text>
         )}
-        {!result && !error && <DemoEmpty>{loading ? '正在执行事务…' : '等待运行'}</DemoEmpty>}
+        {!result && !error && (
+          <DemoEmpty>{loading ? '正在执行事务…' : '等待运行'}</DemoEmpty>
+        )}
         {result && (
           <section aria-live="polite" className={styles.result}>
             <div className={styles.resultHeading}>

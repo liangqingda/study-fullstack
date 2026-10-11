@@ -1,9 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Badge, Button, Text, TextInput } from '@mantine/core';
-import { IconBrandGoogle, IconLogin, IconRefresh, IconX } from '@tabler/icons-react';
+import {
+  IconBrandGoogle,
+  IconLogin,
+  IconRefresh,
+  IconX,
+} from '@tabler/icons-react';
 
 import type { ReactNode } from 'react';
-import type { MeResponse, SendCodeResponse } from '@liangqingda/study-nodejs-schema';
+import type {
+  MeResponse,
+  SendCodeResponse,
+} from '@liangqingda/study-nodejs-schema';
 import type { ClientPanelProps, RedisOp } from '../types';
 
 import {
@@ -14,7 +22,12 @@ import {
 } from '@/apis';
 import { bearerAuth, isApiError } from '@/utils/http';
 
-import { loadCooldownEnd, loadStoredToken, newOp, persistToken } from '../utils';
+import {
+  loadCooldownEnd,
+  loadStoredToken,
+  newOp,
+  persistToken,
+} from '../utils';
 
 import styles from '../index.scss';
 
@@ -22,7 +35,11 @@ const CodeValue = ({ children }: { children: ReactNode }) => (
   <code className={styles.codeValue}>{children}</code>
 );
 
-const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) => {
+const ClientPanel = ({
+  label,
+  accent,
+  onLoginStateChange,
+}: ClientPanelProps) => {
   const [phone, setPhone] = useState('13800138000');
   const [codeInput, setCodeInput] = useState('');
   const [sent, setSent] = useState<SendCodeResponse | null>(null);
@@ -55,7 +72,10 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       setMeRemaining(seconds);
       clearMeTimer();
       meTimerRef.current = window.setInterval(() => {
-        const remaining = Math.max(0, Math.round((meExpiresAtRef.current - Date.now()) / 1000));
+        const remaining = Math.max(
+          0,
+          Math.round((meExpiresAtRef.current - Date.now()) / 1000),
+        );
 
         setMeRemaining(remaining);
 
@@ -92,7 +112,10 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       cooldownEndRef.current = Date.now() + seconds * 1000;
 
       try {
-        localStorage.setItem(`sms-login:cooldown-end:${label}`, String(cooldownEndRef.current));
+        localStorage.setItem(
+          `sms-login:cooldown-end:${label}`,
+          String(cooldownEndRef.current),
+        );
       } catch {
         // 忽略存储失败，倒计时退化为纯内存态。
       }
@@ -100,7 +123,10 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       setCooldown(seconds);
       clearCooldownTimer();
       timerRef.current = window.setInterval(() => {
-        const remaining = Math.max(0, Math.round((cooldownEndRef.current - Date.now()) / 1000));
+        const remaining = Math.max(
+          0,
+          Math.round((cooldownEndRef.current - Date.now()) / 1000),
+        );
 
         setCooldown(remaining);
 
@@ -119,7 +145,10 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     if (savedEnd > Date.now()) {
       cooldownEndRef.current = savedEnd;
       timerRef.current = window.setInterval(() => {
-        const remaining = Math.max(0, Math.round((cooldownEndRef.current - Date.now()) / 1000));
+        const remaining = Math.max(
+          0,
+          Math.round((cooldownEndRef.current - Date.now()) / 1000),
+        );
 
         setCooldown(remaining);
 
@@ -166,7 +195,11 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       setOps((current) =>
         [
           newOp('SET', `sms:send:${phone}`, 'NX + EX 60s：限频标记'),
-          newOp('SET', `sms:code:${phone}`, `EX ${response.data.ttlSeconds}s：写入验证码`),
+          newOp(
+            'SET',
+            `sms:code:${phone}`,
+            `EX ${response.data.ttlSeconds}s：写入验证码`,
+          ),
           ...current,
         ].slice(0, 12),
       );
@@ -188,7 +221,9 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
     setError('');
 
     try {
-      const response = await postApiSmsLoginLogin({ body: { phone, code: codeInput } });
+      const response = await postApiSmsLoginLogin({
+        body: { phone, code: codeInput },
+      });
 
       persistToken(label, response.data.token);
       setToken(response.data.token);
@@ -215,7 +250,11 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
       setCodeInput('');
       onLoginStateChange();
     } catch (cause) {
-      setError(isApiError(cause) ? cause.message : '登录失败；请确认后端与 Redis 已启动。');
+      setError(
+        isApiError(cause)
+          ? cause.message
+          : '登录失败；请确认后端与 Redis 已启动。',
+      );
     } finally {
       setBusy('');
     }
@@ -304,7 +343,8 @@ const ClientPanel = ({ label, accent, onLoginStateChange }: ClientPanelProps) =>
 
       {sent && (
         <Text c="green" size="sm">
-          演示环境验证码：<CodeValue>{sent.code}</CodeValue>（{sent.ttlSeconds}s 有效）
+          演示环境验证码：<CodeValue>{sent.code}</CodeValue>（{sent.ttlSeconds}s
+          有效）
         </Text>
       )}
 

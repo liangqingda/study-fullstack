@@ -82,7 +82,10 @@ const Middleware = () => {
               {selected.explanation}
             </Text>
           </div>
-          <Badge color={selected.method === 'POST' ? 'orange' : 'teal'} variant="light">
+          <Badge
+            color={selected.method === 'POST' ? 'orange' : 'teal'}
+            variant="light"
+          >
             {selected.method}
           </Badge>
         </div>
@@ -129,12 +132,17 @@ const Middleware = () => {
             {error}
           </Text>
         )}
-        {!result && !error && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
+        {!result && !error && (
+          <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>
+        )}
         {result && (
           <div aria-live="polite" className={styles.result}>
             <div className={styles.resultHeading}>
               <h3>实际结果</h3>
-              <Badge color={result.status >= 400 ? 'red' : 'teal'} variant="light">
+              <Badge
+                color={result.status >= 400 ? 'red' : 'teal'}
+                variant="light"
+              >
                 HTTP {result.status}
               </Badge>
             </div>
@@ -149,7 +157,10 @@ const Middleware = () => {
               <Text size="sm">{selected.interpretation}</Text>
             </div>
             <h3>响应体</h3>
-            <CodeBlock code={JSON.stringify(result.data, null, 2)} language="json" />
+            <CodeBlock
+              code={JSON.stringify(result.data, null, 2)}
+              language="json"
+            />
           </div>
         )}
       </DemoNavDetail>

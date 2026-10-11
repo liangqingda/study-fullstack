@@ -138,7 +138,9 @@ const ErrorHandling = () => {
             </Text>
           </div>
         )}
-        {!error && !result && <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>}
+        {!error && !result && (
+          <DemoEmpty>{loading ? '请求中…' : '等待请求'}</DemoEmpty>
+        )}
         {result && (
           <div className={styles.result}>
             <div className={styles.resultHeading}>

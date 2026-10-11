@@ -13,12 +13,20 @@ type DemoKnowledgeDialogProps = {
   demoName: string;
 };
 
-const DemoKnowledgeDialog = ({ content, demoName }: DemoKnowledgeDialogProps) => {
+const DemoKnowledgeDialog = ({
+  content,
+  demoName,
+}: DemoKnowledgeDialogProps) => {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
     <>
-      <Button leftSection={<IconBook2 size={16} />} onClick={open} size="sm" variant="default">
+      <Button
+        leftSection={<IconBook2 size={16} />}
+        onClick={open}
+        size="sm"
+        variant="default"
+      >
         知识点讲解
       </Button>
       <Modal

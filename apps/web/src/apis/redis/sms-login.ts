@@ -11,8 +11,13 @@ import type {
 } from '@liangqingda/study-nodejs-schema';
 import { get, post } from '@/utils/http';
 
-export const postApiSmsLoginLogin = (input: { body: LoginRequest; signal?: AbortSignal }) =>
-  post<LoginResponse>('/api/redis/sms-login/login', input.body, { signal: input.signal });
+export const postApiSmsLoginLogin = (input: {
+  body: LoginRequest;
+  signal?: AbortSignal;
+}) =>
+  post<LoginResponse>('/api/redis/sms-login/login', input.body, {
+    signal: input.signal,
+  });
 
 export const postApiSmsLoginLogout = (
   input: { headers?: { authorization?: string }; signal?: AbortSignal } = {},
@@ -24,10 +29,21 @@ export const postApiSmsLoginLogout = (
 
 export const getApiSmsLoginMe = (
   input: { headers?: { authorization?: string }; signal?: AbortSignal } = {},
-) => get<MeResponse>('/api/redis/sms-login/me', { headers: input.headers, signal: input.signal });
+) =>
+  get<MeResponse>('/api/redis/sms-login/me', {
+    headers: input.headers,
+    signal: input.signal,
+  });
 
-export const postApiSmsLoginSendCode = (input: { body: SendCodeRequest; signal?: AbortSignal }) =>
-  post<SendCodeResponse>('/api/redis/sms-login/send-code', input.body, { signal: input.signal });
+export const postApiSmsLoginSendCode = (input: {
+  body: SendCodeRequest;
+  signal?: AbortSignal;
+}) =>
+  post<SendCodeResponse>('/api/redis/sms-login/send-code', input.body, {
+    signal: input.signal,
+  });
 
 export const getApiSmsLoginSessions = (input: { signal?: AbortSignal } = {}) =>
-  get<SessionsResponse>('/api/redis/sms-login/sessions', { signal: input.signal });
+  get<SessionsResponse>('/api/redis/sms-login/sessions', {
+    signal: input.signal,
+  });

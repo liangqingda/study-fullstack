@@ -13,14 +13,23 @@ import {
   ThemeIcon,
   Title,
 } from '@mantine/core';
-import { IconAlignBoxCenterMiddle, IconCode, IconLayoutAlignMiddle } from '@tabler/icons-react';
+import {
+  IconAlignBoxCenterMiddle,
+  IconCode,
+  IconLayoutAlignMiddle,
+} from '@tabler/icons-react';
 
 import type { CenteringMethod } from './types';
 
 import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 
-import { CENTERING_METHODS, KNOWLEDGE, PRINCIPLES, STRUCTURE } from './constants';
+import {
+  CENTERING_METHODS,
+  KNOWLEDGE,
+  PRINCIPLES,
+  STRUCTURE,
+} from './constants';
 
 import styles from './index.scss';
 
@@ -42,9 +51,13 @@ const renderPreviewTarget = (method: CenteringMethod, tall: boolean) => {
   }
 
   return (
-    <div className={`${styles.previewTarget} ${tall ? styles.previewTargetTall : ''}`}>
+    <div
+      className={`${styles.previewTarget} ${tall ? styles.previewTargetTall : ''}`}
+    >
       <strong>{method.previewHint}</strong>
-      <span>{tall ? '多行内容：高度增加后再观察中心位置' : '内容高度未知'}</span>
+      <span>
+        {tall ? '多行内容：高度增加后再观察中心位置' : '内容高度未知'}
+      </span>
     </div>
   );
 };
@@ -53,7 +66,9 @@ const renderPreview = (method: CenteringMethod, tall: boolean) => {
   if (method.variant === 'table') {
     return (
       <div className={`${styles.previewFrame} ${method.previewClassName}`}>
-        <div className={styles.previewTableCell}>{renderPreviewTarget(method, tall)}</div>
+        <div className={styles.previewTableCell}>
+          {renderPreviewTarget(method, tall)}
+        </div>
       </div>
     );
   }
@@ -77,14 +92,22 @@ const VerticalCenteringDemo = () => {
               <Title className={styles.demoTitle} order={1}>
                 CSS 垂直居中方案
               </Title>
-              <Text c="dimmed" className={styles.demoSubtitle} lh={1.7} size="lg">
+              <Text
+                c="dimmed"
+                className={styles.demoSubtitle}
+                lh={1.7}
+                size="lg"
+              >
                 下面把常用方案放在同一个高度容器里对比：看预览判断对齐效果，
                 看代码决定实际页面该用哪一种。
               </Text>
             </div>
             <Group gap="sm" justify="flex-end">
               <DemoStructureDialog structure={STRUCTURE} />
-              <DemoKnowledgeDialog content={KNOWLEDGE} demoName="CSS 垂直居中方案" />
+              <DemoKnowledgeDialog
+                content={KNOWLEDGE}
+                demoName="CSS 垂直居中方案"
+              />
             </Group>
           </header>
 
@@ -98,7 +121,8 @@ const VerticalCenteringDemo = () => {
                   quick choice
                 </Text>
                 <Text className={styles.summaryTitle} fw={800}>
-                  不确定时先用 <Kbd>display: grid</Kbd> 或 <Kbd>display: flex</Kbd>
+                  不确定时先用 <Kbd>display: grid</Kbd> 或{' '}
+                  <Kbd>display: flex</Kbd>
                 </Text>
               </div>
             </div>
@@ -149,7 +173,12 @@ const VerticalCenteringDemo = () => {
                 <Stack gap="md">
                   <Group gap="sm" justify="space-between" wrap="nowrap">
                     <Group gap="sm" wrap="nowrap">
-                      <ThemeIcon color={method.accent} radius="md" size={38} variant="light">
+                      <ThemeIcon
+                        color={method.accent}
+                        radius="md"
+                        size={38}
+                        variant="light"
+                      >
                         <method.icon size={20} stroke={1.8} />
                       </ThemeIcon>
                       <div className={styles.methodHeading}>
@@ -210,7 +239,8 @@ const VerticalCenteringDemo = () => {
                 普通内容区：优先 <Kbd>flex</Kbd> 或 <Kbd>grid</Kbd>。
               </List.Item>
               <List.Item>
-                覆盖层和悬浮块：用 <Kbd>position</Kbd> 搭配 <Kbd>transform</Kbd>。
+                覆盖层和悬浮块：用 <Kbd>position</Kbd> 搭配 <Kbd>transform</Kbd>
+                。
               </List.Item>
               <List.Item>
                 单行文本：<Kbd>line-height</Kbd> 可以很轻，但不要拿它处理多行。

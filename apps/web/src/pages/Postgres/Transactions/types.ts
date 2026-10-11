@@ -3,7 +3,9 @@ import type { postApiTransactionsRun } from '@/apis';
 /**
  * 事务演示场景类型，直接从后端契约推断。
  */
-export type Scenario = Parameters<typeof postApiTransactionsRun>[0]['body']['scenario'];
+export type Scenario = Parameters<
+  typeof postApiTransactionsRun
+>[0]['body']['scenario'];
 
 /**
  * 后端事务运行结果。

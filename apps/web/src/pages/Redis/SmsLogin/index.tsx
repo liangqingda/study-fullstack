@@ -29,7 +29,11 @@ const SmsLogin = () => {
 
       setSessions(response.data);
     } catch (cause) {
-      setError(isApiError(cause) ? cause.message : '获取共享会话失败；请确认后端与 Redis 已启动。');
+      setError(
+        isApiError(cause)
+          ? cause.message
+          : '获取共享会话失败；请确认后端与 Redis 已启动。',
+      );
     } finally {
       setLoading(false);
     }
@@ -86,7 +90,8 @@ const SmsLogin = () => {
           {sessions && (
             <>
               <Text c="dimmed" size="sm">
-                在线会话 {sessions.count} 个（客户端 A/B 登录后都应出现在这里，登出则消失）。
+                在线会话 {sessions.count} 个（客户端 A/B
+                登录后都应出现在这里，登出则消失）。
               </Text>
               <table className={styles.table}>
                 <thead>
@@ -108,7 +113,9 @@ const SmsLogin = () => {
                     <tr key={session.token}>
                       <td>{session.phone}</td>
                       <td>
-                        <code className={styles.codeValue}>{session.token.slice(0, 12)}…</code>
+                        <code className={styles.codeValue}>
+                          {session.token.slice(0, 12)}…
+                        </code>
                       </td>
                       <td>{session.remainingSeconds}s</td>
                     </tr>

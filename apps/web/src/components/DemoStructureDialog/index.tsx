@@ -1,7 +1,12 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Button, Checkbox, Modal, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChevronRight, IconFileCode, IconFolder, IconHierarchy2 } from '@tabler/icons-react';
+import {
+  IconChevronRight,
+  IconFileCode,
+  IconFolder,
+  IconHierarchy2,
+} from '@tabler/icons-react';
 
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
 
@@ -33,7 +38,11 @@ type Directory = {
 };
 
 const buildTree = (files: StructureFile[]): Directory => {
-  const root: Directory = { name: '', directories: new Map(), files: new Map() };
+  const root: Directory = {
+    name: '',
+    directories: new Map(),
+    files: new Map(),
+  };
 
   for (const { path, role } of files) {
     const segments = path.split('/');
@@ -65,11 +74,13 @@ type TreeProps = {
   readFiles: Record<string, boolean>;
 };
 
-const fileKey = (repository: TreeProps['repository'], path: string) => `${repository}:${path}`;
+const fileKey = (repository: TreeProps['repository'], path: string) =>
+  `${repository}:${path}`;
 const fileId = (repository: TreeProps['repository'], path: string) =>
   `demo-source-${encodeURIComponent(fileKey(repository, path))}`;
 const minSidebarWidth = 240;
-const maxSidebarWidth = () => Math.max(minSidebarWidth, Math.min(720, window.innerWidth - 320));
+const maxSidebarWidth = () =>
+  Math.max(minSidebarWidth, Math.min(720, window.innerWidth - 320));
 const clampSidebarWidth = (width: number) =>
   Math.min(maxSidebarWidth(), Math.max(minSidebarWidth, width));
 
@@ -159,7 +170,12 @@ const FileReview = ({
             </Text>
           )}
           {typeof source === 'string' && (
-            <CodeBlock bare code={source} label={`${file.path} 源码`} path={file.path} />
+            <CodeBlock
+              bare
+              code={source}
+              label={`${file.path} 源码`}
+              path={file.path}
+            />
           )}
         </div>
       )}
@@ -177,7 +193,11 @@ const TreeBranches = ({ directory, repository, readFiles }: TreeProps) => (
             <IconFolder size={17} />
             <span>{child.name}</span>
           </summary>
-          <TreeBranches directory={child} readFiles={readFiles} repository={repository} />
+          <TreeBranches
+            directory={child}
+            readFiles={readFiles}
+            repository={repository}
+          />
         </details>
       </li>
     ))}
@@ -203,7 +223,11 @@ const TreeBranches = ({ directory, repository, readFiles }: TreeProps) => (
 
 const StructureTree = ({ directory, repository, readFiles }: TreeProps) => (
   <div className={styles.tree}>
-    <TreeBranches directory={directory} readFiles={readFiles} repository={repository} />
+    <TreeBranches
+      directory={directory}
+      readFiles={readFiles}
+      repository={repository}
+    />
   </div>
 );
 
@@ -216,7 +240,10 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
     setReadFiles((current) => ({ ...current, [key]: read }));
 
   // 文件树在 structure 稳定时只构建一次；已读勾选、拖动宽度等重渲染不再重建整棵树。
-  const frontendTree = useMemo(() => buildTree(structure.frontend), [structure.frontend]);
+  const frontendTree = useMemo(
+    () => buildTree(structure.frontend),
+    [structure.frontend],
+  );
   const backendTree = useMemo(
     () => (structure.backend ? buildTree(structure.backend) : null),
     [structure.backend],
@@ -237,8 +264,10 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
     () =>
       [
         ...structure.frontend.map((file) => fileKey('frontend', file.path)),
-        ...(structure.backend?.map((file) => fileKey('backend', file.path)) ?? []),
-        ...(structure.schema?.map((file) => fileKey('schema', file.path)) ?? []),
+        ...(structure.backend?.map((file) => fileKey('backend', file.path)) ??
+          []),
+        ...(structure.schema?.map((file) => fileKey('schema', file.path)) ??
+          []),
       ].filter((key) => readFiles[key]).length,
     [structure, readFiles],
   );
@@ -267,7 +296,9 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
   const moveResize = (event: PointerEvent<HTMLDivElement>) => {
     if (dragStart.current) {
       setSidebarWidth(
-        clampSidebarWidth(dragStart.current.width + event.clientX - dragStart.current.x),
+        clampSidebarWidth(
+          dragStart.current.width + event.clientX - dragStart.current.x,
+        ),
       );
     }
   };
@@ -296,7 +327,12 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
 
   return (
     <>
-      <Button leftSection={<IconHierarchy2 size={16} />} onClick={open} size="sm" variant="default">
+      <Button
+        leftSection={<IconHierarchy2 size={16} />}
+        onClick={open}
+        size="sm"
+        variant="default"
+      >
         代码结构
       </Button>
       <Modal
@@ -350,7 +386,11 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
                   <Text fw={700} size="sm">
                     契约 · packages/schema
                   </Text>
-                  <StructureTree directory={schemaTree} readFiles={readFiles} repository="schema" />
+                  <StructureTree
+                    directory={schemaTree}
+                    readFiles={readFiles}
+                    repository="schema"
+                  />
                 </div>
               )}
             </div>
@@ -396,7 +436,9 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
                 <FileReview
                   file={file}
                   key={file.path}
-                  onReadChange={(read) => onReadChange(fileKey('frontend', file.path), read)}
+                  onReadChange={(read) =>
+                    onReadChange(fileKey('frontend', file.path), read)
+                  }
                   read={readFiles[fileKey('frontend', file.path)] ?? false}
                   repository="frontend"
                 />
@@ -411,7 +453,9 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
                   <FileReview
                     file={file}
                     key={file.path}
-                    onReadChange={(read) => onReadChange(fileKey('backend', file.path), read)}
+                    onReadChange={(read) =>
+                      onReadChange(fileKey('backend', file.path), read)
+                    }
                     read={readFiles[fileKey('backend', file.path)] ?? false}
                     repository="backend"
                   />
@@ -427,7 +471,9 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
                   <FileReview
                     file={file}
                     key={file.path}
-                    onReadChange={(read) => onReadChange(fileKey('schema', file.path), read)}
+                    onReadChange={(read) =>
+                      onReadChange(fileKey('schema', file.path), read)
+                    }
                     read={readFiles[fileKey('schema', file.path)] ?? false}
                     repository="schema"
                   />

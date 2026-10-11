@@ -39,7 +39,11 @@ router.get('/end', (_req, res) => {
 
 router.get('/json', (_req, res) => {
   logResponse(res, 'res.json()', '序列化对象并返回 JSON');
-  res.json({ method: 'res.json()', message: '这是一个 JSON 响应', items: ['Express', 'React'] });
+  res.json({
+    method: 'res.json()',
+    message: '这是一个 JSON 响应',
+    items: ['Express', 'React'],
+  });
 });
 
 router.get('/jsonp', (_req, res) => {

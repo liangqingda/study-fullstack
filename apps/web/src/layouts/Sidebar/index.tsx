@@ -20,7 +20,11 @@ type SidebarMenuItemProps = {
   selectedMenuKey?: string;
 };
 
-const SidebarMenuItem = ({ item, onNavigate, selectedMenuKey }: SidebarMenuItemProps) => {
+const SidebarMenuItem = ({
+  item,
+  onNavigate,
+  selectedMenuKey,
+}: SidebarMenuItemProps) => {
   const isSelected = item.key === selectedMenuKey;
   const hasChildren = Boolean(item.children?.length);
 
@@ -64,9 +68,17 @@ const SidebarMenuItem = ({ item, onNavigate, selectedMenuKey }: SidebarMenuItemP
   );
 };
 
-const Sidebar = ({ menus, routes, sectionKey, selectedRoute }: SidebarProps) => {
+const Sidebar = ({
+  menus,
+  routes,
+  sectionKey,
+  selectedRoute,
+}: SidebarProps) => {
   const navigate = useNavigate();
-  const routePathSet = useMemo(() => new Set(routes.map((route) => route.path)), [routes]);
+  const routePathSet = useMemo(
+    () => new Set(routes.map((route) => route.path)),
+    [routes],
+  );
 
   const handleNavigate = (item: DemoMenuItem) => {
     if (item.path && routePathSet.has(item.path)) {

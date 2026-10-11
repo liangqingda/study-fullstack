@@ -35,14 +35,16 @@ export const EXAMPLES: Example[] = [
     key: 'router',
     name: '路由级中间件',
     summary: '挂载在 Router 上',
-    explanation: 'router.use 仅对 /router 路径生效；同一个 Router 下的其他路径不会经过它。',
+    explanation:
+      'router.use 仅对 /router 路径生效；同一个 Router 下的其他路径不会经过它。',
     steps: [
       '请求先经过应用级 applicationMiddleware，留下 app.use 记录。',
       'Router 内的 router.use("/router", ...) 匹配该路径，记录 router.use 并调用 next()。',
       'router.get("/router") 最后记录并发送响应；切换到 /application 时，路径不匹配，这一步便消失。',
     ],
     code: "router.use('/router', (req, res, next) => {\n  trace.push('router.use'); next();\n});",
-    observation: 'HTTP 200，trace 依次显示 app.use、router.use、router.get 三步。',
+    observation:
+      'HTTP 200，trace 依次显示 app.use、router.use、router.get 三步。',
     interpretation:
       '中间的 router.use 仅在路径匹配时出现；next() 使请求继续进入最终的 router.get，否则这次请求不会到达该处理器。',
     comparison:
@@ -61,7 +63,8 @@ export const EXAMPLES: Example[] = [
       '它追加错误处理记录，使用 res.status(500).json(...) 结束响应，因此默认错误页不会接手。',
     ],
     code: "router.get('/error', (req, res, next) => next(new Error('演示用错误')));\nrouter.use((error, req, res, next) => res.status(500).json(...));",
-    observation: 'HTTP 500，trace 从路由直接进入错误处理器；响应体包含 message，没有正常成功响应。',
+    observation:
+      'HTTP 500，trace 从路由直接进入错误处理器；响应体包含 message，没有正常成功响应。',
     interpretation:
       '500 和 JSON 是本例的自定义错误处理中间件写出的；next(error) 只是转交错误，本身不会写响应。',
     comparison:
@@ -127,7 +130,10 @@ export const STRUCTURE: DemoStructure = {
       path: 'apps/web/src/pages/Express/Middleware/types.ts',
       role: 'Example 和 DemoResponse 类型定义。',
     },
-    { path: 'apps/web/src/pages/Express/Middleware/index.scss', role: '页面布局与结果样式。' },
+    {
+      path: 'apps/web/src/pages/Express/Middleware/index.scss',
+      role: '页面布局与结果样式。',
+    },
   ],
   backend: [
     {

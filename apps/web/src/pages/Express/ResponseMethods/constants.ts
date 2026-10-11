@@ -24,7 +24,8 @@ export const METHODS: Method[] = [
       '页面的 fetch 仍会读取文件内容；点击"下载"才会让浏览器按附件方式保存。',
     ],
     code: "res.download(sampleFile, 'express-download-demo.txt');",
-    observation: '状态 200、Content-Disposition 含 attachment 和文件名；"下载"会触发浏览器保存。',
+    observation:
+      '状态 200、Content-Disposition 含 attachment 和文件名；"下载"会触发浏览器保存。',
     interpretation:
       '附件标记来自 res.download()，不是文件扩展名决定的。fetch 只读取响应，不会自己弹出下载框，所以要用独立的下载链接体验浏览器动作。',
     comparison:
@@ -44,7 +45,8 @@ export const METHODS: Method[] = [
     ],
     code: 'res.status(204).end();',
     observation: '状态 204，Body 为空，Content-Type 通常不存在。',
-    interpretation: '空响应体既来自 end() 不写内容，也符合 204 不允许响应体的语义；不是请求失败。',
+    interpretation:
+      '空响应体既来自 end() 不写内容，也符合 204 不允许响应体的语义；不是请求失败。',
     comparison:
       'res.sendStatus(418) 会把状态文字写进 Body；res.status(204).end() 只结束响应。若改用 204，即便尝试发送内容也不应依赖它被传输。',
   },
@@ -53,7 +55,8 @@ export const METHODS: Method[] = [
     slug: 'json',
     description: '发送 JSON 响应',
     note: '把 JavaScript 值序列化为 JSON。',
-    explanation: '最常见的 API 返回方式。Express 会把对象序列化，并设置 JSON 类型的 Content-Type。',
+    explanation:
+      '最常见的 API 返回方式。Express 会把对象序列化，并设置 JSON 类型的 Content-Type。',
     steps: [
       '路由构造包含 method、message 和 items 的普通 JavaScript 对象。',
       'res.json() 将它序列化成 JSON 文本，并设置 Content-Type: application/json。',
@@ -100,7 +103,8 @@ export const METHODS: Method[] = [
       '页面拿到的是最终响应，redirected 和 Final URL 表明中间发生过跳转。',
     ],
     code: "res.redirect(302, '/api/express/response-METHODS/json');",
-    observation: '页面显示最终的 200 JSON、Redirect 标记和最终 URL，而非直接显示中间的 302。',
+    observation:
+      '页面显示最终的 200 JSON、Redirect 标记和最终 URL，而非直接显示中间的 302。',
     interpretation:
       '200 属于跳转目标，不是 res.redirect() 发出的首个响应。最终响应的 Location 为空也正常；它存在于中间的 302 响应上。',
     comparison:
@@ -150,7 +154,8 @@ export const METHODS: Method[] = [
     slug: 'send-file',
     description: '发送文件内容',
     note: '直接把磁盘上的文件作为响应发送。',
-    explanation: '适合提供可在浏览器中查看的文件。与 download() 不同，这里没有主动设置附件下载头。',
+    explanation:
+      '适合提供可在浏览器中查看的文件。与 download() 不同，这里没有主动设置附件下载头。',
     steps: [
       '路由把示例文件的绝对路径传给 res.sendFile()。',
       'Express 读取文件，依据文件类型设置响应头，把文件字节作为 Body 发送。',
@@ -202,13 +207,22 @@ export const STRUCTURE: DemoStructure = {
       path: 'apps/web/src/pages/Express/ResponseMethods/constants.ts',
       role: '各方法的请求地址、数据和代码结构配置。',
     },
-    { path: 'apps/web/src/pages/Express/ResponseMethods/utils.ts', role: '构造请求 URL。' },
+    {
+      path: 'apps/web/src/pages/Express/ResponseMethods/utils.ts',
+      role: '构造请求 URL。',
+    },
     {
       path: 'apps/web/src/pages/Express/ResponseMethods/components/ResponseResult.tsx',
       role: '展示实际响应及对应解释。',
     },
-    { path: 'apps/web/src/pages/Express/ResponseMethods/types.ts', role: 'Method 类型定义。' },
-    { path: 'apps/web/src/pages/Express/ResponseMethods/index.scss', role: '页面与结果样式。' },
+    {
+      path: 'apps/web/src/pages/Express/ResponseMethods/types.ts',
+      role: 'Method 类型定义。',
+    },
+    {
+      path: 'apps/web/src/pages/Express/ResponseMethods/index.scss',
+      role: '页面与结果样式。',
+    },
   ],
   backend: [
     {
@@ -230,7 +244,8 @@ export const STRUCTURE: DemoStructure = {
   ],
   connection:
     '页面向 /api/express/response-METHODS/{方法名} 发送请求；对应路由选用 res 方法返回响应，Hook 读取实际响应，再由 ResponseResult 展示。下载和跳转也提供浏览器直接操作入口。',
-  database: '无。响应内容来自路由数据、同目录的文本文件或 EJS 模板，不查询或修改数据库。',
+  database:
+    '无。响应内容来自路由数据、同目录的文本文件或 EJS 模板，不查询或修改数据库。',
 };
 
 /**

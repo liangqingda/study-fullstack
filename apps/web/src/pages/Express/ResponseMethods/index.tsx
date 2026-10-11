@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Badge, Button, Code, Group, Loader, Text, Title } from '@mantine/core';
-import { IconDownload, IconExternalLink, IconPlayerPlay } from '@tabler/icons-react';
+import {
+  IconDownload,
+  IconExternalLink,
+  IconPlayerPlay,
+} from '@tabler/icons-react';
 
 import DemoEmpty from '@/components/DemoEmpty';
 import CodeBlock from '@/components/CodeBlock';
@@ -112,7 +116,9 @@ const ResponseMethods = () => {
             {error}
           </Text>
         )}
-        {!result && !error && <DemoEmpty>{loading ? <Loader size="sm" /> : '等待请求'}</DemoEmpty>}
+        {!result && !error && (
+          <DemoEmpty>{loading ? <Loader size="sm" /> : '等待请求'}</DemoEmpty>
+        )}
         {result && (
           <ResponseResult
             interpretation={selected.interpretation}

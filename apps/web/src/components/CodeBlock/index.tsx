@@ -25,7 +25,14 @@ hljs.registerLanguage('plaintext', plaintext);
 const highlightAdapter = createHighlightJsAdapter(hljs);
 
 /** 支持显式识别的高亮语言。 */
-const KNOWN_LANGUAGES = ['typescript', 'scss', 'xml', 'json', 'sql', 'plaintext'] as const;
+const KNOWN_LANGUAGES = [
+  'typescript',
+  'scss',
+  'xml',
+  'json',
+  'sql',
+  'plaintext',
+] as const;
 
 type KnownLanguage = (typeof KNOWN_LANGUAGES)[number];
 
@@ -58,7 +65,9 @@ const languageForPath = (path: string): KnownLanguage => {
 const detectLanguage = (code: string): KnownLanguage => {
   const { language } = hljs.highlightAuto(code, [...KNOWN_LANGUAGES]);
 
-  return language && hljs.getLanguage(language) ? (language as KnownLanguage) : 'plaintext';
+  return language && hljs.getLanguage(language)
+    ? (language as KnownLanguage)
+    : 'plaintext';
 };
 
 type CodeBlockProps = {
@@ -87,7 +96,8 @@ const CodeBlock = ({
   bare = false,
   label,
 }: CodeBlockProps) => {
-  const resolved = language ?? (path ? languageForPath(path) : detectLanguage(code));
+  const resolved =
+    language ?? (path ? languageForPath(path) : detectLanguage(code));
 
   return (
     <div

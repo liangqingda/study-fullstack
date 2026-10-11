@@ -30,7 +30,8 @@ export const CENTERING_METHODS: CenteringMethod[] = [
     note: '子元素尺寸未知、数量可变时优先考虑，横向和纵向对齐都稳定。',
     mechanism:
       'display: flex 建立弹性布局；align-items 对齐交叉轴（这里是纵向），justify-content 对齐主轴（这里是横向）。两者结合才是双轴居中。',
-    observation: '切到增高内容：白色内容块变高，但中心仍落在横向参考线上；无需提前知道子元素高度。',
+    observation:
+      '切到增高内容：白色内容块变高，但中心仍落在横向参考线上；无需提前知道子元素高度。',
     limitation:
       '若容器改成 flex-direction: column，两个轴的职责会交换；只设 align-items 也不会同时水平居中。',
     previewClassName: styles.previewFlex,
@@ -48,7 +49,8 @@ export const CENTERING_METHODS: CenteringMethod[] = [
     note: '只有一个核心内容块时最简洁，place-items 同时处理两个轴。',
     mechanism:
       'display: grid 建立网格；place-items: center 是 align-items 和 justify-items 的简写，让网格项在单元格内沿两个轴居中。',
-    observation: '增高后，网格项仍在容器中间。这里只有一个网格项，因此整个单元格就是可用区域。',
+    observation:
+      '增高后，网格项仍在容器中间。这里只有一个网格项，因此整个单元格就是可用区域。',
     limitation:
       '有多个网格项时，它们可能占不同网格单元；place-items 居中的是各自单元里的项，不等于把整组项合成一个块居中。',
     previewClassName: styles.previewGrid,
@@ -72,7 +74,8 @@ export const CENTERING_METHODS: CenteringMethod[] = [
     note: '适合弹层、徽标、浮动元素，不依赖子元素固定高度。',
     mechanism:
       'top/left: 50% 把子元素左上角移到父容器中心；translate(-50%, -50%) 再按子元素自己的宽高向回移动一半。',
-    observation: '增高后自身的 50% 距离随尺寸变化，因此内容块仍以中心点对齐参考线。',
+    observation:
+      '增高后自身的 50% 距离随尺寸变化，因此内容块仍以中心点对齐参考线。',
     limitation:
       'absolute 让元素脱离正常文档流，父容器不会靠它撑开高度；普通段落布局通常用 flex/grid 更合适。',
     previewClassName: styles.previewAbsolute,

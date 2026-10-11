@@ -6,10 +6,18 @@ import type { ComponentType } from 'react';
 const CssDemosVerticalCenteringPage = lazy(
   () => import('@/pages/CssDemos/VerticalCentering/index'),
 );
-const ExpressErrorHandlingPage = lazy(() => import('@/pages/Express/ErrorHandling/index'));
-const ExpressMiddlewarePage = lazy(() => import('@/pages/Express/Middleware/index'));
-const ExpressResponseMethodsPage = lazy(() => import('@/pages/Express/ResponseMethods/index'));
-const PostgresTransactionsPage = lazy(() => import('@/pages/Postgres/Transactions/index'));
+const ExpressErrorHandlingPage = lazy(
+  () => import('@/pages/Express/ErrorHandling/index'),
+);
+const ExpressMiddlewarePage = lazy(
+  () => import('@/pages/Express/Middleware/index'),
+);
+const ExpressResponseMethodsPage = lazy(
+  () => import('@/pages/Express/ResponseMethods/index'),
+);
+const PostgresTransactionsPage = lazy(
+  () => import('@/pages/Postgres/Transactions/index'),
+);
 const RedisSmsLoginPage = lazy(() => import('@/pages/Redis/SmsLogin/index'));
 
 export type DemoRoute = {

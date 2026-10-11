@@ -43,7 +43,8 @@ export const EXAMPLES: Example[] = [
     question: '同样顺序下，B 提交后 A 第二次还会读到 10 吗？',
     expected: 'A 两次都读到 10；提交后的新查询读到 9。',
     code: 'A: BEGIN ISOLATION LEVEL REPEATABLE READ;\nA: SELECT stock; -- 建立快照：10\nB: UPDATE stock = 9; -- 已提交\nA: SELECT stock; -- 仍为 10',
-    explanation: 'BEGIN 本身不固定数据快照；首次查询建立快照，之后的普通查询复用它。',
+    explanation:
+      'BEGIN 本身不固定数据快照；首次查询建立快照，之后的普通查询复用它。',
     comparison: '稳定快照不能自动保护跨行约束，见写偏斜。',
   },
   {
@@ -89,20 +90,32 @@ export const STRUCTURE: DemoStructure = {
       path: 'apps/web/src/pages/Postgres/Transactions/index.scss',
       role: '实验工作台与响应式布局。',
     },
-    { path: 'apps/web/src/apis/index.ts', role: '从 OpenAPI 生成的事务调用方法。' },
+    {
+      path: 'apps/web/src/apis/index.ts',
+      role: '从 OpenAPI 生成的事务调用方法。',
+    },
     { path: 'apps/web/src/utils/http/index.ts', role: 'axios 请求实例。' },
   ],
   backend: [
     { path: 'apps/api/src/services/app.ts', role: '挂载事务 Router。' },
-    { path: 'apps/api/src/express/transactions/index.ts', role: '请求及响应校验、错误处理。' },
-    { path: 'apps/api/src/express/transactions/run.ts', role: '真实数据库事务与结果记录。' },
+    {
+      path: 'apps/api/src/express/transactions/index.ts',
+      role: '请求及响应校验、错误处理。',
+    },
+    {
+      path: 'apps/api/src/express/transactions/run.ts',
+      role: '真实数据库事务与结果记录。',
+    },
   ],
   schema: [
     {
       path: 'packages/schema/apis/postgres/transactions/index.ts',
       role: '场景枚举、请求、结果及错误契约。',
     },
-    { path: 'packages/schema/apis/model/api-info.ts', role: '接口描述的数据结构。' },
+    {
+      path: 'packages/schema/apis/model/api-info.ts',
+      role: '接口描述的数据结构。',
+    },
   ],
   connection:
     '页面调用生成的 POST /api/postgres/transactions/run；后端按共享契约校验，在一个或两个 PostgreSQL 连接上执行，再返回按会话排序的实际步骤。',

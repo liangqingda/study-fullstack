@@ -49,7 +49,9 @@ export const createApp = (
       },
     }),
   );
-  app.use(cors({ origin: config.corsOrigins.length ? config.corsOrigins : false }));
+  app.use(
+    cors({ origin: config.corsOrigins.length ? config.corsOrigins : false }),
+  );
   app.use(compression());
   app.use((req, res, next) => {
     if (req.path === '/api/express/middleware/built-in') {
@@ -66,7 +68,9 @@ export const createApp = (
   app.use('/api/redis/sms-login', createSmsLoginRouter(redis));
   app.use(
     '/api/postgres/transactions',
-    createTransactionRouter(postgres?.connect ? (postgres as Pick<Pool, 'connect'>) : undefined),
+    createTransactionRouter(
+      postgres?.connect ? (postgres as Pick<Pool, 'connect'>) : undefined,
+    ),
   );
   app.use('/api/express/response-methods', responseMethodsRouter);
   app.use('/api/express/middleware', applicationMiddleware, middlewareRouter);
