@@ -58,6 +58,37 @@ description: Implement runnable, observable learning demos in the study-react, s
 - 保持现有统一入口与约定不动：`代码结构`、`知识点讲解` 弹窗的位置、文案、交互与既有视觉规范保持一致；新增页面与弹窗之间维持统一的视觉语言，不引入与既有约定冲突的观感。
 - 文案即设计：按钮、提示、状态说明用用户能直接理解的平实语言，动作与结果用词一致（如“保存”对应“已保存”），错误与空状态说明发生了什么以及如何修正，不堆砌空泛的营销化描述。
 
+## 代码质量基线（should）
+
+本节是横跨前后端的通用质量基线，源自三份 best-practice skill 的提炼子集。**优先级分层：上方各仓库契约（路径、表名、契约、结构、页面规范）是 must，必须先满足；本节是 should 的质量基线，冲突时以仓库契约和「小而清晰、便于观察」的教学目标优先。** 需要深挖某条规则的完整解释与示例时，读取对应源 skill 目录（本机全局 `~/.agents/skills`）。
+
+### 后端基线（源自 best-nodejs-code）
+
+- 使用 TypeScript 严格类型；输入用 Zod（`safeParse`）校验并保持与契约一致，不信任裸 `req.body`。
+- PostgreSQL 用 `pg` 连接池（复用 `src/services/postgres.ts`），不逐请求新建连接；进程退出时优雅关闭池。
+- 用自定义错误类区分业务错误（4xx）与意外错误，统一交给全局错误处理器，生产环境不泄露堆栈与细节。
+- 结构化日志（pino），记录关键步骤与结果，不记录密码、令牌或连接串。
+- 依赖通过参数注入（如 `createSmsLoginRouter(redis)`），便于测试替身，不引入全局单例。
+
+学习 demo 不采用（避免过度工程化）：DI 容器、Repository 分层、统一响应封装（`success/error/paginated` envelope）、限流中间件、业务缓存装饰器、JWT 认证体系、WebSocket / 后台任务 / HTTPS / APM。
+
+### 数据库基线（源自 best-postgres-practices）
+
+- 表名、列名小写 `snake_case`（仓库已要求 `demo_<模块>_<表>`）；建表给出主键，关联列配外键与匹配索引。
+- 查询所用列应有匹配索引，`WHERE`/`JOIN` 条件与索引一致；讲解查询行为时用 `EXPLAIN ANALYZE` 佐证。
+- 复用仓库连接池避免连接耗尽；事务保持短小，用单个 `client` 并在 `finally` 释放。
+
+学习 demo 不采用：RLS 多租户安全、pg_cron/pgmq 队列、pgvector、表分区、覆盖/部分索引等高级索引、vacuum/监控运维类规则。
+
+### 前端基线（源自 best-react-code）
+
+- 不在组件内部定义组件（每次渲染都会重建、破坏子树状态）；跨模块导入走 `@/` 直接路径，不制造 barrel 文件。
+- 独立依赖的 hooks 分开写；昂贵初始值用函数式 `useState(() => ...)`。
+- 互不依赖的请求用 `Promise.all` 并行，避免串行 waterfall。
+- 条件渲染用三元而非 `&&`，避免渲染出 `0` 或空串。
+
+学习 demo 不采用：bundle 深度优化（dynamic import / preload / 三方延迟加载）、SWR 去重、`startTransition` / `useDeferredValue` / `useEffectEvent` 等高级 API、SVG 与列表渲染类微优化。
+
 ## 验证与交付
 
 验证构建、静态检查和关键交互，最终说明运行方式及未验证部分。数据库验证遵守上述连接和数据边界。
