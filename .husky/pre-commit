@@ -1,1 +1,7 @@
+#!/bin/sh
+# Ensure pnpm is reachable even when git is launched from a GUI (e.g. VS Code)
+# whose hook environment has a minimal PATH that lacks the Homebrew prefix.
+if ! command -v pnpm >/dev/null 2>&1; then
+  export PATH="/opt/homebrew/bin:$PATH"
+fi
 pnpm lint
