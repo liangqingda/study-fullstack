@@ -1,7 +1,19 @@
 #!/bin/sh
-# Ensure pnpm is reachable even when git is launched from a GUI (e.g. VS Code)
-# whose hook environment has a minimal PATH that lacks the Homebrew prefix.
-if ! command -v pnpm >/dev/null 2>&1; then
-  export PATH="/opt/homebrew/bin:$PATH"
-fi
+# Ensure pnpm and node are reachable even when git is launched from a GUI
+# (e.g. VS Code) whose hook environment has a minimal PATH that lacks the
+# Homebrew prefix and the nvm-managed Node.js bin directory.
+
+# 1) Locate the nvm-managed Node.js bin (highest installed version) so that
+#    `#!/usr/bin/env node` shebangs (e.g. Homebrew's pnpm) can find node.
+NVM_BIN=""
+for _d in "$HOME"/.nvm/versions/node/v*/bin; do
+  [ -x "$_d/node" ] || continue
+  NVM_BIN="$_d"
+done
+
+# 2) Prepend Homebrew + resolved nvm bin. Homebrew provides pnpm on this machine;
+#    nvm provides node.
+PATH="/opt/homebrew/bin${NVM_BIN:+:$NVM_BIN}:$PATH"
+export PATH
+
 pnpm lint

@@ -41,6 +41,8 @@ description: Implement runnable, observable learning demos in the study-fullstac
 
 知识点内容围绕“核心概念、机制、关键代码、边界与误区”组织：说明该 demo 解决的问题与触发条件，讲解关键机制并给出对应代码，用表格或列表对比相近做法的区别与适用边界，指出常见误区。内容须与页面演示、代码结构和实际结果保持一致，不堆砌无关文档。新增 demo 时同步补充该页面的知识点 Markdown 与“知识点讲解”按钮。
 
+**知识点讲解必须全面完整**：覆盖该知识主题的完整链路，而不只限于 demo 代码实际触及的部分。demo 代码可能只覆盖部分场景，但知识点讲解须完整讲解相关核心概念、机制、边界与误区，代码覆盖不全不成为讲解不全的借口。知识点讲解的组织与撰写统一使用 `take-notes` skill（全局技能清单 `.user_skills/take-notes`），按 take-notes 的知识笔记结构（主题概述、核心术语、机制、demo 与结果、常见误区、边界、小结与练习）撰写该页面的知识点 Markdown。
+
 ## 前后端接口契约（涉及跨仓库接口时）
 
 - 新增供 `study-react` 调用的 `study-nodejs` 接口前，检查 `study-nodejs-schema` 的现有契约；在其 `apis/<分类>/<demo>/` 定义或扩展请求参数、请求体、成功响应及预期错误响应的 Zod schema 和接口描述。无请求体的接口也要明确响应结构，不要因 demo 简单就省略契约。
