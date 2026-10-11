@@ -1,9 +1,11 @@
 ---
 name: study-demo
-description: Implement runnable, observable learning demos in the study-react, study-nodejs, and study-nodejs-schema repositories. Use for concept, API, or feature demos; not for unrelated maintenance.
+description: Implement runnable, observable learning demos in the study-fullstack workspace: apps/web (package study-react), apps/api (package study-nodejs), and packages/schema (package @liangqingda/study-nodejs-schema). Use for concept, API, or feature demos; not for unrelated maintenance.
 ---
 
 # 学习型 Demo
+
+本仓库为 pnpm workspace `study-fullstack`。下文沿用的包名对应：`study-react` = `apps/web`，`study-nodejs` = `apps/api`，`study-nodejs-schema` = `packages/schema`（包名 `@liangqingda/study-nodejs-schema`）。
 
 让每个例子能运行、能触发关键行为、能观察结果，并解释为什么得到该结果。默认优先提供可操作的页面：当页面有助于触发行为、比较状态或观察结果时，即使核心概念属于后端或数据库，也提供页面和真实可调用的后端接口。不要仅因可以通过终端运行，就把适合页面观察的 demo 做成纯命令行实验。若用户明确要求纯命令行或单端实现，遵守该范围，不补造另一端；若判断页面对当前 demo 没有实际帮助，在实施前告知用户原因及替代的操作和观察入口。沿用各仓库技术栈与目录规范，选择小而真实、便于比较的例子；标明教学简化，不将过时做法当作生产推荐。
 
@@ -42,7 +44,7 @@ description: Implement runnable, observable learning demos in the study-react, s
 - PostgreSQL 查询、表结构、迁移、联调统一使用 `study_nodejs` 数据库，以 `DATABASE_URL` 配置连接，不提交真实凭据；不要使用旧的 `lqd`、默认 `postgres` 或其他项目数据库。
 - 建表、迁移或可能修改数据的验证前，确认 `current_database()` 是 `study_nodejs`。默认单元测试使用注入或模拟，不连接真实数据库；真实数据库测试需显式启用并限于该库，不清空或重建已有数据。
 - 涉及数据库时先检查 `study_nodejs` 是否有适用表；仅在不改变其他 demo 所依赖的结构、数据或结果时复用。写入和清理仅作用于本 demo 数据，否则使用专用表。
-- 新表用小写 `snake_case`：`demo_<模块名>_<表用途>`。模块名取前端 demo 页面目录最后一级转为 `snake_case`，并与后端功能目录对应；仅有后端时取后端功能目录最后一级。例如 `pages/Express/ResponseMethods` 对应 `demo_response_methods_<表用途>`，事务部门表可命名 `demo_transaction_departments`。表用途使用业务含义，不以 `001` 等编号作固定后缀。
+- 新表用小写 `snake_case`：`demo_<模块名>_<表用途>`。模块名取前端 demo 页面目录最后一级转为 `snake_case`，并与后端功能目录对应；仅有后端时取后端功能目录最后一级。例如 `pages/Express/ResponseMethods` 对应 `demo_response_methods_<表用途>`，`pages/Postgres/Transactions` 对应 `demo_transactions_<表用途>`（如账户表 `demo_transactions_accounts`）。表用途使用业务含义，不以 `001` 等编号作固定后缀。
 
 ## 前端代码组织（有 Web 页面时）
 
@@ -91,4 +93,4 @@ description: Implement runnable, observable learning demos in the study-react, s
 
 ## 验证与交付
 
-验证构建、静态检查和关键交互，最终说明运行方式及未验证部分。数据库验证遵守上述连接和数据边界。
+验证构建、静态检查和关键交互，最终说明运行方式及未验证部分。数据库验证遵守上述连接和数据边界。任务改动仓库文件后，按仓库 AGENTS.md 要求核对并恰好提交一次（仅含本任务变更）。
