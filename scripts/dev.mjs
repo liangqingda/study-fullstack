@@ -116,6 +116,9 @@ const refresh = async () => {
 
 process.once('SIGINT', () => void shutdown());
 process.once('SIGTERM', () => void shutdown());
+// 关闭终端时 macOS/类 Unix 终端会向前台会话首进程发送 SIGHUP。
+// 监听它，让“关终端”也能触发整棵 dev 进程树的清理，避免孤儿进程残留。
+process.once('SIGHUP', () => void shutdown());
 
 try {
   // Prepare contracts before either service can import generated package exports.
