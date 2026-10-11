@@ -1,10 +1,10 @@
 import { Badge } from '@mantine/core';
 
-import type { Result } from '../hooks/useResponseRequest';
+import type { Result } from '../../hooks/useResponseRequest';
 
 import CodeBlock from '@/components/CodeBlock';
 
-import styles from './ResponseResult.scss';
+import styles from './index.scss';
 
 const statusColor = (status: number) => {
   if (status >= 400) {

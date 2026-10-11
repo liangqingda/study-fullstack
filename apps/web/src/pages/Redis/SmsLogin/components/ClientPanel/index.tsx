@@ -12,7 +12,7 @@ import type {
   MeResponse,
   SendCodeResponse,
 } from '@liangqingda/study-nodejs-schema';
-import type { ClientPanelProps, RedisOp } from '../types';
+import type { ClientPanelProps, RedisOp } from '../../types';
 
 import {
   getApiSmsLoginMe,
@@ -27,9 +27,9 @@ import {
   loadStoredToken,
   newOp,
   persistToken,
-} from '../utils';
+} from '../../utils';
 
-import styles from './ClientPanel.scss';
+import styles from './index.scss';
 
 const CodeValue = ({ children }: { children: ReactNode }) => (
   <code className={styles.codeValue}>{children}</code>

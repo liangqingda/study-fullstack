@@ -1,6 +1,6 @@
-import { RENDER_PHASES } from '../constants';
+import { RENDER_PHASES } from '../../constants';
 
-import styles from './RenderPipeline.scss';
+import styles from './index.scss';
 
 /**
  * 浏览器端渲染流程的静态示意。

@@ -1,6 +1,6 @@
 import { Badge, Text, Title } from '@mantine/core';
 
-import styles from './RedisExplainer.scss';
+import styles from './index.scss';
 
 const RedisExplainer = () => (
   <section className={styles.explainer}>

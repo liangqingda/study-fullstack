@@ -1,8 +1,8 @@
-import type { RevealedPhase } from '../types';
+import type { RevealedPhase } from '../../types';
 
-import { PHASE_COLORS } from '../constants';
+import { PHASE_COLORS } from '../../constants';
 
-import styles from './JourneyBar.scss';
+import styles from './index.scss';
 
 type JourneyBarProps = {
   /** 已揭示状态的网络阶段。 */
