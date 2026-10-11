@@ -26,8 +26,8 @@ const backendSources = import.meta.glob<string>(
 
 const schemaSources = import.meta.glob<string>(
   [
-    '../../../../../packages/schema/apis/sms-login/**/*.ts',
-    '../../../../../packages/schema/apis/transactions/**/*.ts',
+    '../../../../../packages/schema/apis/redis/sms-login/**/*.ts',
+    '../../../../../packages/schema/apis/postgres/transactions/**/*.ts',
     '../../../../../packages/schema/apis/model/api-info.ts',
   ],
   { query: '?raw', import: 'default' },

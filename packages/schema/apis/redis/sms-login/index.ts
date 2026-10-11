@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { defineApiInfo, HttpMethodEnum } from '../model/api-info';
+import { defineApiInfo, HttpMethodEnum } from '../../model/api-info';
 
 // 手机号取中国大陆 11 位示例；教学简化，仅约束长度与首字。
 const phone = () => z.string().regex(/^1\d{10}$/, '手机号应为 11 位数字');

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { defineApiInfo, HttpMethodEnum } from '../model/api-info';
+import { defineApiInfo, HttpMethodEnum } from '../../model/api-info';
 
 export const TransactionScenarioSchema = z.enum([
   'atomicity', 'savepoint', 'read-committed', 'repeatable-read', 'write-skew', 'serializable',

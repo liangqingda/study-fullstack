@@ -40,7 +40,7 @@ export const STRUCTURE: DemoStructure = {
   ],
   schema: [
     {
-      path: 'packages/schema/apis/sms-login/index.ts',
+      path: 'packages/schema/apis/redis/sms-login/index.ts',
       role: '发码、登录、校验、退出与会话列表契约。',
     },
     { path: 'packages/schema/apis/model/api-info.ts', role: '接口描述的数据结构。' },

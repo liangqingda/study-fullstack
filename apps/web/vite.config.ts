@@ -31,7 +31,7 @@ const previewFiles = new Set([
   'src/express/transactions/index.ts',
   'src/express/transactions/run.ts',
 ]);
-const schemaPreviewFiles = new Set(['apis/sms-login/index.ts', 'apis/transactions/index.ts', 'apis/model/api-info.ts']);
+const schemaPreviewFiles = new Set(['apis/redis/sms-login/index.ts', 'apis/postgres/transactions/index.ts', 'apis/model/api-info.ts']);
 
 const backendSourcePreview = (): Plugin => ({
   name: 'backend-source-preview',

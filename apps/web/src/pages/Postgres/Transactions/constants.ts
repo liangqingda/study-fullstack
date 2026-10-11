@@ -99,7 +99,7 @@ export const STRUCTURE: DemoStructure = {
   ],
   schema: [
     {
-      path: 'packages/schema/apis/transactions/index.ts',
+      path: 'packages/schema/apis/postgres/transactions/index.ts',
       role: '场景枚举、请求、结果及错误契约。',
     },
     { path: 'packages/schema/apis/model/api-info.ts', role: '接口描述的数据结构。' },
