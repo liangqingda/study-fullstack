@@ -23,15 +23,13 @@ const apisDir = resolve(__dirname, '../apis');
 /**
  * 写入生成内容：保留 marker 之前的手写头部，仅替换 marker 之后的部分。
  * 首次生成（文件不存在或无 marker）时从 marker 开始整写。
- * `quotesDisable` 仅对含字符串字面量的类型声明需要；纯 re-export 段（index）不需要。
- * 仅在生成的正文里实际出现双引号字符串（enum/union 字面量）时才写入 `eslint-disable quotes`，
- * 避免对无字面量的文件产生 unused-disable 告警。
+ * 生成代码的格式由脚本串联的 prettier 统一处理（见 generate:apitypes），
+ * 因此这里不写入 eslint-disable 豁免。
  */
 const writeGenerated = (
   target: string,
   fileMarker: string,
   generated: string,
-  quotesDisable = true,
 ): void => {
   let original = '';
 
@@ -42,11 +40,7 @@ const writeGenerated = (
   }
 
   const idx = original.indexOf(fileMarker);
-  const leading =
-    quotesDisable && generated.includes('"')
-      ? '/* eslint-disable quotes */\n'
-      : '';
-  const body = generated ? `${leading}${generated}` : 'export {};';
+  const body = generated ? generated : 'export {};';
 
   let next: string;
 
@@ -197,7 +191,13 @@ for (const [demo, groupNamed] of groups) {
       overrides: nestedOverrides,
     });
 
-    return `export ${printNode(createTypeAlias(node, name))}`;
+    // 顶层 schema 的 describe 映射为 type alias 前的 JSDoc，保持与手写文件一致。
+    const { description } = schema as { description?: string };
+    const prefix = description
+      ? `/**\n * ${description.replace(/\s*\n\s*/g, '\n * ')}\n */\n`
+      : '';
+
+    return `${prefix}export ${printNode(createTypeAlias(node, name))}`;
   });
   const auxiliary = Array.from(
     auxiliaryTypeStore.definitions.values(),
@@ -205,7 +205,19 @@ for (const [demo, groupNamed] of groups) {
   );
   const generated = [...auxiliary, ...declarations]
     .join('\n\n')
-    .replace(/\s*\| undefined\b/g, '');
+    .replace(/\s*\| undefined\b/g, '')
+    // TypeScript printer 固定用 4 空格缩进；统一收敛为仓库风格的 2 空格。
+    .split('\n')
+    .map((line) => {
+      const indent = line.match(/^( +)/)?.[1].length ?? 0;
+
+      if (indent % 4 !== 0) {
+        return line;
+      }
+
+      return `${' '.repeat(indent / 2)}${line.slice(indent)}`;
+    })
+    .join('\n');
 
   writeGenerated(join(typesDir, `${demo}.ts`), marker, generated);
 }
@@ -230,7 +242,7 @@ const indexExports = sortStrings(Array.from(groups.keys()))
   .map((demo) => `export * from './${demo}';`)
   .join('\n\n');
 
-writeGenerated(join(typesDir, 'index.ts'), exportMarker, indexExports, false);
+writeGenerated(join(typesDir, 'index.ts'), exportMarker, indexExports);
 
 let total = 0;
 
