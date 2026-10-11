@@ -141,7 +141,7 @@ export const STRUCTURE: DemoStructure = {
       role: '将应用级中间件和 Router 挂载到 /api/express/middleware，并配置通用请求处理。',
     },
     {
-      path: 'apps/api/src/express/middleware/index.ts',
+      path: 'apps/api/src/apis/express/middleware/index.ts',
       role: '实现应用级、路由级、错误处理、内置和第三方中间件示例；记录执行链及终端日志。',
     },
   ],

@@ -43,7 +43,7 @@ export const STRUCTURE: DemoStructure = {
     { path: 'apps/api/src/services/app.ts', role: '挂载短信登录 Router。' },
     { path: 'apps/api/src/services/redis.ts', role: '创建 ioredis 客户端。' },
     {
-      path: 'apps/api/src/express/sms-login/index.ts',
+      path: 'apps/api/src/apis/redis/sms-login/index.ts',
       role: '验证码、限频、会话建立与共享视图的全部 Redis 操作。',
     },
   ],

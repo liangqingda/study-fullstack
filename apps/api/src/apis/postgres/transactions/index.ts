@@ -9,7 +9,7 @@ import type { Pool } from 'pg';
 import type { Router as ExpressRouter } from 'express';
 
 import { runTransaction } from './run';
-import { loggerFor } from '../../services/logger';
+import { loggerFor } from '../../../services/logger';
 
 export const createTransactionRouter = (
   pool?: Pick<Pool, 'connect'>,

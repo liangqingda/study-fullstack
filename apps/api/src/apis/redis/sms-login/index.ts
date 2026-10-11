@@ -17,7 +17,7 @@ import {
 import type { Router as ExpressRouter, Request, Response } from 'express';
 import type { Redis } from 'ioredis';
 
-import { loggerFor } from '../../services/logger';
+import { loggerFor } from '../../../services/logger';
 
 const CODE_TTL_SECONDS = 60;
 const SEND_RATE_TTL_SECONDS = 60;

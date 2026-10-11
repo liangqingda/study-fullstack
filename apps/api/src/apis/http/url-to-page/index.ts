@@ -15,7 +15,7 @@ import {
 import type { RequestOptions } from 'node:http';
 import type { Router as ExpressRouter, Request } from 'express';
 
-import { loggerFor } from '../../services/logger';
+import { loggerFor } from '../../../services/logger';
 
 /** 阶段 key 的合法集合，与契约中的 enum 保持一致。 */
 type PhaseKey = 'url' | 'dns' | 'tcp' | 'tls' | 'request' | 'wait' | 'body';

@@ -181,7 +181,7 @@ export const STRUCTURE: DemoStructure = {
       role: '将 Router 挂载到 /api/http/url-to-page。',
     },
     {
-      path: 'apps/api/src/express/url-to-page/index.ts',
+      path: 'apps/api/src/apis/http/url-to-page/index.ts',
       role: '用 Node 原生 http/https 发起真实请求，实测各阶段耗时并打印日志。',
     },
   ],

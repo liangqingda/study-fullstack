@@ -99,11 +99,11 @@ export const STRUCTURE: DemoStructure = {
   backend: [
     { path: 'apps/api/src/services/app.ts', role: '挂载事务 Router。' },
     {
-      path: 'apps/api/src/express/transactions/index.ts',
+      path: 'apps/api/src/apis/postgres/transactions/index.ts',
       role: '请求及响应校验、错误处理。',
     },
     {
-      path: 'apps/api/src/express/transactions/run.ts',
+      path: 'apps/api/src/apis/postgres/transactions/run.ts',
       role: '真实数据库事务与结果记录。',
     },
   ],

@@ -5,7 +5,7 @@ import type { Router as ExpressRouter } from 'express';
 import type { PostgresClient } from './queries';
 
 import { pingPostgres } from './queries';
-import { loggerFor } from '../../services/logger';
+import { loggerFor } from '../../../services/logger';
 
 const PING_QUERY = z.object({ value: z.string().trim().min(1).max(100) });
 

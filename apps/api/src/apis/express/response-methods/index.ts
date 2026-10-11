@@ -6,7 +6,7 @@ import type { Response, Router as ExpressRouter } from 'express';
 
 const router: ExpressRouter = Router();
 // 非 TS 资源保留在 src 中，开发态和 build 中的模块都指向同一份文件。
-const demoRoot = resolve(process.cwd(), 'src/express/response-methods');
+const demoRoot = resolve(process.cwd(), 'src/apis/express/response-methods');
 const sampleFile = resolve(demoRoot, 'assets/response-demo.txt');
 const viewFile = resolve(demoRoot, 'views/response-demo.ejs');
 

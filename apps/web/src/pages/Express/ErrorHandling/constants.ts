@@ -149,7 +149,7 @@ export const STRUCTURE: DemoStructure = {
       role: '将示例 Router 挂载到 /api/express/error-handling，并在路由之后挂载应用级错误处理器。',
     },
     {
-      path: 'apps/api/src/express/error-handling/index.ts',
+      path: 'apps/api/src/apis/express/error-handling/index.ts',
       role: '实现六条错误路由及四参数错误处理器，记录完成或连接关闭。',
     },
     {

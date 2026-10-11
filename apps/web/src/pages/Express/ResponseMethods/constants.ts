@@ -98,11 +98,11 @@ export const METHODS: Method[] = [
     explanation:
       '这里用临时重定向把请求指向 JSON 示例。浏览器的 fetch 会自动跟随，因此页面展示的是最终 JSON 响应。',
     steps: [
-      'GET /redirect 首先返回 302，Location 指向 /api/express/response-METHODS/json。',
+      'GET /redirect 首先返回 302，Location 指向 /api/express/response-methods/json。',
       'fetch 默认跟随 Location 再发起一次 GET，第二个路由以 res.json() 返回 200 JSON。',
       '页面拿到的是最终响应，redirected 和 Final URL 表明中间发生过跳转。',
     ],
-    code: "res.redirect(302, '/api/express/response-METHODS/json');",
+    code: "res.redirect(302, '/api/express/response-methods/json');",
     observation:
       '页面显示最终的 200 JSON、Redirect 标记和最终 URL，而非直接显示中间的 302。',
     interpretation:
@@ -227,23 +227,23 @@ export const STRUCTURE: DemoStructure = {
   backend: [
     {
       path: 'apps/api/src/services/app.ts',
-      role: '将示例 Router 挂载到 /api/express/response-METHODS。',
+      role: '将示例 Router 挂载到 /api/express/response-methods。',
     },
     {
-      path: 'apps/api/src/express/response-METHODS/index.ts',
+      path: 'apps/api/src/apis/express/response-methods/index.ts',
       role: '九种 res 响应方法的路由和终端日志。',
     },
     {
-      path: 'apps/api/src/express/response-METHODS/assets/response-demo.txt',
+      path: 'apps/api/src/apis/express/response-methods/assets/response-demo.txt',
       role: 'download 与 sendFile 使用的示例文件。',
     },
     {
-      path: 'apps/api/src/express/response-METHODS/views/response-demo.ejs',
+      path: 'apps/api/src/apis/express/response-methods/views/response-demo.ejs',
       role: 'render 方法使用的 EJS 模板。',
     },
   ],
   connection:
-    '页面向 /api/express/response-METHODS/{方法名} 发送请求；对应路由选用 res 方法返回响应，Hook 读取实际响应，再由 ResponseResult 展示。下载和跳转也提供浏览器直接操作入口。',
+    '页面向 /api/express/response-methods/{方法名} 发送请求；对应路由选用 res 方法返回响应，Hook 读取实际响应，再由 ResponseResult 展示。下载和跳转也提供浏览器直接操作入口。',
   database:
     '无。响应内容来自路由数据、同目录的文本文件或 EJS 模板，不查询或修改数据库。',
 };

@@ -6,18 +6,18 @@ import pinoHttp from 'pino-http';
 
 import type { Express } from 'express';
 import type { AppConfig } from '../consts/config';
-import type { PostgresClient } from '../express/postgres/queries';
+import type { PostgresClient } from '../apis/postgres/ping/queries';
 import type { Pool } from 'pg';
 import type { Redis } from 'ioredis';
 
 import { errorHandler } from '../middlewares/error-handler';
-import errorHandlingRouter from '../express/error-handling';
-import middlewareRouter, { applicationMiddleware } from '../express/middleware';
-import { createPostgresRouter } from '../express/postgres';
-import responseMethodsRouter from '../express/response-methods';
-import { createSmsLoginRouter } from '../express/sms-login';
-import { createTransactionRouter } from '../express/transactions';
-import { createUrlToPageRouter } from '../express/url-to-page';
+import errorHandlingRouter from '../apis/express/error-handling';
+import middlewareRouter, { applicationMiddleware } from '../apis/express/middleware';
+import { createPostgresRouter } from '../apis/postgres/ping';
+import responseMethodsRouter from '../apis/express/response-methods';
+import { createSmsLoginRouter } from '../apis/redis/sms-login';
+import { createTransactionRouter } from '../apis/postgres/transactions';
+import { createUrlToPageRouter } from '../apis/http/url-to-page';
 
 export const createApp = (
   config: AppConfig,

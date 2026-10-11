@@ -7,7 +7,7 @@
 **预测**：A=500、B=200，扣 100、加 100 后，流水插入主键冲突。`SELECT` 能否看到扣款？回滚后两账户是多少？
 
 ```sh
-psql "$DATABASE_URL" -f src/express/postgres/transactions/01-atomicity.sql
+psql "$DATABASE_URL" -f src/apis/postgres/transactions/01-atomicity.sql
 ```
 
 脚本先创建临时账户和流水，再用一个 `BEGIN` 包住两次 `UPDATE` 和流水插入。故意重复流水 ID 后，PostgreSQL 报 `23505`；同一事务中的下一条 `SELECT` 报 `25P02`（事务已中止），不是返回暂时余额。`ROLLBACK` 后查询得到 `(1,500)`、`(2,200)`，流水仍只有预置的 1 条；这条旧流水不是本次转账。脚本仅对预期的两条错误临时关闭 `ON_ERROR_STOP`。
@@ -17,7 +17,7 @@ psql "$DATABASE_URL" -f src/express/postgres/transactions/01-atomicity.sql
 **预测**：保存点之后先插入商品 10，再重复插入同一商品造成主键冲突。回到保存点之后，商品 10 会留下吗？
 
 ```sh
-psql "$DATABASE_URL" -f src/express/postgres/transactions/02-savepoint.sql
+psql "$DATABASE_URL" -f src/apis/postgres/transactions/02-savepoint.sql
 ```
 
 `23505` 后执行 `ROLLBACK TO SAVEPOINT before_items`，会同时撤销保存点之后成功的商品 10；随后插入商品 11 并 `COMMIT`。最终订单 1 存在，明细只有 `(1,11)`。`RELEASE SAVEPOINT` 不会单独提交外层事务。脚本仅对预期的冲突临时关闭 `ON_ERROR_STOP`。
@@ -27,7 +27,7 @@ psql "$DATABASE_URL" -f src/express/postgres/transactions/02-savepoint.sql
 **预测**：A 首次读库存 10，B 改为 9 并提交，A 再读是什么？两种隔离级别为何不同？先初始化一次：
 
 ```sh
-psql "$DATABASE_URL" -f src/express/postgres/transactions/03-snapshot-setup.sql
+psql "$DATABASE_URL" -f src/apis/postgres/transactions/03-snapshot-setup.sql
 ```
 
 打开两个独立的 `psql "$DATABASE_URL"` 终端，严格按下列顺序逐段执行。A 的事务未结束时不要重跑初始化。
@@ -53,7 +53,7 @@ psql "$DATABASE_URL" -f src/express/postgres/transactions/03-snapshot-setup.sql
 **预测**：两位医生都在岗；A、B 两个事务各看到在岗人数为 2，各自让不同医生下班。最终可能为 0 吗？
 
 ```sh
-psql "$DATABASE_URL" -f src/express/postgres/transactions/04-serializable-setup.sql
+psql "$DATABASE_URL" -f src/apis/postgres/transactions/04-serializable-setup.sql
 ```
 
 再次打开两个独立的 `psql "$DATABASE_URL"` 终端，逐步执行：
