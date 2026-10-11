@@ -118,7 +118,7 @@ export const PRESET_URLS: PresetUrl[] = [
   },
   {
     label: '本仓库服务（无 TLS）',
-    url: 'http://localhost:3000/api/express/response-methods/json',
+    url: 'http://localhost:3001/api/express/response-methods/json',
     hint: '无 TLS 握手；服务端就是正在运行的后端。',
   },
   {
@@ -240,12 +240,12 @@ export const KNOWLEDGE = `## 主题概述
 
 ## demo 与结果
 
-**预测先于验证**：连 \`http://localhost:3000/api/express/response-methods/json\`（本仓库后端）和 \`https://example.com\`，猜哪个 TLS 有值、哪个没有？哪个阶段的耗时最可能占大头？
+**预测先于验证**：连 \`http://localhost:3001/api/express/response-methods/json\`（本仓库后端）和 \`https://example.com\`，猜哪个 TLS 有值、哪个没有？哪个阶段的耗时最可能占大头？
 
 | 预设 | 期望链路 | 关键观察 |
 | --- | --- | --- |
 | \`https://example.com\` | URL→DNS→TCP→TLS→… | TLS 有实测值；wait 通常占大头 |
-| \`http://localhost:3000/...\` | 无 TLS | TLS 记 0ms，标注跳过 |
+| \`http://localhost:3001/...\` | 无 TLS | TLS 记 0ms，标注跳过 |
 | \`https://example.com/404\` | 完整链路 | 状态 404，仍正常返回响应体 |
 | \`http://localhost:1\` | DNS→TCP 失败 | 链路停在 TCP，返回错误文案 |
 

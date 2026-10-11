@@ -44,7 +44,7 @@ export const readConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
     RESULT.data.CORS_ORIGINS?.split(',')
       .map((origin) => origin.trim())
       .filter(Boolean) ??
-    (RESULT.data.NODE_ENV === 'development' ? ['http://localhost:5173'] : []);
+    (RESULT.data.NODE_ENV === 'development' ? ['http://localhost:3000'] : []);
 
   if (RESULT.data.NODE_ENV === 'production' && CORS_ORIGINS.length === 0) {
     throw new Error('CORS_ORIGINS is required in production');

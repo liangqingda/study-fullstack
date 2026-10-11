@@ -50,7 +50,7 @@ const ErrorHandling = () => {
           throw new Error(
             selected.slug === 'headers-sent'
               ? '响应未完整结束（连接中断或代理仍在等待），无法读取完整响应。查看后端终端的 headersSent 和连接关闭日志。'
-              : '请求失败或超时。请检查 localhost:3000 后端是否已启动。',
+              : '请求失败或超时。请检查 localhost:3001 后端是否已启动。',
           );
         }
 

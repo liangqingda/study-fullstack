@@ -54,4 +54,4 @@ export default tseslint.config({
 
 Use `request<T>` from `src/utils/http` for handwritten calls. It returns the full Axios response (including status and headers); non-2xx responses reject with an Axios error. Generated callers use the same instance and accept an optional `signal` for cancellation. The existing HTTP teaching demos still use `fetch` to preserve their response and redirect observations.
 
-The Vite `/api` proxy targets `http://localhost:3000` by default. If the backend runs elsewhere, set `VITE_API_TARGET` when starting Vite, for example `VITE_API_TARGET=http://localhost:3001 pnpm dev`.
+The Vite `/api` proxy targets `http://localhost:3001` by default. If the backend runs elsewhere, set `VITE_API_TARGET` when starting Vite, for example `VITE_API_TARGET=http://localhost:3001 pnpm dev`.
