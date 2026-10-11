@@ -23,7 +23,16 @@ export type AppConfig = {
 };
 
 export const readConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
-  const RESULT = ENVIRONMENT.safeParse(env);
+  /*
+   * 兼容常见的 PORT 平台变量：HTTP_PORT 缺省时回退到 PORT，避免 .env 中
+   * 只写了 PORT 却被静默忽略。HTTP_PORT 仍是唯一权威键（见 .env.example）。
+   */
+  const EFFECTIVE_ENV: NodeJS.ProcessEnv =
+    env.HTTP_PORT === undefined && env.PORT !== undefined
+      ? { ...env, HTTP_PORT: env.PORT }
+      : env;
+
+  const RESULT = ENVIRONMENT.safeParse(EFFECTIVE_ENV);
 
   if (!RESULT.success) {
     throw new Error(

@@ -9,6 +9,7 @@ import type { Pool } from 'pg';
 import type { Router as ExpressRouter } from 'express';
 
 import { runTransaction } from './run';
+import { loggerFor } from '../../services/logger';
 
 export const createTransactionRouter = (
   pool?: Pick<Pool, 'connect'>,
@@ -17,10 +18,11 @@ export const createTransactionRouter = (
   const router: ExpressRouter = Router();
 
   router.post('/run', async (req, res) => {
+    const log = loggerFor(req);
     const input = TransactionRunRequestSchema.safeParse(req.body);
 
     if (!input.success) {
-      console.info('[transactions] invalid scenario');
+      log.info('[transactions] invalid scenario');
       res.status(400).json(
         TransactionErrorSchema.parse({
           error: 'Invalid transaction scenario',
@@ -30,7 +32,7 @@ export const createTransactionRouter = (
     }
 
     if (!pool) {
-      console.info(
+      log.info(
         `[transactions/${input.data.scenario}] DATABASE_URL is not configured`,
       );
       res.status(503).json(
@@ -44,13 +46,17 @@ export const createTransactionRouter = (
     try {
       const result = await execute(pool, input.data.scenario);
 
-      console.info(
-        `[transactions/${input.data.scenario}] complete: ${result.outcome}`,
+      log.info(
+        { scenario: input.data.scenario, outcome: result.outcome },
+        `[transactions/${input.data.scenario}] complete`,
       );
       res.json(TransactionRunResponseSchema.parse(result));
     } catch (error) {
-      console.error(
-        `[transactions/${input.data.scenario}] failed: ${(error as { code?: string }).code ?? 'unknown'}`,
+      const code = (error as { code?: string }).code ?? 'unknown';
+
+      log.error(
+        { scenario: input.data.scenario, code },
+        `[transactions/${input.data.scenario}] failed`,
       );
       res.status(503).json(
         TransactionErrorSchema.parse({

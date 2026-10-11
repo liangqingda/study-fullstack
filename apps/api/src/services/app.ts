@@ -32,6 +32,7 @@ export const createApp = (
         'req.headers.cookie',
         'req.url',
         'err.config.headers.authorization',
+        'phone',
       ],
       censor: '[Redacted]',
     },
