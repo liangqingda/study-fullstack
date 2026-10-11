@@ -251,9 +251,21 @@ export const STRUCTURE: DemoStructure = {
 /**
  * 知识点讲解弹窗的 Markdown 内容。
  */
-export const KNOWLEDGE = `## res 方法在做什么
+export const KNOWLEDGE = `## 主题概述
 
-\`res.*\` 是 Express 用于**结束本次请求并写出响应**的方法。它们共同处理三件事：**状态码、响应头、响应体**。
+\`res.*\` 是 Express 用于**结束本次请求并写出响应**的方法族。它们共同处理三件事：**状态码、响应头、响应体**。选对方法，就是向客户端声明"这次响应的语义是什么"。
+
+适用场景：接口返回 JSON、发送文件、重定向、服务端渲染页面、只回状态码等不同需求时，选择正确的结束方式。
+
+## 核心术语
+
+| 术语 | 定义 | 为什么重要 | 最小示例 | 结果 |
+| --- | --- | --- | --- | --- |
+| 响应状态码 | 请求结果的三位数字 | HTTP 语义的第一层表达 | \`res.status(204)\` | 204 No Content |
+| Content-Type | 响应体的媒体类型 | 决定客户端如何解释 Body | \`application/json\` | 客户端按数据解析 |
+| 响应体 (Body) | 实际返回的内容 | 有/无内容、文本/JSON/脚本 | \`res.json({ a: 1 })\` | 序列化后的 JSON |
+| \`Content-Disposition\` | 提示附件下载的响应头 | 决定浏览器"展示还是保存" | \`attachment; filename=...\` | 触发下载 |
+| \`res.end()\` | 最底层的结束动作 | 只结束连接，不写内容 | \`res.status(204).end()\` | 空响应 |
 
 ## 方法速查
 
@@ -269,11 +281,25 @@ export const KNOWLEDGE = `## res 方法在做什么
 | \`res.render()\` | 模板渲染后的 HTML | 服务端渲染 |
 | \`res.redirect()\` | 302 + Location | 跳转到别的地址 |
 
-## 看结果时对照三样东西
+## 分步机制：一次响应怎么"结束"
 
-1. **状态码**：204 / 302 / 418 是方法或显式设置的产物。
-2. **Content-Type**：\`application/json\`、\`text/plain\`、\`text/html\` 决定客户端如何解释 Body。
-3. **Body**：有没有内容、是纯文本还是 JSON 还是脚本。
+路由处理器选一个 \`res.*\` 方法 → 该方法设置状态码/响应头 → 写入响应体（或留空）→ 结束本次请求。\`res.end()\` 是最底层的结束动作；\`send()\`/\`json()\` 等在它之上封装。
+
+## demo 与结果（先猜后验）
+
+先猜一猜：\`/redirect\` 页面最终显示的是 302 还是 200？\`/send-file\` 有没有下载头？
+
+| 请求 | 方法 | 状态码 | Content-Type | Body | 关键点 |
+| --- | --- | --- | --- | --- | --- |
+| \`/download\` | \`res.download()\` | 200 | 文本 | 文件内容 | 带 \`Content-Disposition: attachment\` |
+| \`/end\` | \`res.status(204).end()\` | 204 | 通常无 | 空 | 204 不允许响应体 |
+| \`/json\` | \`res.json()\` | 200 | application/json | 序列化 JSON | 双引号、数组是序列化结果 |
+| \`/jsonp\` | \`res.jsonp()\` | 200 | JavaScript | \`showResponse({...})\` | 整段是可执行脚本 |
+| \`/redirect\` | \`res.redirect(302)\` | 最终 200 | application/json | JSON | fetch 自动跟随，看到的 200 是目标 |
+| \`/render\` | \`res.render()\` | 200 | text/html | 模板渲染后的 HTML | 内容由后端生成 |
+| \`/send\` | \`res.type('text/plain').send()\` | 200 | text/plain | 纯文本 | 类型头由 \`res.type\` 显式设置 |
+| \`/send-file\` | \`res.sendFile()\` | 200 | 文本 | 文件内容 | 无 attachment 头 |
+| \`/send-status\` | \`res.sendStatus(418)\` | 418 | — | 状态文字 | 状态文字被写进 Body |
 
 ## 几组易混的对比
 
@@ -286,4 +312,21 @@ export const KNOWLEDGE = `## res 方法在做什么
 ## 为什么 type 和状态值得关注
 
 HTTP 的语义由状态码与响应头共同表达：\`text/plain\` 让浏览器当文字读，\`application/json\` 让客户端按数据解析。只看 Body 不够，要连 Content-Type 一起读。
+
+## 边界与误区
+
+- \`res.json()\` 返回的 JSON 是数据文档，不是脚本；\`res.jsonp()\` 才是可执行脚本。
+- 附件行为来自 \`Content-Disposition\` 头，不是文件扩展名。
+- fetch 不会自己弹出下载框；"下载"需要独立入口触发浏览器行为。
+- \`end()\` 只结束连接不写内容；想带状态文字用 \`sendStatus()\`。
+
+## 小结与练习
+
+一句话：**\`res.*\` 处理状态码、Content-Type、Body 三件事，选对方法就是声明响应语义。**
+
+练习（先自行判断再对照）：
+1. 想要"无内容但表示处理成功"的响应，用什么方法组合？
+2. 下载与直接展示文件，区别在哪个响应头？
+3. \`/redirect\` 页面显示的 200 是 \`res.redirect()\` 发出的吗？真正发出 302 的是哪一次响应？
+4. JSONP 和 JSON 的本质区别是什么？
 `;

@@ -165,39 +165,79 @@ export const STRUCTURE: DemoStructure = {
 /**
  * 知识点讲解弹窗的 Markdown 内容。
  */
-export const KNOWLEDGE = `## 错误从哪里来
+export const KNOWLEDGE = `## 主题概述
 
-错误可以在三个不同时机产生，Express 接住它们的方式不同：
+Express 错误处理解决的是：请求处理过程中出错后，错误如何被接住、沿哪条链传递、由谁写出最终响应。核心是分清三件事：**错误从哪里来**、**以什么方式进入错误链**、**谁结束这次响应**。做对后，出错时客户端拿到的是受控响应，而不是进程崩溃、堆栈泄漏或请求挂起。
 
-| 产生方式 | 进入错误链的方式 |
-| --- | --- |
-| 同步 \`throw\` | Express 自动捕获 |
-| async 函数 \`await\` 到 rejected Promise | Express 5 自动转交 \`next(error)\` |
-| Node 风格回调 | 需要在回调里手动 \`next(error)\` |
+适用场景：需要统一接口错误格式、区分业务错误（4xx）与意外错误（5xx）、覆盖同步/异步/回调三种错误来源、或处理流式响应中途出错时。
 
-## 错误处理链怎么走
+## 核心术语
 
-普通处理器只接收 \`(req, res, next)\`。**错误处理中间件有四个参数** \`(err, req, res, next)\`，并且要放在路由之后。请求触发错误后：
+| 术语 | 定义 | 为什么重要 | 最小示例 | 结果 |
+| --- | --- | --- | --- | --- |
+| 错误处理中间件 | 有四个参数 \`(err, req, res, next)\` 的中间件 | 只有它能接收 \`next(error)\`，普通三参数中间件接不到 | \`router.use((err, req, res, next) => ...)\` | 错误进入错误链时执行 |
+| \`next(error)\` | 把错误对象交给错误链 | 是同步调用栈之外（如回调里）的错误进入链的唯一通道 | \`next(new Error('x'))\` | 跳过后续普通处理器 |
+| \`err.status\` | 附加在错误对象上的数字状态码 | 默认处理器据此选响应状态 | \`Object.assign(err, { status: 422 })\` | 返回 422 |
+| \`err.headers\` | 附加在错误对象上的响应头 | 默认处理器把它合并进响应头 | \`{ headers: { 'X-Demo-Error': 'validation' } }\` | 响应带上该头 |
+| \`res.headersSent\` | 响应头是否已发送的标志 | 为 \`true\` 后无法回头写错误响应 | \`res.write('x')\` 后变 \`true\` | 只能结束连接 |
+| Express 5 的 Promise 处理 | Express 5 自动把被拒绝的路由 Promise 转给 \`next(error)\` | async 路由无需手动 \`try/catch\` 转交 | \`async () => await Promise.reject(err)\` | 自动进入错误链 |
 
-\`错误 → next(error) → 跳过普通处理器 → 四参数错误中间件 → 写响应或继续转交\`
+## 错误从哪来：三种入口
+
+| 来源 | 进入错误链的方式 | 代码 | 需手动转交 |
+| --- | --- | --- | --- |
+| 同步 \`throw\` | Express 自动捕获 | \`throw new Error(...)\` | 否 |
+| async 里 \`await\` 到 rejected Promise | Express 5 自动 \`next(error)\` | \`await Promise.reject(...)\` | 否 |
+| Node 风格回调 | 必须手动 \`next(error)\` | \`readFile(p, (err) => err && next(err))\` | 是 |
+
+## 分步机制：错误链怎么走
+
+请求进入路由 → 出错 → 经"自动或手动"变成 \`next(error)\` → 跳过后续普通处理器 → 四参数错误中间件 → 自己写响应结束，或 \`next(err)\` 继续 → 默认处理器兜底。
+
+两个硬条件：**错误中间件必须放在路由之后**，且**必须有四个参数**，否则 Express 不把它当作错误处理器。
+
+## demo 与结果（先猜后验）
+
+先猜一猜：\`/status\` 返回什么状态码？\`/headers-sent\` 还能把响应改成 500 吗？
+
+| 路径 | 入口 | 期望 | 实际结果 |
+| --- | --- | --- | --- |
+| \`/sync\` | 同步 \`throw\` | 500 | 默认处理器返回 500 HTML |
+| \`/async\` | async 拒绝 | 500 | 同为 500，来自 Promise 拒绝 |
+| \`/callback\` | readFile 回调 \`next(error)\` | 500 + ENOENT | 500；ENOENT 未被映射成 404 |
+| \`/status\` | \`err.status=422\` + headers | 422 + \`X-Demo-Error\` | 422，响应头出现 |
+| \`/custom\` | 交给自定义处理器 | 500 JSON | \`{ handler, message }\`，无堆栈 |
+| \`/headers-sent\` | 先 \`res.write\` 再出错 | 无法改 500 | 连接关闭 / 传输中断 |
+
+关键对照：
+
+- \`/sync\` 与 \`/async\` 结果相同，因为最终都到达同一个默认处理器；区别只在错误进入链的方式（自动捕获 vs Promise 自动转交）。
+- \`/status\` 的 422 来自 \`err.status\`，不是错误消息文本自动决定的状态。
+- \`/headers-sent\` 即使工具先显示 200 也不算成功：200 已随最初的 \`res.write\` 发出，连接随后异常关闭。
 
 ## 谁能决定最终响应
 
-- **默认处理器**（Express 内置）：根据 \`err.status\` 选状态码、用 \`err.headers\` 加响应头，返回 HTML（生产环境不暴露堆栈）。
-- **自定义处理器**：自己 \`res.status(...).json(...)\` 结束请求，返回稳定的业务格式。
+| 角色 | 是否写响应 | 典型结果 |
+| --- | --- | --- |
+| 默认处理器（Express 内置） | 是 | 按 \`err.status\` 选状态、\`err.headers\` 加响应头，返回 HTML；生产环境不暴露堆栈 |
+| 自定义处理器 | 是（自己 \`res.json(...)\`） | 返回稳定的业务格式，客户端可依赖 |
+| 两者都不处理 | 否 | 请求挂起（既不响应也不 \`next(err)\`） |
 
-两者二选一；如果既不写响应也不 \`next(err)\`，请求会一直挂起。
+## 边界与误区
 
-## 两个关键元数据
+- 回调里的 \`throw\` 不会被 Express 自动捕获，可能成为未捕获异常；必须 \`next(error)\`。
+- \`err.status\` 只认 4xx/5xx，其他值按 500 处理。
+- 错误消息文本不会自动决定 HTTP 状态，状态由 \`err.status\` 或处理器显式设置。
+- \`res.headersSent === true\` 后不能再写错误响应，只能 \`next(err)\` 让默认处理器关闭连接。
+- 错误中间件既不写响应也不 \`next(err)\`，请求会一直挂起。
 
-- \`err.status\`：数字状态码（4xx / 5xx 才生效，其他按 500）。
-- \`err.headers\`：附加到响应的额外响应头（如 \`X-Demo-Error\`）。
+## 小结与练习
 
-## headersSent：响应已经开始的情况
+一句话：**错误从不同来源进入链，沿"自动/手动转交 → 四参数错误中间件 → 默认处理器"传递；\`err.status\`/\`err.headers\` 决定状态与响应头；\`headersSent\` 是"还能不能改响应"的硬边界。**
 
-一旦 \`res.write(...)\` 发出了第一块内容，\`res.headersSent\` 变为 \`true\`，就**不能回头改成错误响应**。此时错误处理器只能 \`next(err)\`，由默认处理器关闭连接终止这条不完整的响应。先看到 200 不代表成功，因为 200 已随最初内容发出。
-
-## 一个常见误区
-
-不是所有回调里的错误都会被 Express 捕获。\`readFile\` 的回调不在路由的同步调用栈里，直接 \`throw\` 可能变成未捕获异常；必须在回调里 \`next(error)\` 才能交给 Express。
+练习（先自行判断再对照）：
+1. 在回调里直接 \`throw\` 而不用 \`next(error)\`，预测会发生什么？为什么？
+2. 想让某个错误返回 409 而不是 500，应该改哪个元数据？
+3. 路由已 \`res.send('部分内容')\` 后再出错，错误处理器能否返回 JSON 500？为什么？
+4. 自定义错误处理器返回 JSON 后，默认处理器还会执行吗？
 `;

@@ -198,25 +198,33 @@ export const STRUCTURE: DemoStructure = {
 /**
  * 知识点讲解弹窗的 Markdown 内容。
  */
-export const KNOWLEDGE = `## 先记住结论
+export const KNOWLEDGE = `## 主题概述
 
-普通内容区优先用 **flex** 或 **grid**；它们能处理未知尺寸和响应式变化。特殊场景才用 \`position\`、\`table-cell\`、\`line-height\`。
+CSS 垂直居中是在子元素尺寸未知、内容高度不定、需要响应式时，让元素在容器内沿纵轴对齐。难点在于**高度不固定**：很多方案依赖已知尺寸或单行文本。现代页面优先用 flex / grid，因为布局引擎能在未知尺寸下计算剩余空间。
+
+适用场景：页面内容块居中、弹层/徽标等覆盖层定位、单行文本、旧项目兼容。
+
+## 核心术语
+
+| 术语 | 定义 | 为什么重要 | 最小示例 | 结果 |
+| --- | --- | --- | --- | --- |
+| 主轴 / 交叉轴 | flex/grid 的两个对齐方向 | \`align-items\` 与 \`justify-content\` 分别对齐它们 | flex 默认主轴水平 | 两轴都设才居中 |
+| 文档流 | 元素默认的排布方式 | \`absolute\` 脱离流，父容器不靠它撑高 | \`position: absolute\` | 元素浮出 |
+| 行盒 | 一行文字占的高度区域 | \`line-height\` 决定其高度 | \`line-height: 178px\` | 单行视觉居中 |
+| \`place-items\` | \`align-items\` + \`justify-items\` 的简写 | 一条属性同时管两轴 | \`place-items: center\` | 网格项双轴居中 |
+| \`translate(-50%,-50%)\` | 按自身尺寸回移一半 | 让中心对准父容器中心 | \`transform: translate(...)\` | 不依赖固定高度 |
+| auto margin | 分配剩余空间 | 上下 \`margin\` 平分 | \`margin-block: auto\` | 剩余空间被平分 |
 
 ## 六种方案速查
 
 | 方案 | 核心代码 | 适用场景 | 局限 |
 | --- | --- | --- | --- |
-| Flexbox | \`display:flex\` + \`align-items\` + \`justify-content\` | 元素尺寸未知、数量可变 | 改 \`flex-direction\` 后两轴职责会交换 |
+| Flexbox | \`display:flex\` + \`align-items\` + \`justify-content\` | 元素尺寸未知、数量可变 | 改 \`flex-direction\` 后两轴职责交换 |
 | Grid | \`place-items: center\` | 单个核心内容块 | 多网格项时居中的是各自单元格 |
 | Absolute + transform | \`top/left:50%\` + \`translate(-50%,-50%)\` | 浮层、徽标 | 脱离文档流，父容器不靠它撑高 |
 | Position + margin auto | 定高 + \`inset-block:0\` + \`margin auto\` | 高度已知的固定块 | 需要可计算高度，内容超限会溢出 |
 | Table-cell | \`display:table-cell\` + \`vertical-align\` | 旧式兼容 | 改变父容器布局模型 |
 | Line-height | 行高等于容器高度 | 单行文本 | 多行 / 未知高度不适用 |
-
-## 双轴与单轴别搞混
-
-- flex 里 \`align-items\` 对齐**交叉轴**，\`justify-content\` 对齐**主轴**，两者都要设才双轴居中。
-- \`text-align\` 管的是行内方向水平对齐，不等于垂直居中。
 
 ## 三种方案的"为什么"
 
@@ -224,7 +232,41 @@ export const KNOWLEDGE = `## 先记住结论
 2. **absolute + transform**：\`50%\` 把左上角移到父容器中心，\`translate(-50%,-50%)\` 再按自身宽高回移一半，所以不依赖固定高度。
 3. **line-height**：单行文本的行盒高度由 \`line-height\` 决定，行高等于容器高度时文字视觉居中；换行后每行仍占整行高，会溢出。
 
-## 选择顺序
+## demo 与结果（先猜后验）
 
-普通内容区 → \`flex\` / \`grid\`；覆盖层 / 悬浮块 → \`position\` + \`transform\`；单行文本 → \`line-height\`（轻但只适用单行）。切到"增高 / 换行"再看一遍预览，能更快看出哪种方案不能自适应内容。
+先猜一猜：把内容切到"增高"后，哪几种方案还能保持居中？
+
+六种方案共用同一预览框与横向参考线。切到"增高 / 换行"后：
+
+| 方案 | 增高后是否保持居中 | 关键原因 |
+| --- | --- | --- |
+| flex / grid | ✅ | 布局引擎计算剩余空间 |
+| absolute + transform | ✅ | translate 按自身尺寸回移 |
+| margin auto | ⚠️ 定高、可能溢出 | 依赖可计算高度 |
+| table-cell | ✅ | 单元格垂直对齐 |
+| line-height | ❌ 换行即溢出 | 每行占满整行高 |
+
+关键结论：增高内容能最快暴露哪种方案**不能自适应**——line-height 换行即溢出，margin auto 只适合已知高度。
+
+## 双轴与单轴别搞混
+
+- flex 里 \`align-items\` 对齐**交叉轴**，\`justify-content\` 对齐**主轴**，两者都要设才双轴居中。
+- \`text-align\` 管的是行内方向水平对齐，不等于垂直居中。
+
+## 边界与误区
+
+- absolute 脱离文档流，父容器不会靠它撑开高度；普通段落布局用 flex/grid 更合适。
+- margin auto 需要可计算高度和足够空间；内容超限时先调高度或改用自适应布局。
+- 有多个网格项时，place-items 居中的是各自单元里的项，不是把整组项合成一块居中。
+- line-height 只适合单行文本，不是通用的元素居中。
+
+## 小结与练习
+
+一句话：**现代内容区优先 flex / grid（自适应），覆盖层用 absolute + transform（不依赖高度），单行文本才用 line-height；切到"增高"能最快暴露哪种方案不自适应。**
+
+练习（先自行判断再对照）：
+1. 内容未知高度时，为什么 line-height 不合适？
+2. flex 里只设 \`align-items\` 会水平居中吗？还差什么？
+3. absolute + transform 为什么不需要知道子元素高度？
+4. 想居中一个"内容可能超高"的面板，用哪两种方案更稳？
 `;
