@@ -17,6 +17,7 @@ import { createPostgresRouter } from '../express/postgres';
 import responseMethodsRouter from '../express/response-methods';
 import { createSmsLoginRouter } from '../express/sms-login';
 import { createTransactionRouter } from '../express/transactions';
+import { createUrlToPageRouter } from '../express/url-to-page';
 
 export const createApp = (
   config: AppConfig,
@@ -76,6 +77,7 @@ export const createApp = (
   app.use('/api/express/response-methods', responseMethodsRouter);
   app.use('/api/express/middleware', applicationMiddleware, middlewareRouter);
   app.use('/api/express/error-handling', errorHandlingRouter);
+  app.use('/api/http/url-to-page', createUrlToPageRouter());
   app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
   app.use(errorHandler);
 

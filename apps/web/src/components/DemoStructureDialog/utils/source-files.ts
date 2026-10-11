@@ -4,6 +4,7 @@ const frontendSources = import.meta.glob<string>(
     '@/pages/Postgres/**/*.{ts,tsx,scss}',
     '@/pages/Redis/**/*.{ts,tsx,scss}',
     '@/pages/CssDemos/**/*.{ts,tsx,scss}',
+    '@/pages/Http/**/*.{ts,tsx,scss}',
     '@/apis/**/*.{ts,tsx}',
     '@/utils/http/**/*.{ts,tsx}',
   ],
@@ -20,6 +21,7 @@ const backendSources = import.meta.glob<string>(
     '../../../../api/src/express/response-methods/**/*.{ts,txt,ejs}',
     '../../../../api/src/express/sms-login/**/*.{ts}',
     '../../../../api/src/express/transactions/**/*.{ts,sql}',
+    '../../../../api/src/express/url-to-page/**/*.{ts}',
   ],
   { query: '?raw', import: 'default' },
 );
@@ -28,6 +30,7 @@ const schemaSources = import.meta.glob<string>(
   [
     '../../../../../packages/schema/apis/redis/sms-login/**/*.ts',
     '../../../../../packages/schema/apis/postgres/transactions/**/*.ts',
+    '../../../../../packages/schema/apis/http/url-to-page/**/*.ts',
     '../../../../../packages/schema/apis/model/api-info.ts',
   ],
   { query: '?raw', import: 'default' },

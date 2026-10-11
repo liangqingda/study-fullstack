@@ -8,3 +8,5 @@ export * from './model/api-info';
 export * from './redis/sms-login';
 
 export * from './postgres/transactions';
+
+export * from './http/url-to-page';
