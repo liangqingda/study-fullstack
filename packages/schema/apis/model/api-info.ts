@@ -15,7 +15,7 @@ export enum HttpMethodEnum {
 export interface ApiInfo {
   /** 请求方法。 */
   method: HttpMethodEnum;
-  /** 路由路径，如 `/api/sms-login/send-code`。 */
+  /** 路由路径，如 `/api/redis/sms-login/send-code`。 */
   path: string;
   /** 接口简短摘要，展示在文档和目录中。 */
   summary: string;

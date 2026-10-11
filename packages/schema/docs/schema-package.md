@@ -11,7 +11,7 @@
 ## 生成的两条路径
 
 1. `generate:apitypes` 从 `common/index.ts` 和 `apis/index.ts` 的命名导出查找顶层 `ZodObject`；未命名立即报错。遍历 object 字段及 array、optional、nullable、default、union，收集命名 object/enum，使用 `zod-to-ts` 的 `zodToTs`、`createTypeAlias`、`printNode` 输出别名。嵌套的具名 schema 用类型引用，而匿名节点内联；去掉生成文本冗余 `| undefined`。只替换 `types/api-types.ts` 标记后的内容，前面的手写 import 保留。当前遍历覆盖上述容器；其他复杂 Zod wrapper（例如 transform/lazy/intersection）需要按实际语义扩展，不会被静默宣称支持。
-2. `generate:openapi` 收集 `ApiInfo`，把 method/path/tags/summary/query/params/body/response/errorResponses 交给 `OpenAPIRegistry.registerPath`，由 `OpenApiGeneratorV31` 生成 3.1 JSON。`info.version` 直接读取 `package.json`，因此不需要把版本临时写入类型入口。当前文档包含 `/api/transactions/run`。
+2. `generate:openapi` 收集 `ApiInfo`，把 method/path/tags/summary/query/params/body/response/errorResponses 交给 `OpenAPIRegistry.registerPath`，由 `OpenApiGeneratorV31` 生成 3.1 JSON。`info.version` 直接读取 `package.json`，因此不需要把版本临时写入类型入口。当前文档包含 `/api/postgres/transactions/run`。
 
 `prebuild` 依次运行生成器；`build` 清理旧 `lib/` 并调用 `tsc`；`postbuild` 复制 JSON 到 `lib/`，移除编译期的 `lib/scripts/`。相较于“先改 `types/index.ts`、失败后恢复”的做法，生成器不修改该文件，故编译失败也不会遗留临时版本修改。根目录 JSON 是忽略的可再生文件，生成类型是受版本控制的契约，生成失败时需查看生成类型差异。`files: ["lib"]` 限制包内容；发布前 `prepack` 重新构建。
 

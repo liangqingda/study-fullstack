@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFileSync } from 'node:child_process';
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -34,73 +34,17 @@ const toKebabCase = (value) =>
     .toLowerCase();
 
 /**
- * 从一条路由及其首个操作推导 demo 分组键：
- * 优先取 OpenAPI 操作的 tags（与 demo 名对应），回退到 `/api/` 后的第一个路径段。
+ * 从路由路径直接推导目录归属：`/api/<分类>/<demo>/...` 取前两段做两层结构。
+ * 只有 `/api/` 后一段（如 `/api/foo`）时视为顶层 demo、无分类；有两段时第一段是分类、第二段是 demo。
  */
-const demoKeyFor = (route, pathItem) => {
-  const tags = Object.values(pathItem ?? {})
-    .filter((operation) => operation && typeof operation === 'object' && !('$ref' in operation))
-    .flatMap((operation) => operation.tags ?? [])
-    .map(toKebabCase)
-    .filter(Boolean);
+const splitRoute = (route) => {
+  const segments = route.replace(/^\/api\/?/, '').split('/').filter(Boolean);
+  const demo = segments[1] ?? segments[0] ?? 'api';
 
-  if (tags.length) {
-    return tags[0];
-  }
-
-  const firstSegment = route.replace(/^\/api\/?/, '').split('/')[0];
-
-  return firstSegment ? toKebabCase(firstSegment) : 'api';
-};
-
-/**
- * 扫描 `src/pages`，建立 demo 名（kebab-case）→ 顶层分类（kebab-case）的映射，
- * 使生成的 API 客户端沿用前端页面的两层目录结构（如 `Redis/SmsLogin` → redis/sms-login）。
- * 只把包含子目录（demo 页面目录）的顶层目录视为分类；顶层文件类页面（如 Errors/*.tsx）不参与。
- */
-const buildDemoCategoryMap = async (pagesRoot) => {
-  const map = {};
-  let entries;
-
-  try {
-    entries = await readdir(pagesRoot, { withFileTypes: true });
-  } catch (error) {
-    if (error.code === 'ENOENT') { return map; }
-
-    throw error;
-  }
-
-  for (const entry of entries) {
-    if (!entry.isDirectory() || entry.name.startsWith('.')) {
-      continue;
-    }
-
-    const categoryKey = toKebabCase(entry.name);
-
-    if (!categoryKey) {
-      continue;
-    }
-
-    const demos = await readdir(path.join(pagesRoot, entry.name), { withFileTypes: true }).catch((error) => {
-      if (error.code === 'ENOENT') { return []; }
-
-      throw error;
-    });
-
-    for (const demo of demos) {
-      if (!demo.isDirectory() || demo.name.startsWith('.')) {
-        continue;
-      }
-
-      const demoKey = toKebabCase(demo.name);
-
-      if (demoKey) {
-        map[demoKey] = categoryKey;
-      }
-    }
-  }
-
-  return map;
+  return {
+    category: segments[1] ? toKebabCase(segments[0]) : null,
+    demo: toKebabCase(demo),
+  };
 };
 
 const responseType = async (operation, opType, schemaType) => {
@@ -129,7 +73,7 @@ const responseType = async (operation, opType, schemaType) => {
   return [...new Set(branches)].join(' | ');
 };
 
-export const generateApiClient = async (document, { demoCategories = {} } = {}) => {
+export const generateApiClient = async (document) => {
   if (!document || typeof document !== 'object' || !String(document.openapi ?? '').startsWith('3.')) {
     throw new Error('Expected an OpenAPI 3 document');
   }
@@ -180,14 +124,20 @@ export const generateApiClient = async (document, { demoCategories = {} } = {}) 
     required: parameters.filter((parameter) => parameter.required).map((parameter) => parameter.name),
   });
   const usedNames = new Set();
-  // demoKey -> { entries, importedTypes, httpImports }
+  // demo 键 -> { category, entries, importedTypes, httpImports }
   const demoGroups = new Map();
 
   for (const [route, pathItem] of Object.entries(document.paths ?? {}).sort(([a], [b]) => a.localeCompare(b))) {
-    const demoKey = demoKeyFor(route, pathItem);
+    const { category, demo } = splitRoute(route);
+    const demoKey = demo;
+    // 函数名不应包含分类前缀：去掉分类段，但保留 `/api` 前缀，使标识与既有命名一致（如 postApiSmsLoginLogin）。
+    const routeSegments = route.replace(/^\/api\/?/, '').split('/').filter(Boolean);
+    const idSegments = category ? routeSegments.slice(1) : routeSegments;
+    const idRoute = `/api/${idSegments.join('/')}`;
 
     if (!demoGroups.has(demoKey)) {
       demoGroups.set(demoKey, {
+        category,
         entries: [],
         importedTypes: new Set(),
         httpImports: new Set(),
@@ -207,7 +157,7 @@ export const generateApiClient = async (document, { demoCategories = {} } = {}) 
         throw new Error(`Unsupported operation: ${method.toUpperCase()} ${route}`);
       }
 
-      const name = toIdentifier(method, route);
+      const name = toIdentifier(method, idRoute);
 
       if (usedNames.has(name)) {
         throw new Error(`Duplicate generated function name: ${name}`);
@@ -295,7 +245,7 @@ export const generateApiClient = async (document, { demoCategories = {} } = {}) 
   };
 
   for (const [demoKey, group] of [...demoGroups.entries()].sort(([left], [right]) => left.localeCompare(right))) {
-    const category = demoCategories[demoKey];
+    const category = group.category;
     const file = assembleDemoFile(demoKey, group);
 
     if (category) {
@@ -347,8 +297,7 @@ export const generateApiClient = async (document, { demoCategories = {} } = {}) 
 const main = async () => {
   execFileSync('pnpm', ['generate:openapi'], { cwd: schemaRoot, stdio: 'inherit' });
   const document = JSON.parse(await readFile(path.join(schemaRoot, 'openApiJsonFile.json'), 'utf8'));
-  const demoCategories = await buildDemoCategoryMap(path.resolve(root, 'src/pages'));
-  const { files, categoryIndexes, index } = await generateApiClient(document, { demoCategories });
+  const { files, categoryIndexes, index } = await generateApiClient(document);
 
   await mkdir(outputDir, { recursive: true });
 

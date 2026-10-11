@@ -4,4 +4,4 @@ import type { TransactionRunRequest, TransactionRunResponse } from '@liangqingda
 import { post } from '@/utils/http';
 
 export const postApiTransactionsRun = (input: { body: TransactionRunRequest; signal?: AbortSignal }) =>
-  post<TransactionRunResponse>("/api/transactions/run", input.body, { signal: input.signal });
+  post<TransactionRunResponse>("/api/postgres/transactions/run", input.body, { signal: input.signal });

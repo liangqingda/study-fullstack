@@ -60,7 +60,7 @@ export const SmsLoginErrorSchema = z.object({
 
 export const sendCodeApi = defineApiInfo({
   method: HttpMethodEnum.POST,
-  path: '/api/sms-login/send-code',
+  path: '/api/redis/sms-login/send-code',
   summary: 'Send an SMS verification code, stored in Redis with an expiry and resend rate-limit',
   tags: ['SmsLogin'],
   body: SendCodeRequestSchema,
@@ -70,7 +70,7 @@ export const sendCodeApi = defineApiInfo({
 
 export const loginApi = defineApiInfo({
   method: HttpMethodEnum.POST,
-  path: '/api/sms-login/login',
+  path: '/api/redis/sms-login/login',
   summary: 'Verify the code and create a Redis-backed shared session token',
   tags: ['SmsLogin'],
   body: LoginRequestSchema,
@@ -80,7 +80,7 @@ export const loginApi = defineApiInfo({
 
 export const meApi = defineApiInfo({
   method: HttpMethodEnum.GET,
-  path: '/api/sms-login/me',
+  path: '/api/redis/sms-login/me',
   summary: 'Read the session from shared Redis and renew its TTL (sliding expiration)',
   tags: ['SmsLogin'],
   response: MeResponseSchema,
@@ -90,7 +90,7 @@ export const meApi = defineApiInfo({
 
 export const logoutApi = defineApiInfo({
   method: HttpMethodEnum.POST,
-  path: '/api/sms-login/logout',
+  path: '/api/redis/sms-login/logout',
   summary: 'Delete the session from Redis',
   tags: ['SmsLogin'],
   requiresAuth: true,
@@ -100,7 +100,7 @@ export const logoutApi = defineApiInfo({
 
 export const sessionsApi = defineApiInfo({
   method: HttpMethodEnum.GET,
-  path: '/api/sms-login/sessions',
+  path: '/api/redis/sms-login/sessions',
   summary: 'List all live sessions stored in shared Redis',
   tags: ['SmsLogin'],
   response: SessionsResponseSchema,

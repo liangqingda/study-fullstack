@@ -13,7 +13,7 @@ describe('application routes', () => {
     { body: '{}', headers: { 'Content-Encoding': 'unsupported' }, status: 415, error: 'Unsupported content encoding' },
     { body: '{}', headers: { 'Content-Type': 'application/json; charset=iso-8859-1' }, status: 415, error: 'Unsupported charset' },
   ])('returns safe JSON for parser failures ($status: $error)', async ({ body, headers, status, error }) => {
-    const response = await request(app).post('/api/transactions/run')
+    const response = await request(app).post('/api/postgres/transactions/run')
       .set('Origin', 'http://localhost:5173')
       .set('Content-Type', 'application/json').set(headers).send(body);
 
@@ -24,7 +24,7 @@ describe('application routes', () => {
 
   it('includes CORS headers on parser failures', async () => {
     const corsApp = createApp(readConfig({ NODE_ENV: 'test', LOG_LEVEL: 'silent', CORS_ORIGINS: 'http://localhost:5173' }));
-    const response = await request(corsApp).post('/api/transactions/run')
+    const response = await request(corsApp).post('/api/postgres/transactions/run')
       .set('Origin', 'http://localhost:5173').set('Content-Type', 'application/json').send('{');
 
     expect(response.status).toBe(400);

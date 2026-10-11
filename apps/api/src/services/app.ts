@@ -59,8 +59,8 @@ export const createApp = (config: AppConfig, postgres?: PostgresClient & Partial
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
   app.get('/health-check', (_req, res) => res.json({ status: 'ok' }));
   app.use('/api/postgres', createPostgresRouter(postgres));
-  app.use('/api/sms-login', createSmsLoginRouter(redis));
-  app.use('/api/transactions', createTransactionRouter(postgres?.connect ? postgres as Pick<Pool, 'connect'> : undefined));
+  app.use('/api/redis/sms-login', createSmsLoginRouter(redis));
+  app.use('/api/postgres/transactions', createTransactionRouter(postgres?.connect ? postgres as Pick<Pool, 'connect'> : undefined));
   app.use('/api/response-methods', responseMethodsRouter);
   app.use('/api/middleware', applicationMiddleware, middlewareRouter);
   app.use('/api/error-handling', errorHandlingRouter);

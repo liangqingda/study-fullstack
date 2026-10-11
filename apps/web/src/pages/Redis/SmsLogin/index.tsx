@@ -50,7 +50,7 @@ const SmsLogin = () => {
 
           <section className={styles.registry}>
             <div className={styles.registryHeading}>
-              <div><Title order={2}>共享 Session 视图</Title><Text c="dimmed" size="sm">GET /api/sms-login/sessions · 集中存储在 Redis</Text></div>
+              <div><Title order={2}>共享 Session 视图</Title><Text c="dimmed" size="sm">GET /api/redis/sms-login/sessions · 集中存储在 Redis</Text></div>
               <Button leftSection={<IconRefresh size={16} />} loading={loading} onClick={() => void refreshSessions()} variant="default">刷新（dirty={dirty}）</Button>
             </div>
             {error && <Text c="red" role="alert" size="sm">{error}</Text>}

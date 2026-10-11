@@ -29,7 +29,7 @@ export const TransactionErrorSchema = z.object({ error: z.string() }).openapi('T
 
 export const runTransactionApi = defineApiInfo({
   method: HttpMethodEnum.POST,
-  path: '/api/transactions/run',
+  path: '/api/postgres/transactions/run',
   summary: 'Run a PostgreSQL transaction learning scenario',
   tags: ['Transactions'],
   body: TransactionRunRequestSchema,

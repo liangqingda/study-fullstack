@@ -7,7 +7,7 @@ const spec = {
   openapi: '3.1.0',
   info: { title: 'Demo', version: '1' },
   paths: {
-    '/api/orders/{orderId}': {
+    '/api/shop/orders/{orderId}': {
       get: {
         parameters: [
           { name: 'orderId', in: 'path', required: true, schema: { type: 'integer' } },
@@ -27,17 +27,19 @@ const spec = {
   },
 };
 
-test('generates typed callers for path, query, JSON body, and empty success responses', async () => {
-  const { files, index } = await generateApiClient(spec);
-  const orders = files.find((file) => file.name === 'orders.ts')?.content ?? '';
+test('derives the two-level category/demo directory from the API path', async () => {
+  const { files, categoryIndexes, index } = await generateApiClient(spec);
+  const orders = files.find((file) => file.path === 'shop/orders.ts')?.content ?? '';
 
-  assert.equal(files.length, 1);
-  assert.match(index, /export \* from '\.\/orders';/);
+  assert.deepEqual(files.map((file) => file.path), ['shop/orders.ts']);
+  assert.deepEqual(categoryIndexes.map((file) => file.path), ['shop/index.ts']);
+  assert.match(categoryIndexes[0].content, /export \* from '\.\/orders';/);
+  assert.match(index, /export \* from '\.\/shop';/);
   assert.match(orders, /orderId: number/);
   assert.match(orders, /export const getApiOrdersOrderId/);
   assert.match(orders, /import \{ buildPath, get, post \} from '@\/utils\/http';/);
   assert.match(orders, /query\?: \{\s+details\?: boolean;/);
-  assert.match(orders, /buildPath\("\/api\/orders\/\{orderId\}", input.path\)/);
+  assert.match(orders, /buildPath\("\/api\/shop\/orders\/\{orderId\}", input.path\)/);
   assert.match(orders, /body: \{\s+quantity: number;/);
   // 便捷方法已声明返回类型，生成的函数省略标注，由 TypeScript 自动推导。
   assert.doesNotMatch(orders, /Promise<AxiosResponse/);
@@ -50,7 +52,7 @@ test('imports named payload types from the schema package without a local types 
     ...spec,
     components: { schemas: { OrderRequest: { type: 'object' }, OrderResponse: { type: 'object' } } },
     paths: {
-      '/api/orders': {
+      '/api/shop/orders': {
         post: {
           requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OrderRequest' } } } },
           responses: { 200: { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/OrderResponse' } } } } },
@@ -58,7 +60,7 @@ test('imports named payload types from the schema package without a local types 
       },
     },
   });
-  const orders = files.find((file) => file.name === 'orders.ts')?.content ?? '';
+  const orders = files.find((file) => file.path === 'shop/orders.ts')?.content ?? '';
 
   assert.match(orders, /import type \{ OrderRequest, OrderResponse \} from '@liangqingda\/study-nodejs-schema';/);
   assert.match(orders, /body: OrderRequest/);
@@ -66,24 +68,23 @@ test('imports named payload types from the schema package without a local types 
   assert.doesNotMatch(orders, /paths\[|components\[|from ['"]\.\/types/);
 });
 
-test('splits callers into per-demo files, groups them by category, and re-exports from indexes', async () => {
+test('groups multiple demos into their own category directories and re-exports from indexes', async () => {
   const { files, categoryIndexes, index } = await generateApiClient({
     ...spec,
     paths: {
-      '/api/orders': {
+      '/api/shop/orders': {
         get: {
           responses: { 200: { description: 'ok', content: { 'application/json': { schema: { type: 'object' } } } } },
         },
       },
-      '/api/users': {
+      '/api/identity/users': {
         get: {
           responses: { 200: { description: 'ok', content: { 'application/json': { schema: { type: 'object' } } } } },
         },
       },
     },
-  }, { demoCategories: { orders: 'shop', users: 'identity' } });
+  });
 
-  // 有分类的 demo 归入 `category/<demo>.ts`，形成最多两层结构。
   assert.deepEqual(files.map((file) => file.path), ['shop/orders.ts', 'identity/users.ts']);
   assert.deepEqual(categoryIndexes.map((file) => file.path), ['identity/index.ts', 'shop/index.ts']);
   assert.match(categoryIndexes[0].content, /export \* from '\.\/users';/);
@@ -97,8 +98,17 @@ test('splits callers into per-demo files, groups them by category, and re-export
   assert.doesNotMatch(files[1].content, /orders/);
 });
 
-test('falls back to a top-level demo file when no category maps to a demo', async () => {
-  const { files, categoryIndexes, index } = await generateApiClient(spec);
+test('keeps a single-segment route at the top level without a category', async () => {
+  const { files, categoryIndexes, index } = await generateApiClient({
+    ...spec,
+    paths: {
+      '/api/orders': {
+        get: {
+          responses: { 200: { description: 'ok', content: { 'application/json': { schema: { type: 'object' } } } } },
+        },
+      },
+    },
+  });
 
   assert.deepEqual(files.map((file) => file.path), ['orders.ts']);
   assert.equal(categoryIndexes.length, 0);
@@ -117,7 +127,7 @@ test('preserves nested references and unions of successful responses', async () 
     ...spec,
     components: { schemas: { Order: { type: 'object' } } },
     paths: {
-      '/api/orders': {
+      '/api/shop/orders': {
         get: {
           responses: {
             200: { description: 'ok', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Order' } } } } },
@@ -127,7 +137,7 @@ test('preserves nested references and unions of successful responses', async () 
       },
     },
   });
-  const orders = files.find((file) => file.name === 'orders.ts')?.content ?? '';
+  const orders = files.find((file) => file.path === 'shop/orders.ts')?.content ?? '';
 
   assert.match(orders, /import type \{ Order \} from '@liangqingda\/study-nodejs-schema';/);
   assert.match(orders, /=>\s+get<Order\[\] \| void>\(/);

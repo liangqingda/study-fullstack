@@ -35,7 +35,7 @@ export const STRUCTURE: DemoStructure = {
     { path: 'packages/schema/apis/transactions/index.ts', role: '场景枚举、请求、结果及错误契约。' },
     { path: 'packages/schema/apis/model/api-info.ts', role: '接口描述的数据结构。' },
   ],
-  connection: '页面调用生成的 POST /api/transactions/run；后端按共享契约校验，在一个或两个 PostgreSQL 连接上执行，再返回按会话排序的实际步骤。',
+  connection: '页面调用生成的 POST /api/postgres/transactions/run；后端按共享契约校验，在一个或两个 PostgreSQL 连接上执行，再返回按会话排序的实际步骤。',
   database: '仅使用 study_nodejs。单连接场景使用临时表；并发场景复用或创建 demo_transactions_stock 与 demo_transactions_on_call，每次运行只写入并清理自己的演示行。',
 };
 

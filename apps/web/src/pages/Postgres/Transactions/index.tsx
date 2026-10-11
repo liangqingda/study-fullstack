@@ -57,7 +57,7 @@ const Transactions = () => {
       >
             <div className={styles.heading}><div><Title order={2}>{selected.title}</Title><Text c="dimmed" size="sm">{selected.subtitle}</Text></div><Badge color="orange" variant="light">POST</Badge></div>
             <div className={styles.lesson}><div><h3>先预测</h3><Text size="sm">{selected.question}</Text></div><div><h3>关键 SQL（简化展示）</h3><CodeBlock code={selected.code} language="sql" /></div><div><h3>运行后应看到</h3><Text size="sm">{selected.expected}</Text></div></div>
-            <div className={styles.action}><code>POST /api/transactions/run</code><Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void runExperiment()}>运行实验</Button></div>
+            <div className={styles.action}><code>POST /api/postgres/transactions/run</code><Button leftSection={<IconPlayerPlay size={16} />} loading={loading} onClick={() => void runExperiment()}>运行实验</Button></div>
             {error && <Text c="red" role="alert">{error}</Text>}
             {!result && !error && <DemoEmpty>{loading ? '正在执行事务…' : '等待运行'}</DemoEmpty>}
             {result && <section aria-live="polite" className={styles.result}>
