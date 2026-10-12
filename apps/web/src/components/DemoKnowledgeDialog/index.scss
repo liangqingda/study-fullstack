@@ -3,43 +3,18 @@
 .modal-body { padding: 0; }
 .modal-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; }
 
-.knowledge-layout { position: relative; display: flex; min-height: calc(100dvh - 64px); }
+.knowledge-layout { display: flex; min-height: calc(100dvh - 64px); }
 .sidebar {
   display: flex; flex-direction: column; flex-shrink: 0; width: 280px;
   position: sticky; top: 64px; align-self: start; height: calc(100dvh - 64px);
   border-right: 1px solid var(--mantine-color-default-border); background: var(--mantine-color-body);
 }
-.sidebar-collapsed {
-  position: absolute; left: 0; top: 64px; height: calc(100dvh - 64px); z-index: 20;
-  transform: translateX(-100%); opacity: 0; pointer-events: none;
-  box-shadow: var(--mantine-shadow-lg);
-  transition: transform 0.18s ease, opacity 0.18s ease;
-}
-.sidebar-collapsed-visible { transform: translateX(0); opacity: 1; pointer-events: auto; }
 .sidebar-body { flex: 1; min-width: 0; padding: 16px; overflow-x: hidden; overflow-y: auto; scrollbar-color: var(--mantine-color-default-border) transparent; scrollbar-width: thin; }
 .sidebar-body::-webkit-scrollbar { width: 6px; }
 .sidebar-body::-webkit-scrollbar-track { background: transparent; }
 .sidebar-body::-webkit-scrollbar-thumb { border-radius: 6px; background: var(--mantine-color-default-border); }
 .sidebar-body::-webkit-scrollbar-thumb:hover { background: var(--mantine-color-dimmed); }
-/* 侧栏底部：参照 Notion 的折叠/展开按钮位置。 */
-.sidebar-footer { display: flex; flex-shrink: 0; border-top: 1px solid var(--mantine-color-default-border); }
-.sidebar-toggle {
-  flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 14px;
-  border: none; background: transparent; color: var(--mantine-color-dimmed); font-size: 13px; cursor: pointer;
-}
-.sidebar-toggle:hover, .sidebar-toggle:focus-visible { color: var(--mantine-color-teal-7); background: var(--mantine-color-default-hover); }
-.sidebar-toggle:focus-visible { outline: 2px solid var(--mantine-color-teal-6); outline-offset: 1px; }
-/* 收起态左边缘窄条：参照 Notion，鼠标移到边缘时浮出侧栏，底部有展开按钮。 */
-.sidebar-edge {
-  position: absolute; left: 0; top: 64px; height: calc(100dvh - 64px); width: 16px; z-index: 10;
-  display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 8px;
-  background: var(--mantine-color-body); border-right: 1px solid var(--mantine-color-default-border);
-}
-.sidebar-edge-button {
-  display: grid; place-items: center; width: 16px; height: 32px; padding: 0;
-  border: none; border-radius: 4px; background: transparent; color: var(--mantine-color-dimmed); cursor: pointer;
-}
-.sidebar-edge-button:hover, .sidebar-edge-button:focus-visible { color: var(--mantine-color-teal-7); background: var(--mantine-color-default-hover); }
+.content { flex: 1; min-width: 0; }
 .sidebar-edge-button:focus-visible { outline: 2px solid var(--mantine-color-teal-6); outline-offset: 1px; }
 .content { flex: 1; min-width: 0; }
 .toc-list { display: grid; gap: 2px; margin: 4px 0 0; padding: 0; list-style: none; }
@@ -62,8 +37,6 @@
 .toc-link:focus-visible { outline: 2px solid var(--mantine-color-teal-6); outline-offset: 1px; }
 .toc-active { box-shadow: inset 2px 0 0 var(--mantine-color-teal-5); }
 .toc-active .toc-link { color: var(--mantine-color-teal-7); font-weight: 600; background: var(--mantine-color-default-hover); }
-
-.content { min-width: 0; }
 
 .markdown {
   max-width: 860px;
@@ -148,12 +121,7 @@
 
 @media (max-width: 800px) {
   .knowledge-layout { flex-direction: column; }
-  .sidebar { width: auto; height: 200px; position: static; flex-direction: column-reverse; border-right: none; border-bottom: 1px solid var(--mantine-color-default-border); }
-  .sidebar-collapsed { position: static; width: 100%; height: 44px; transform: none; opacity: 1; pointer-events: auto; box-shadow: none; z-index: auto; }
-  .sidebar-collapsed .sidebar-body { display: none; }
-  .sidebar-collapsed-visible { transform: none; opacity: 1; }
-  .sidebar-footer { order: 1; border-top: none; border-bottom: 1px solid var(--mantine-color-default-border); }
-  .sidebar-edge { display: none; }
+  .sidebar { width: auto; height: 200px; position: static; border-right: none; border-bottom: 1px solid var(--mantine-color-default-border); }
 }
 @media (max-width: 620px) {
   .modal-header { padding: 12px 16px; }

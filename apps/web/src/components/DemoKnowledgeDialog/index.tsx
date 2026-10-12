@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Modal, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconBook2, IconChevronDown, IconChevronRight, IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconPin } from '@tabler/icons-react';
+import { IconBook2, IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import type { ReactNode } from 'react';
 import type { Components, ExtraProps } from 'react-markdown';
 
 import { buildTree, collectAncestors, headingSelector, parseHeadings, type TocItem, type TocNode } from './utils';
@@ -215,8 +214,6 @@ const DemoKnowledgeDialog = ({
   const [opened, { open, close }] = useDisclosure(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [floating, setFloating] = useState(false);
   const sidebarRef = useRef<HTMLElement | null>(null);
 
   const toc = useMemo(() => parseHeadings(content), [content]);
@@ -279,26 +276,6 @@ const DemoKnowledgeDialog = ({
     }
   }, [currentActive]);
 
-  /*
-   * 收起态下：鼠标移到左侧边缘（约 14px）时浮出侧栏，进入侧栏范围（280px 内）
-   * 保持展开，移出侧栏范围则收回。参考 Notion 文档的侧栏交互。
-   */
-  useEffect(() => {
-    if (!sidebarCollapsed) {
-      return;
-    }
-
-    const handleMouseMove = (event: MouseEvent) => {
-      const x = event.clientX;
-
-      setFloating((prev) => (prev ? x < 288 : x < 14));
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [sidebarCollapsed]);
-
   const scrollToSection = (id: string) => {
     const target = document.getElementById(id);
 
@@ -322,30 +299,6 @@ const DemoKnowledgeDialog = ({
       return next;
     });
   };
-
-  /* 把侧栏固定为常驻展开。 */
-  const expandSidebar = () => {
-    setSidebarCollapsed(false);
-    setFloating(false);
-  };
-
-  /* 侧栏底部按钮：展开态收起，收起态（浮动中）固定为常驻展开。 */
-  const toggleSidebar = () => {
-    if (sidebarCollapsed) {
-      expandSidebar();
-    } else {
-      setSidebarCollapsed(true);
-    }
-  };
-
-  /* 侧栏底部折叠/展开按钮的文案与图标（参照 Notion）：收起且浮动中显示"固定"，收起未浮动显示"展开"。 */
-  let footerLabel = '收起目录';
-  let footerIcon: ReactNode = <IconLayoutSidebarLeftCollapse size={16} />;
-
-  if (sidebarCollapsed) {
-    footerLabel = floating ? '固定目录' : '展开目录';
-    footerIcon = floating ? <IconPin size={16} /> : <IconLayoutSidebarLeftExpand size={16} />;
-  }
 
   return (
     <>
@@ -376,19 +329,7 @@ const DemoKnowledgeDialog = ({
         }
       >
         <div className={styles.knowledgeLayout}>
-          {sidebarCollapsed && (
-            <div className={styles.sidebarEdge}>
-              <button
-                aria-label="展开目录"
-                className={styles.sidebarEdgeButton}
-                onClick={expandSidebar}
-                type="button"
-              >
-                <IconLayoutSidebarLeftExpand size={14} />
-              </button>
-            </div>
-          )}
-          <aside className={`${styles.sidebar} ${sidebarCollapsed ? styles.sidebarCollapsed : ''} ${sidebarCollapsed && floating ? styles.sidebarCollapsedVisible : ''}`}>
+          <aside className={styles.sidebar}>
             <nav aria-label="知识点目录" className={styles.sidebarBody} ref={sidebarRef}>
               {toc.length === 0 ? (
                 <Text c="dimmed" size="sm">
@@ -405,18 +346,6 @@ const DemoKnowledgeDialog = ({
                 />
               )}
             </nav>
-            <div className={styles.sidebarFooter}>
-              <button
-                aria-expanded={!sidebarCollapsed}
-                aria-label={footerLabel}
-                className={styles.sidebarToggle}
-                onClick={toggleSidebar}
-                type="button"
-              >
-                {footerIcon}
-                <span>{footerLabel}</span>
-              </button>
-            </div>
           </aside>
           <div className={styles.content}>
             <KnowledgeContent
