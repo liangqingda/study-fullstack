@@ -3,6 +3,24 @@
 .modal-body { padding: 0; }
 .modal-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; }
 
+.knowledge-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: calc(100dvh - 64px); }
+.sidebar { position: sticky; top: 64px; align-self: start; height: calc(100dvh - 64px); overflow-x: hidden; overflow-y: auto; border-right: 1px solid var(--mantine-color-default-border); background: var(--mantine-color-body); scrollbar-color: var(--mantine-color-default-border) transparent; scrollbar-width: thin; }
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { border-radius: 6px; background: var(--mantine-color-default-border); }
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--mantine-color-dimmed); }
+.sidebar-inner { padding: 20px 16px; }
+.sidebar-title { display: flex; align-items: center; gap: 8px; color: var(--mantine-color-text); }
+.toc-list { display: grid; gap: 2px; margin: 12px 0 0; padding: 0; list-style: none; }
+.toc-item { padding-left: calc(6px + var(--toc-depth) * 14px); border-radius: 5px; }
+.toc-item button { display: block; width: 100%; min-width: 0; padding: 5px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: none; border-radius: 5px; background: transparent; color: var(--mantine-color-dimmed); text-align: left; font-size: 13px; line-height: 1.4; cursor: pointer; }
+.toc-item button:hover, .toc-item button:focus-visible { color: var(--mantine-color-teal-7); }
+.toc-item button:focus-visible { outline: 2px solid var(--mantine-color-teal-6); outline-offset: 1px; }
+.toc-active { box-shadow: inset 2px 0 0 var(--mantine-color-teal-5); }
+.toc-active button { color: var(--mantine-color-teal-7); font-weight: 600; background: var(--mantine-color-default-hover); }
+
+.content { min-width: 0; }
+
 .markdown {
   max-width: 860px;
   margin: 0 auto;
@@ -75,4 +93,17 @@
   th, td { padding: 8px 12px; border: 1px solid var(--mantine-color-default-border); text-align: left; vertical-align: top; }
   th { background: var(--mantine-color-default-hover); font-weight: 700; }
   tr:nth-child(even) td { background: var(--mantine-color-body); }
+}
+
+:global(html[data-mantine-color-scheme='dark']) {
+  .toc-item button:hover, .toc-item button:focus-visible,
+  .toc-active button { color: var(--mantine-color-teal-3); }
+}
+
+@media (max-width: 800px) {
+  .knowledge-layout { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { position: static; height: 200px; border-right: none; border-bottom: 1px solid var(--mantine-color-default-border); }
+}
+@media (max-width: 620px) {
+  .modal-header { padding: 12px 16px; }
 }
