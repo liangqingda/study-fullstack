@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Modal, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconBook2, IconChevronDown, IconChevronRight } from '@tabler/icons-react';
+import { IconBook2, IconChevronDown, IconChevronRight, IconChevronsLeft, IconChevronsRight } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -352,6 +352,7 @@ const DemoKnowledgeDialog = ({
   const [opened, { open, close }] = useDisclosure(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const sidebarRef = useRef<HTMLElement | null>(null);
 
   const toc = useMemo(() => parseHeadings(content), [content]);
@@ -452,8 +453,23 @@ const DemoKnowledgeDialog = ({
         }
       >
         <div className={styles.knowledgeLayout}>
-          <nav aria-label="知识点目录" className={styles.sidebar} ref={sidebarRef}>
-            <div className={styles.sidebarInner}>
+          <aside
+            className={`${styles.sidebar} ${sidebarCollapsed ? styles.sidebarCollapsed : ''}`}
+          >
+            <button
+              aria-expanded={!sidebarCollapsed}
+              aria-label={sidebarCollapsed ? '展开目录' : '收起目录'}
+              className={styles.sidebarHandle}
+              onClick={() => setSidebarCollapsed((prev) => !prev)}
+              type="button"
+            >
+              {sidebarCollapsed ? (
+                <IconChevronsRight size={16} />
+              ) : (
+                <IconChevronsLeft size={16} />
+              )}
+            </button>
+            <nav aria-label="知识点目录" className={styles.sidebarBody} ref={sidebarRef}>
               {toc.length === 0 ? (
                 <Text c="dimmed" size="sm">
                   本节暂无标题目录。
@@ -480,8 +496,8 @@ const DemoKnowledgeDialog = ({
                   }
                 />
               )}
-            </div>
-          </nav>
+            </nav>
+          </aside>
           <div className={styles.content}>
             <KnowledgeContent
               content={content}
