@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import type { CSSProperties } from 'react';
+import type { Components, ExtraProps } from 'react-markdown';
 
 import styles from './index.scss';
 
@@ -17,12 +18,14 @@ type DemoKnowledgeDialogProps = {
 };
 
 type TocItem = {
-  /** 章节锚点 id，对应正文标题的 DOM id。 */
+  /** 章节锚点 id，由 React 直接渲染到正文标题上，保证点击跳转可靠。 */
   id: string;
   /** 章节标题文本。 */
   text: string;
   /** 标题层级（1-4，对应 h1-h4）。 */
   level: number;
+  /** 标题在 Markdown 源文本中的行号（1 起），用于和正文标题一一对齐。 */
+  line: number;
 };
 
 /** 参与目录导航的标题层级。 */
@@ -42,14 +45,15 @@ const slugify = (text: string) =>
     .replace(/^-+|-+$/g, '') || 'section';
 
 /**
- * 从 Markdown 源文本解析出目录项，顺序与正文渲染保持一致。
+ * 从 Markdown 源文本解析出目录项，并记录每个标题的源行号，
+ * 供渲染正文标题时按行号对齐锚点 id。
  * 跳过围栏代码块，只取 h1-h4；标题内联语法（行内代码、链接、强调）先剥掉再取文本。
  */
 const parseHeadings = (markdown: string): TocItem[] => {
   const used = new Map<string, number>();
   let inFence = false;
 
-  const items = markdown.split('\n').flatMap((line) => {
+  const items = markdown.split('\n').flatMap((line, index) => {
     const trimmed = line.trim();
 
     if (/^(```|~~~)/.test(trimmed)) {
@@ -91,34 +95,66 @@ const parseHeadings = (markdown: string): TocItem[] => {
 
     used.set(base, count + 1);
 
-    return [{ id, text, level }];
+    return [{ id, text, level, line: index + 1 }];
   });
 
   return items;
 };
 
-const DemoKnowledgeDialog = ({
-  content,
-  demoName,
-}: DemoKnowledgeDialogProps) => {
-  const [opened, { open, close }] = useDisclosure(false);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const contentRef = useRef<HTMLElement | null>(null);
-  const sidebarRef = useRef<HTMLElement | null>(null);
+type KnowledgeContentProps = {
+  /** 知识点 Markdown。 */
+  content: string;
+  /** 目录项，含每个标题的源行号，用于给正文标题渲染锚点 id。 */
+  toc: TocItem[];
+  /** 当前阅读到的章节变化时回调。 */
+  onActiveChange: (id: string) => void;
+};
 
-  const toc = useMemo(() => parseHeadings(content), [content]);
-  const currentActive = activeId ?? (toc.length > 0 ? toc[0].id : null);
+/*
+ * 正文与滚动高亮监听独立成组件：它随弹窗内容一起挂载，
+ * 其 effect 在自身 ref 赋值后才运行，避免父组件按 opened 时序取到空 ref。
+ */
+const KnowledgeContent = ({
+  content,
+  toc,
+  onActiveChange,
+}: KnowledgeContentProps) => {
+  const articleRef = useRef<HTMLElement | null>(null);
+
+  /* 行号 → 目录项，正文标题渲染时按源行号取回锚点 id。 */
+  const lineItems = useMemo(
+    () => new Map(toc.map((item) => [item.line, item])),
+    [toc],
+  );
 
   /*
-   * 弹窗打开后，给正文标题补上目录锚点 id（slug 规则与目录解析一致），
-   * 并用 IntersectionObserver 跟踪当前阅读到的章节，高亮对应目录项。
+   * 标题由 React 直接渲染 id（React 拥有属性，重渲染不会被抹掉），
+   * 目录点击、锚点跳转因此始终可靠。react-markdown 会把源行号放到 node 上。
    */
-  useEffect(() => {
-    if (!opened) {
-      return;
-    }
+  const markdownComponents = useMemo<Components>(() => {
+    const idFor = (node: ExtraProps['node']) => {
+      const position = node?.position;
 
-    const article = contentRef.current;
+      if (position === undefined) {
+        return undefined;
+      }
+
+      return lineItems.get(position.start.line)?.id;
+    };
+
+    return {
+      h1: ({ node, ...rest }) => <h1 id={idFor(node)} {...rest} />,
+      h2: ({ node, ...rest }) => <h2 id={idFor(node)} {...rest} />,
+      h3: ({ node, ...rest }) => <h3 id={idFor(node)} {...rest} />,
+      h4: ({ node, ...rest }) => <h4 id={idFor(node)} {...rest} />,
+      h5: ({ node, ...rest }) => <h5 id={idFor(node)} {...rest} />,
+      h6: ({ node, ...rest }) => <h6 id={idFor(node)} {...rest} />,
+    };
+  }, [lineItems]);
+
+  /* 挂载后（articleRef 已赋值）用 IntersectionObserver 跟踪阅读位置。 */
+  useEffect(() => {
+    const article = articleRef.current;
 
     if (!article) {
       return;
@@ -127,16 +163,6 @@ const DemoKnowledgeDialog = ({
     const headings = Array.from(
       article.querySelectorAll<HTMLElement>(headingSelector),
     );
-    const used = new Map<string, number>();
-
-    for (const heading of headings) {
-      const base = slugify(heading.textContent);
-      const count = used.get(base) ?? 0;
-      const id = count === 0 ? base : `${base}-${count + 1}`;
-
-      used.set(base, count + 1);
-      heading.id = id;
-    }
 
     if (headings.length === 0) {
       return;
@@ -160,7 +186,7 @@ const DemoKnowledgeDialog = ({
         }
 
         if (best) {
-          setActiveId((best.target as HTMLElement).id);
+          onActiveChange((best.target as HTMLElement).id);
         }
       },
       /*
@@ -175,7 +201,27 @@ const DemoKnowledgeDialog = ({
     }
 
     return () => observer.disconnect();
-  }, [content, opened]);
+  }, [content, onActiveChange]);
+
+  return (
+    <article className={styles.markdown} ref={articleRef}>
+      <ReactMarkdown components={markdownComponents} remarkPlugins={[remarkGfm]}>
+        {content}
+      </ReactMarkdown>
+    </article>
+  );
+};
+
+const DemoKnowledgeDialog = ({
+  content,
+  demoName,
+}: DemoKnowledgeDialogProps) => {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const sidebarRef = useRef<HTMLElement | null>(null);
+
+  const toc = useMemo(() => parseHeadings(content), [content]);
+  const currentActive = activeId ?? (toc.length > 0 ? toc[0].id : null);
 
   /* 阅读位置变化时，让目录随动，保证高亮项始终在左侧可视范围内。 */
   useEffect(() => {
@@ -204,7 +250,7 @@ const DemoKnowledgeDialog = ({
   }, [currentActive]);
 
   const scrollToSection = (id: string) => {
-    const target = contentRef.current?.querySelector(`#${CSS.escape(id)}`);
+    const target = document.getElementById(id);
 
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -272,9 +318,11 @@ const DemoKnowledgeDialog = ({
             </div>
           </nav>
           <div className={styles.content}>
-            <article className={styles.markdown} ref={contentRef}>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-            </article>
+            <KnowledgeContent
+              content={content}
+              onActiveChange={setActiveId}
+              toc={toc}
+            />
           </div>
         </div>
       </Modal>
