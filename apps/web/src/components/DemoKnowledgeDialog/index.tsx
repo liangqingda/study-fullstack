@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Modal, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconBook2, IconListTree } from '@tabler/icons-react';
+import { IconBook2, IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import type { CSSProperties } from 'react';
 import type { Components, ExtraProps } from 'react-markdown';
 
 import styles from './index.scss';
@@ -26,6 +25,13 @@ type TocItem = {
   level: number;
   /** 标题在 Markdown 源文本中的行号（1 起），用于和正文标题一一对齐。 */
   line: number;
+};
+
+type TocNode = {
+  /** 当前章节。 */
+  item: TocItem;
+  /** 其下的子章节。 */
+  children: TocNode[];
 };
 
 /** 参与目录导航的标题层级。 */
@@ -99,6 +105,55 @@ const parseHeadings = (markdown: string): TocItem[] => {
   });
 
   return items;
+};
+
+/**
+ * 把扁平的标题列表按层级构建成目录树。逐级下钻：当遇到更浅或同级的标题时
+ * 回溯到正确祖先，跳级标题（如 h2 后直接 h4）就近挂到最近的祖先下。
+ */
+const buildTree = (items: TocItem[]): TocNode[] => {
+  const root: TocNode = { item: { id: '', text: '', level: 1, line: 0 }, children: [] };
+  let stack: TocNode[] = [root];
+
+  for (const item of items) {
+    while (
+      stack.length > 1 &&
+      item.level <= stack[stack.length - 1].item.level
+    ) {
+      stack = stack.slice(0, -1);
+    }
+
+    const node: TocNode = { item, children: [] };
+    const parent = stack[stack.length - 1];
+
+    parent.children = [...parent.children, node];
+    stack = [...stack, node];
+  }
+
+  return root.children;
+};
+
+/**
+ * 返回目标章节在目录树中的祖先 id（自根到其父级，不含自身）；
+ * 目标不存在时返回 null。用于滚动到某章时自动展开其祖先链。
+ */
+const collectAncestors = (
+  nodes: TocNode[],
+  targetId: string,
+): string[] | null => {
+  for (const node of nodes) {
+    if (node.item.id === targetId) {
+      return [];
+    }
+
+    const found = collectAncestors(node.children, targetId);
+
+    if (found !== null) {
+      return [node.item.id, ...found];
+    }
+  }
+
+  return null;
 };
 
 type KnowledgeContentProps = {
@@ -212,16 +267,126 @@ const KnowledgeContent = ({
   );
 };
 
+type TocTreeProps = {
+  /** 当前高亮的章节 id。 */
+  activeId: string | null;
+  /** 收起的章节 id 集合。 */
+  collapsed: Set<string>;
+  /** 当前渲染到的树深度（从 0 起），用于缩进。 */
+  depth: number;
+  /** 目录树节点。 */
+  nodes: TocNode[];
+  /** 点击章节文本跳转。 */
+  onJump: (id: string) => void;
+  /** 点击箭头展开/收起。 */
+  onToggle: (id: string) => void;
+};
+
+/* 递归渲染目录树：有子级的节点带展开箭头，文本点击跳转，缩进随深度递增。 */
+const TocTree = ({
+  activeId,
+  collapsed,
+  depth,
+  nodes,
+  onJump,
+  onToggle,
+}: TocTreeProps) => (
+  <ul className={styles.tocList}>
+    {nodes.map((node) => {
+      const hasChildren = node.children.length > 0;
+      const isActive = activeId === node.item.id;
+      const isCollapsed = collapsed.has(node.item.id);
+
+      return (
+        <li
+          className={`${styles.tocItem} ${isActive ? styles.tocActive : ''}`}
+          data-toc-id={node.item.id}
+          key={node.item.id}
+        >
+          <div className={styles.tocRow} style={{ paddingLeft: depth * 14 }}>
+            {hasChildren ? (
+              <button
+                aria-expanded={!isCollapsed}
+                aria-label={`${isCollapsed ? '展开' : '收起'} ${node.item.text}`}
+                className={styles.tocToggle}
+                onClick={() => onToggle(node.item.id)}
+                type="button"
+              >
+                {isCollapsed ? (
+                  <IconChevronRight size={14} />
+                ) : (
+                  <IconChevronDown size={14} />
+                )}
+              </button>
+            ) : (
+              <span className={styles.tocSpacer} />
+            )}
+            <button
+              className={styles.tocLink}
+              onClick={() => onJump(node.item.id)}
+              type="button"
+            >
+              {node.item.text}
+            </button>
+          </div>
+          {hasChildren && !isCollapsed && (
+            <TocTree
+              activeId={activeId}
+              collapsed={collapsed}
+              depth={depth + 1}
+              nodes={node.children}
+              onJump={onJump}
+              onToggle={onToggle}
+            />
+          )}
+        </li>
+      );
+    })}
+  </ul>
+);
+
 const DemoKnowledgeDialog = ({
   content,
   demoName,
 }: DemoKnowledgeDialogProps) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const sidebarRef = useRef<HTMLElement | null>(null);
 
   const toc = useMemo(() => parseHeadings(content), [content]);
+  const tocTree = useMemo(() => buildTree(toc), [toc]);
   const currentActive = activeId ?? (toc.length > 0 ? toc[0].id : null);
+
+  /*
+   * 章节变化（点击跳转或滚动高亮）时，记录当前章并自动展开其祖先链，
+   * 保证高亮项在折叠的子树里也能露出，行为与飞书/Notion 一致。
+   */
+  const handleActiveChange = useCallback(
+    (id: string) => {
+      setActiveId(id);
+
+      const ancestors = collectAncestors(tocTree, id) ?? [];
+
+      if (ancestors.length === 0) {
+        return;
+      }
+
+      setCollapsed((prev) => {
+        const next = new Set(prev);
+        let changed = false;
+
+        for (const ancestorId of ancestors) {
+          if (next.delete(ancestorId)) {
+            changed = true;
+          }
+        }
+
+        return changed ? next : prev;
+      });
+    },
+    [tocTree],
+  );
 
   /* 阅读位置变化时，让目录随动，保证高亮项始终在左侧可视范围内。 */
   useEffect(() => {
@@ -254,7 +419,7 @@ const DemoKnowledgeDialog = ({
 
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setActiveId(id);
+      handleActiveChange(id);
     }
   };
 
@@ -289,38 +454,38 @@ const DemoKnowledgeDialog = ({
         <div className={styles.knowledgeLayout}>
           <nav aria-label="知识点目录" className={styles.sidebar} ref={sidebarRef}>
             <div className={styles.sidebarInner}>
-              <div className={styles.sidebarTitle}>
-                <IconListTree size={16} />
-                <Text fw={700} size="sm">
-                  目录
-                </Text>
-              </div>
               {toc.length === 0 ? (
                 <Text c="dimmed" size="sm">
                   本节暂无标题目录。
                 </Text>
               ) : (
-                <ul className={styles.tocList}>
-                  {toc.map((item) => (
-                    <li
-                      className={`${styles.tocItem} ${currentActive === item.id ? styles.tocActive : ''}`}
-                      data-toc-id={item.id}
-                      key={item.id}
-                      style={{ '--toc-depth': item.level - 1 } as CSSProperties}
-                    >
-                      <button onClick={() => scrollToSection(item.id)} type="button">
-                        {item.text}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                <TocTree
+                  activeId={currentActive}
+                  collapsed={collapsed}
+                  depth={0}
+                  nodes={tocTree}
+                  onJump={scrollToSection}
+                  onToggle={(id) =>
+                    setCollapsed((prev) => {
+                      const next = new Set(prev);
+
+                      if (next.has(id)) {
+                        next.delete(id);
+                      } else {
+                        next.add(id);
+                      }
+
+                      return next;
+                    })
+                  }
+                />
               )}
             </div>
           </nav>
           <div className={styles.content}>
             <KnowledgeContent
               content={content}
-              onActiveChange={setActiveId}
+              onActiveChange={handleActiveChange}
               toc={toc}
             />
           </div>
