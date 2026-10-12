@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Loader, Text, TextInput } from '@mantine/core';
-import { IconPlayerPlay } from '@tabler/icons-react';
+import { IconPlayerPlay, IconRotateClockwise } from '@tabler/icons-react';
 
 import type { PhaseKey, PhaseStatus, RevealedPhase } from './types';
 
@@ -82,6 +82,14 @@ const UrlToPage = () => {
     run(url.trim());
   };
 
+  // 重置：中止进行中的请求、清空结果与失败信息、退出揭示动画并恢复初始输入。
+  const handleReset = () => {
+    reset();
+    setHasRun(false);
+    setRevealStep(0);
+    setUrl(INITIAL_URL);
+  };
+
   // 失败时所有已完成阶段直接标为 done；成功时按 revealStep 逐步揭示。
   const doneCount = failure ? failure.reached.length : revealStep;
   const phases: RevealedPhase[] = NETWORK_PHASES.map((phase, index) => {
@@ -124,6 +132,13 @@ const UrlToPage = () => {
             onClick={handleRun}
           >
             开始加载
+          </Button>
+          <Button
+            leftSection={<IconRotateClockwise size={16} />}
+            onClick={handleReset}
+            variant="subtle"
+          >
+            重置
           </Button>
         </div>
         <div aria-label="示例 URL" className={styles.presets} role="list">

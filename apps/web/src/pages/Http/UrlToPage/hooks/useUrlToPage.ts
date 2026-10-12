@@ -27,6 +27,12 @@ export const useUrlToPage = () => {
     useDemoRequest<UrlToPageLoadResponse>();
   const [failure, setFailure] = useState<LoadFailure | null>(null);
 
+  /** 取消当前请求并清空结果与失败信息，回到初始状态。 */
+  const resetLoad = useCallback(() => {
+    reset();
+    setFailure(null);
+  }, [reset]);
+
   /** 发起一次真实链路加载，自动取消上一个未完成的请求。 */
   const runLoad = useCallback(
     (url: string) => {
@@ -66,5 +72,5 @@ export const useUrlToPage = () => {
     [run],
   );
 
-  return { result, loading, reset, run: runLoad, failure };
+  return { result, loading, reset: resetLoad, run: runLoad, failure };
 };
