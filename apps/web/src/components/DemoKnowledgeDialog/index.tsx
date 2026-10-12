@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Modal, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconBook2, IconChevronDown, IconChevronRight, IconChevronsLeft, IconChevronsRight } from '@tabler/icons-react';
+import { IconBook2, IconChevronDown, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPin } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import type { ReactNode } from 'react';
 import type { Components, ExtraProps } from 'react-markdown';
 
 import styles from './index.scss';
@@ -353,6 +354,7 @@ const DemoKnowledgeDialog = ({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [floating, setFloating] = useState(false);
   const sidebarRef = useRef<HTMLElement | null>(null);
 
   const toc = useMemo(() => parseHeadings(content), [content]);
@@ -415,6 +417,26 @@ const DemoKnowledgeDialog = ({
     }
   }, [currentActive]);
 
+  /*
+   * 收起态下：鼠标移到左侧边缘（约 14px）时浮出侧栏，进入侧栏范围（280px 内）
+   * 保持展开，移出侧栏范围则收回。参考 Notion 文档的侧栏交互。
+   */
+  useEffect(() => {
+    if (!sidebarCollapsed) {
+      return;
+    }
+
+    const handleMouseMove = (event: MouseEvent) => {
+      const x = event.clientX;
+
+      setFloating((prev) => (prev ? x < 288 : x < 14));
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [sidebarCollapsed]);
+
   const scrollToSection = (id: string) => {
     const target = document.getElementById(id);
 
@@ -423,6 +445,15 @@ const DemoKnowledgeDialog = ({
       handleActiveChange(id);
     }
   };
+
+  /* 侧栏把手按钮的文案与图标：收起且浮动中显示"固定"，收起未浮动显示"展开"。 */
+  let handleLabel = '收起目录';
+  let handleIcon: ReactNode = <IconChevronsLeft size={16} />;
+
+  if (sidebarCollapsed) {
+    handleLabel = floating ? '固定目录' : '展开目录';
+    handleIcon = floating ? <IconPin size={16} /> : <IconChevronsRight size={16} />;
+  }
 
   return (
     <>
@@ -454,20 +485,23 @@ const DemoKnowledgeDialog = ({
       >
         <div className={styles.knowledgeLayout}>
           <aside
-            className={`${styles.sidebar} ${sidebarCollapsed ? styles.sidebarCollapsed : ''}`}
+            className={`${styles.sidebar} ${sidebarCollapsed ? styles.sidebarCollapsed : ''} ${sidebarCollapsed && floating ? styles.sidebarCollapsedVisible : ''}`}
           >
             <button
               aria-expanded={!sidebarCollapsed}
-              aria-label={sidebarCollapsed ? '展开目录' : '收起目录'}
+              aria-label={handleLabel}
               className={styles.sidebarHandle}
-              onClick={() => setSidebarCollapsed((prev) => !prev)}
+              onClick={() => {
+                if (sidebarCollapsed) {
+                  setSidebarCollapsed(false);
+                  setFloating(false);
+                } else {
+                  setSidebarCollapsed(true);
+                }
+              }}
               type="button"
             >
-              {sidebarCollapsed ? (
-                <IconChevronsRight size={16} />
-              ) : (
-                <IconChevronsLeft size={16} />
-              )}
+              {handleIcon}
             </button>
             <nav aria-label="知识点目录" className={styles.sidebarBody} ref={sidebarRef}>
               {toc.length === 0 ? (
