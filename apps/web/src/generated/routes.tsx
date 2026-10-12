@@ -3,8 +3,8 @@
 import { lazy } from 'react';
 import type { ComponentType } from 'react';
 
-const CssDemosVerticalCenteringPage = lazy(
-  () => import('@/pages/CssDemos/VerticalCentering/index'),
+const CssVerticalCenteringPage = lazy(
+  () => import('@/pages/Css/VerticalCentering/index'),
 );
 const ExpressErrorHandlingPage = lazy(
   () => import('@/pages/Express/ErrorHandling/index'),
@@ -36,15 +36,15 @@ export type DemoMenuItem = {
   children?: DemoMenuItem[];
 };
 
-export const defaultRoutePath = '/css-demos/vertical-centering';
+export const defaultRoutePath = '/css/vertical-centering';
 
 export const demoRoutes: DemoRoute[] = [
   {
-    path: '/css-demos/vertical-centering',
-    menuKey: '/css-demos/vertical-centering',
-    topLevelKey: '/css-demos',
+    path: '/css/vertical-centering',
+    menuKey: '/css/vertical-centering',
+    topLevelKey: '/css',
     label: 'vertical-centering',
-    Component: CssDemosVerticalCenteringPage,
+    Component: CssVerticalCenteringPage,
   },
   {
     path: '/express/error-handling',
@@ -92,9 +92,9 @@ export const demoRoutes: DemoRoute[] = [
 
 export const headerMenus: DemoMenuItem[] = [
   {
-    key: '/css-demos',
-    label: 'css-demos',
-    path: '/css-demos/vertical-centering',
+    key: '/css',
+    label: 'css',
+    path: '/css/vertical-centering',
   },
   {
     key: '/express',
@@ -119,11 +119,11 @@ export const headerMenus: DemoMenuItem[] = [
 ];
 
 export const sidebarMenusByTopLevel: Record<string, DemoMenuItem[]> = {
-  '/css-demos': [
+  '/css': [
     {
-      key: '/css-demos/vertical-centering',
+      key: '/css/vertical-centering',
       label: 'vertical-centering',
-      path: '/css-demos/vertical-centering',
+      path: '/css/vertical-centering',
     },
   ],
   '/express': [

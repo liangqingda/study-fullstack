@@ -176,19 +176,19 @@ export const PRINCIPLES: Principle[] = [
 export const STRUCTURE: DemoStructure = {
   frontend: [
     {
-      path: 'apps/web/src/pages/CssDemos/VerticalCentering/index.tsx',
+      path: 'apps/web/src/pages/Css/VerticalCentering/index.tsx',
       role: '定义六种居中方式、切换内容高度并展示对比说明。',
     },
     {
-      path: 'apps/web/src/pages/CssDemos/VerticalCentering/constants.ts',
+      path: 'apps/web/src/pages/Css/VerticalCentering/constants.ts',
       role: '六种居中方式数据、原则、代码结构和知识点配置。',
     },
     {
-      path: 'apps/web/src/pages/CssDemos/VerticalCentering/types.ts',
+      path: 'apps/web/src/pages/Css/VerticalCentering/types.ts',
       role: 'CenteringMethod 和 Principle 类型定义。',
     },
     {
-      path: 'apps/web/src/pages/CssDemos/VerticalCentering/index.scss',
+      path: 'apps/web/src/pages/Css/VerticalCentering/index.scss',
       role: '实现各预览区域的实际 CSS 居中规则及页面样式。',
     },
   ],
