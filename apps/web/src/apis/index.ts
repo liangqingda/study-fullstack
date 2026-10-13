@@ -1,6 +1,2 @@
-// Generated from study-nodejs-schema. Do not edit.
-export * from './http';
-
-export * from './postgres';
-
-export * from './redis';
+// Generated from @study-lab/schema. Do not edit.
+export * from './tech';

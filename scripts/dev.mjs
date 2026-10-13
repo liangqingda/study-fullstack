@@ -101,7 +101,7 @@ const refresh = async () => {
       await stop(api);
       await sync();
       if (!shuttingDown && !dirty) {
-        api = startService(['--filter', 'study-nodejs', 'start:dev']);
+        api = startService(['--filter', '@study-lab/api', 'start:dev']);
       }
     }
   } catch (error) {
@@ -124,8 +124,8 @@ try {
   // Prepare contracts before either service can import generated package exports.
   await sync();
   if (!shuttingDown) {
-    api = startService(['--filter', 'study-nodejs', 'start:dev']);
-    startService(['--filter', 'study-react', 'dev']);
+    api = startService(['--filter', '@study-lab/api', 'start:dev']);
+    startService(['--filter', '@study-lab/web', 'dev']);
     watcher = watch(path.join(root, 'packages/schema'), { recursive: true }, (_event, filename) => {
       const file = filename?.replaceAll(path.sep, '/');
 

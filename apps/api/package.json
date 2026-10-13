@@ -1,5 +1,5 @@
 {
-  "name": "study-nodejs",
+  "name": "@study-lab/api",
   "version": "1.0.0",
   "description": "Express learning service and demos",
   "main": "build/index.js",
@@ -26,7 +26,7 @@
     "*.{ts,js,mjs,cjs}": "eslint --fix"
   },
   "dependencies": {
-    "@liangqingda/study-nodejs-schema": "workspace:*",
+    "@study-lab/schema": "workspace:*",
     "compression": "1.8.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

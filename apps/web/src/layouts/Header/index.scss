@@ -64,6 +64,10 @@
   flex: 0 0 36px;
 }
 
+.realm-select {
+  flex: 0 0 auto;
+}
+
 @media (max-width: 720px) {
   .demo-header-inner {
     padding: 0 14px;

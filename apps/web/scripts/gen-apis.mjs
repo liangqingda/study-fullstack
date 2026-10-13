@@ -233,13 +233,13 @@ export const generateApiClient = async (document) => {
     }
 
     const schemaImport = group.importedTypes.size
-      ? `import type { ${[...group.importedTypes].sort().join(', ')} } from '@liangqingda/study-nodejs-schema';\n`
+      ? `import type { ${[...group.importedTypes].sort().join(', ')} } from '@study-lab/schema';\n`
       : '';
     // 生成的函数省略返回类型标注，由 TypeScript 从便捷方法自动推导，故无需导入 AxiosResponse。
     const imports = group.entries.length
       ? `${schemaImport}import { ${[...group.httpImports].sort().join(', ')} } from '@/utils/http';\n\n`
       : '';
-    const content = `/* eslint-disable */\n// Generated from study-nodejs-schema. Do not edit.\n${imports}${group.entries.join('\n\n')}${group.entries.length ? '\n' : ''}`;
+    const content = `/* eslint-disable */\n// Generated from @study-lab/schema. Do not edit.\n${imports}${group.entries.join('\n\n')}${group.entries.length ? '\n' : ''}`;
 
     return { name: `${demoKey}.ts`, content };
   };
@@ -264,7 +264,7 @@ export const generateApiClient = async (document) => {
 
   // 只有纯 `export *` 重导出的索引文件没有可 lint 的代码，无需 eslint-disable 头；
   // 但多条导出之间需空行，满足 padding-line-between-statements。
-  const indexHeader = '// Generated from study-nodejs-schema. Do not edit.\n';
+  const indexHeader = '// Generated from @study-lab/schema. Do not edit.\n';
   const categoryIndexLines = [];
 
   for (const [category, files] of [...categoryFiles.entries()].sort(([left], [right]) => left.localeCompare(right))) {

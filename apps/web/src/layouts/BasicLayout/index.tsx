@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { useLocation } from 'react-router';
+import { useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { AppShell } from '@mantine/core';
 
 import type { ReactNode } from 'react';
@@ -20,14 +20,37 @@ type BasicLayoutProps = {
 
 const BasicLayout = ({ children }: BasicLayoutProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  /*
+   * 顶层分类即「领域」：headerMenus 每一项是一个领域（当前仅 tech，
+   * 未来扩展 English 等新领域后该项列表随之增加）。
+   */
+  const realms = headerMenus;
+  const [activeRealmKey, setActiveRealmKey] = useState<string | undefined>(
+    () => realms[0]?.key,
+  );
   const selectedRoute = useMemo(
     () => demoRoutes.find((route) => route.path === location.pathname),
     [location.pathname],
   );
-  const selectedTopLevelKey = selectedRoute?.topLevelKey ?? headerMenus[0]?.key;
-  const sidebarMenus = selectedTopLevelKey
-    ? (sidebarMenusByTopLevel[selectedTopLevelKey] ?? [])
+  const selectedTopLevelKey =
+    selectedRoute?.topLevelKey ?? activeRealmKey ?? realms[0]?.key;
+  // 当前领域内的 header 段（领域内顶层 section，随领域切换而整体替换）。
+  const realmHeaderMenus = realms.filter(
+    (item) => item.key === activeRealmKey,
+  );
+  const sidebarMenus = activeRealmKey
+    ? (sidebarMenusByTopLevel[activeRealmKey] ?? [])
     : [];
+
+  const handleRealmChange = (key: string) => {
+    setActiveRealmKey(key);
+    const target = realms.find((item) => item.key === key);
+
+    if (target?.path) {
+      navigate(target.path);
+    }
+  };
 
   return (
     <AppShell
@@ -38,14 +61,20 @@ const BasicLayout = ({ children }: BasicLayoutProps) => {
       withBorder={false}
     >
       <AppShell.Header className={styles.demoHeader}>
-        <Header menus={headerMenus} selectedTopLevelKey={selectedTopLevelKey} />
+        <Header
+          activeRealmKey={activeRealmKey}
+          menus={realmHeaderMenus}
+          onRealmChange={handleRealmChange}
+          realms={realms}
+          selectedTopLevelKey={selectedTopLevelKey}
+        />
       </AppShell.Header>
 
       <AppShell.Navbar className={styles.demoSidebar}>
         <Sidebar
           menus={sidebarMenus}
           routes={demoRoutes}
-          sectionKey={selectedTopLevelKey}
+          sectionKey={activeRealmKey}
           selectedRoute={selectedRoute}
         />
       </AppShell.Navbar>

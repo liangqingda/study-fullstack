@@ -4,12 +4,24 @@ Keep the API, web app, and schema in this pnpm workspace. Do not modify ESLint,
 Prettier, TypeScript configuration or build scripts unless the task requires it.
 See `apps/web/AGENTS.md` for frontend-specific conventions.
 
-Backend PostgreSQL development and integration use only `study_nodejs` via
+Backend PostgreSQL development and integration use only `study_lab` via
 `DATABASE_URL`. Never commit credentials. Before operations that may change data,
 confirm `current_database()`; do not clear or rebuild existing data. Unit tests
 use injection or mocks by default; explicitly opt in to real database tests.
 
-For learning demos, use the repository-level `.agents/skills/study-demo/SKILL.md`. API 路由路径统一为两层 `/api/<分类>/<demo>/...`（如 `/api/redis/sms-login/login`），对应 schema `apis/<分类>/<demo>/` 与生成的客户端 `src/apis/<分类>/<demo>.ts`，详见该 skill 的接口契约部分。
+For learning demos in the **tech** realm, use the repository-level
+`.agents/skills/tech-demo/SKILL.md`. Tech demo API routes are three-level
+`/api/tech/<原分类>/<demo>/<动作>`（如 `/api/tech/redis/sms-login/login`），对应
+schema `apis/tech/<原分类>/<demo>/` 与生成的客户端 `src/apis/tech/<原分类>.ts`，
+详见该 skill 的接口契约部分。
+
+Demos are organized **by realm**: each learning realm gets one `<realm>-demo`
+skill under `.agents/skills/`（currently only `tech-demo`; a future English realm
+would add `english-demo`）. To scaffold a skill for a new realm, follow
+`.agents/skills/create-realm-skill/SKILL.md` and trim the generated content to the
+realm's nature — coding realms keep the interface-contract / backend / database
+baselines; non-coding realms (e.g. language learning) drop the backend contract
+and keep only the content / explanation shape, page layout and quality baselines.
 
 ## Code documentation
 

@@ -61,41 +61,51 @@ const writeGenerated = (
 };
 
 /**
- * 扫描 `apis/<分类>/<demo>/index.ts` 中的 `.openapi('Name')`，
- * 建立 类型名 -> "<分类>/<demo>" 的映射，据此把生成的类型拆到对应文件。
+ * 扫描 apis 目录下各层级的 index.ts 中的 `.openapi('Name')`，
+ * 建立 类型名 -> "相对 apis 的路径" 的映射，据此把生成的类型拆到对应文件。
+ * 支持多层分类（如 `tech/postgres/transactions`），rel 为该目录相对 apis 的路径。
  */
 const nameToDemo = new Map<string, string>();
 
-for (const category of readdirSync(apisDir, { withFileTypes: true })) {
-  if (!category.isDirectory() || category.name === 'model') {
-    continue;
-  }
+const scanIndexFiles = (dir: string, baseRel: string): void => {
+  const entries = readdirSync(dir, { withFileTypes: true });
 
-  for (const demo of readdirSync(join(apisDir, category.name), {
-    withFileTypes: true,
-  })) {
-    if (!demo.isDirectory()) {
-      continue;
-    }
-
-    const indexPath = join(apisDir, category.name, demo.name, 'index.ts');
+  if (
+    baseRel &&
+    entries.some((entry) => entry.isFile() && entry.name === 'index.ts')
+  ) {
+    const indexPath = join(dir, 'index.ts');
     let source: string;
 
     try {
       source = readFileSync(indexPath, 'utf8');
     } catch {
-      continue;
+      return;
     }
 
-    const rel = `${category.name}/${demo.name}`;
     const re = /\.openapi\(\s*['"]([^'"]+)['"]\s*\)/g;
     let match: RegExpExecArray | null;
 
     while ((match = re.exec(source)) !== null) {
-      nameToDemo.set(match[1], rel);
+      nameToDemo.set(match[1], baseRel);
     }
+
+    return;
   }
-}
+
+  for (const entry of entries) {
+    if (!entry.isDirectory() || entry.name === 'model') {
+      continue;
+    }
+
+    scanIndexFiles(
+      join(dir, entry.name),
+      baseRel ? `${baseRel}/${entry.name}` : entry.name,
+    );
+  }
+};
+
+scanIndexFiles(apisDir, '');
 
 const named = new Map<z.core.$ZodType, string>();
 const names = new Set<string>();

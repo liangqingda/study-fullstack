@@ -1,8 +1,8 @@
 {
-  "name": "@liangqingda/study-nodejs-schema",
+  "name": "@study-lab/schema",
   "private": true,
   "version": "1.0.0",
-  "description": "Runtime schemas and OpenAPI contracts for study-nodejs",
+  "description": "Runtime schemas and OpenAPI contracts for @study-lab/api",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {

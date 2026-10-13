@@ -3,7 +3,7 @@ RUN corepack enable && corepack prepare pnpm@10.6.1 --activate
 WORKDIR /workspace
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter @liangqingda/study-nodejs-schema build && pnpm --filter study-nodejs build
+RUN pnpm --filter @study-lab/schema build && pnpm --filter @study-lab/api build
 
 FROM node:22-bookworm-slim
 ENV NODE_ENV=production

@@ -1,10 +1,10 @@
 const frontendSources = import.meta.glob<string>(
   [
-    '@/pages/Express/**/*.{ts,tsx,scss}',
-    '@/pages/Postgres/**/*.{ts,tsx,scss}',
-    '@/pages/Redis/**/*.{ts,tsx,scss}',
-    '@/pages/Css/**/*.{ts,tsx,scss}',
-    '@/pages/Http/**/*.{ts,tsx,scss}',
+    '@/pages/Tech/Express/**/*.{ts,tsx,scss}',
+    '@/pages/Tech/Postgres/**/*.{ts,tsx,scss}',
+    '@/pages/Tech/Redis/**/*.{ts,tsx,scss}',
+    '@/pages/Tech/Css/**/*.{ts,tsx,scss}',
+    '@/pages/Tech/Http/**/*.{ts,tsx,scss}',
     '@/apis/**/*.{ts,tsx}',
     '@/utils/http/**/*.{ts,tsx}',
   ],

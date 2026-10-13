@@ -4,8 +4,8 @@ import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 extendZodWithOpenApi(z);
 
 // start of generated exports
-export * from './http/url-to-page';
+export * from './tech/http/url-to-page';
 
-export * from './postgres/transactions';
+export * from './tech/postgres/transactions';
 
-export * from './redis/sms-login';
+export * from './tech/redis/sms-login';

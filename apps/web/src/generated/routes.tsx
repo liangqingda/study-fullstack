@@ -3,23 +3,13 @@
 import { lazy } from 'react';
 import type { ComponentType } from 'react';
 
-const CssVerticalCenteringPage = lazy(
-  () => import('@/pages/Css/VerticalCentering/index'),
-);
-const ExpressErrorHandlingPage = lazy(
-  () => import('@/pages/Express/ErrorHandling/index'),
-);
-const ExpressMiddlewarePage = lazy(
-  () => import('@/pages/Express/Middleware/index'),
-);
-const ExpressResponseMethodsPage = lazy(
-  () => import('@/pages/Express/ResponseMethods/index'),
-);
-const HttpUrlToPagePage = lazy(() => import('@/pages/Http/UrlToPage/index'));
-const PostgresTransactionsPage = lazy(
-  () => import('@/pages/Postgres/Transactions/index'),
-);
-const RedisSmsLoginPage = lazy(() => import('@/pages/Redis/SmsLogin/index'));
+const TechCssVerticalCenteringPage = lazy(() => import("@/pages/Tech/Css/VerticalCentering/index"));
+const TechExpressErrorHandlingPage = lazy(() => import("@/pages/Tech/Express/ErrorHandling/index"));
+const TechExpressMiddlewarePage = lazy(() => import("@/pages/Tech/Express/Middleware/index"));
+const TechExpressResponseMethodsPage = lazy(() => import("@/pages/Tech/Express/ResponseMethods/index"));
+const TechHttpUrlToPagePage = lazy(() => import("@/pages/Tech/Http/UrlToPage/index"));
+const TechPostgresTransactionsPage = lazy(() => import("@/pages/Tech/Postgres/Transactions/index"));
+const TechRedisSmsLoginPage = lazy(() => import("@/pages/Tech/Redis/SmsLogin/index"));
 
 export type DemoRoute = {
   path: string;
@@ -36,132 +26,134 @@ export type DemoMenuItem = {
   children?: DemoMenuItem[];
 };
 
-export const defaultRoutePath = '/css/vertical-centering';
+export const defaultRoutePath = "/tech/css/vertical-centering";
 
 export const demoRoutes: DemoRoute[] = [
   {
-    path: '/css/vertical-centering',
-    menuKey: '/css/vertical-centering',
-    topLevelKey: '/css',
-    label: 'vertical-centering',
-    Component: CssVerticalCenteringPage,
+    path: "/tech/css/vertical-centering",
+    menuKey: "/tech/css/vertical-centering",
+    topLevelKey: "/tech",
+    label: "vertical-centering",
+    Component: TechCssVerticalCenteringPage,
   },
   {
-    path: '/express/error-handling',
-    menuKey: '/express/error-handling',
-    topLevelKey: '/express',
-    label: 'error-handling',
-    Component: ExpressErrorHandlingPage,
+    path: "/tech/express/error-handling",
+    menuKey: "/tech/express/error-handling",
+    topLevelKey: "/tech",
+    label: "error-handling",
+    Component: TechExpressErrorHandlingPage,
   },
   {
-    path: '/express/middleware',
-    menuKey: '/express/middleware',
-    topLevelKey: '/express',
-    label: 'middleware',
-    Component: ExpressMiddlewarePage,
+    path: "/tech/express/middleware",
+    menuKey: "/tech/express/middleware",
+    topLevelKey: "/tech",
+    label: "middleware",
+    Component: TechExpressMiddlewarePage,
   },
   {
-    path: '/express/response-methods',
-    menuKey: '/express/response-methods',
-    topLevelKey: '/express',
-    label: 'response-methods',
-    Component: ExpressResponseMethodsPage,
+    path: "/tech/express/response-methods",
+    menuKey: "/tech/express/response-methods",
+    topLevelKey: "/tech",
+    label: "response-methods",
+    Component: TechExpressResponseMethodsPage,
   },
   {
-    path: '/http/url-to-page',
-    menuKey: '/http/url-to-page',
-    topLevelKey: '/http',
-    label: 'url-to-page',
-    Component: HttpUrlToPagePage,
+    path: "/tech/http/url-to-page",
+    menuKey: "/tech/http/url-to-page",
+    topLevelKey: "/tech",
+    label: "url-to-page",
+    Component: TechHttpUrlToPagePage,
   },
   {
-    path: '/postgres/transactions',
-    menuKey: '/postgres/transactions',
-    topLevelKey: '/postgres',
-    label: 'transactions',
-    Component: PostgresTransactionsPage,
+    path: "/tech/postgres/transactions",
+    menuKey: "/tech/postgres/transactions",
+    topLevelKey: "/tech",
+    label: "transactions",
+    Component: TechPostgresTransactionsPage,
   },
   {
-    path: '/redis/sms-login',
-    menuKey: '/redis/sms-login',
-    topLevelKey: '/redis',
-    label: 'sms-login',
-    Component: RedisSmsLoginPage,
+    path: "/tech/redis/sms-login",
+    menuKey: "/tech/redis/sms-login",
+    topLevelKey: "/tech",
+    label: "sms-login",
+    Component: TechRedisSmsLoginPage,
   },
 ];
 
 export const headerMenus: DemoMenuItem[] = [
   {
-    key: '/css',
-    label: 'css',
-    path: '/css/vertical-centering',
-  },
-  {
-    key: '/express',
-    label: 'express',
-    path: '/express/error-handling',
-  },
-  {
-    key: '/http',
-    label: 'http',
-    path: '/http/url-to-page',
-  },
-  {
-    key: '/postgres',
-    label: 'postgres',
-    path: '/postgres/transactions',
-  },
-  {
-    key: '/redis',
-    label: 'redis',
-    path: '/redis/sms-login',
-  },
+    "key": "/tech",
+    "label": "tech",
+    "path": "/tech/css/vertical-centering"
+  }
 ];
 
 export const sidebarMenusByTopLevel: Record<string, DemoMenuItem[]> = {
-  '/css': [
+  "/tech": [
     {
-      key: '/css/vertical-centering',
-      label: 'vertical-centering',
-      path: '/css/vertical-centering',
-    },
-  ],
-  '/express': [
-    {
-      key: '/express/error-handling',
-      label: 'error-handling',
-      path: '/express/error-handling',
-    },
-    {
-      key: '/express/middleware',
-      label: 'middleware',
-      path: '/express/middleware',
+      "key": "group:/tech/css",
+      "label": "css",
+      "children": [
+        {
+          "key": "/tech/css/vertical-centering",
+          "label": "vertical-centering",
+          "path": "/tech/css/vertical-centering"
+        }
+      ]
     },
     {
-      key: '/express/response-methods',
-      label: 'response-methods',
-      path: '/express/response-methods',
+      "key": "group:/tech/express",
+      "label": "express",
+      "children": [
+        {
+          "key": "/tech/express/error-handling",
+          "label": "error-handling",
+          "path": "/tech/express/error-handling"
+        },
+        {
+          "key": "/tech/express/middleware",
+          "label": "middleware",
+          "path": "/tech/express/middleware"
+        },
+        {
+          "key": "/tech/express/response-methods",
+          "label": "response-methods",
+          "path": "/tech/express/response-methods"
+        }
+      ]
     },
-  ],
-  '/http': [
     {
-      key: '/http/url-to-page',
-      label: 'url-to-page',
-      path: '/http/url-to-page',
+      "key": "group:/tech/http",
+      "label": "http",
+      "children": [
+        {
+          "key": "/tech/http/url-to-page",
+          "label": "url-to-page",
+          "path": "/tech/http/url-to-page"
+        }
+      ]
     },
-  ],
-  '/postgres': [
     {
-      key: '/postgres/transactions',
-      label: 'transactions',
-      path: '/postgres/transactions',
+      "key": "group:/tech/postgres",
+      "label": "postgres",
+      "children": [
+        {
+          "key": "/tech/postgres/transactions",
+          "label": "transactions",
+          "path": "/tech/postgres/transactions"
+        }
+      ]
     },
-  ],
-  '/redis': [
     {
-      key: '/redis/sms-login',
-      label: 'sms-login',
-      path: '/redis/sms-login',
-    },
-  ],
+      "key": "group:/tech/redis",
+      "label": "redis",
+      "children": [
+        {
+          "key": "/tech/redis/sms-login",
+          "label": "sms-login",
+          "path": "/tech/redis/sms-login"
+        }
+      ]
+    }
+  ]
 };

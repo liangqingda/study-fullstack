@@ -1,10 +1,10 @@
 import { execSync } from 'node:child_process';
 
 /**
- * 一键清理 study-fullstack 的开发服务进程树。
+ * 一键清理 study-lab 的开发服务进程树。
  *
  * 为什么需要它：dev 服务可以由 scripts/dev.mjs（pnpm dev）统一拉起，也可以被
- * 单独以 `pnpm --filter study-nodejs start:dev` / `pnpm --filter study-react dev`
+ * 单独以 `pnpm --filter @study-lab/api start:dev` / `pnpm --filter @study-lab/web dev`
  * 启动。单独启动的 pnpm/tsx/vite 没有父进程管理，停掉终端后会被 reparent 成
  * 孤儿进程继续后台运行。本脚本按项目特征匹配这些进程及其子进程树，SIGTERM 后
  * 兜底 SIGKILL，无论用哪种方式启动都能停干净。
@@ -13,7 +13,7 @@ import { execSync } from 'node:child_process';
  */
 
 /** 本项目根目录标识，用于区分本项目进程与其它项目。 */
-const ROOT_MARK = 'study-fullstack';
+const ROOT_MARK = 'study-lab';
 
 /** 这些进程不属于 dev 服务，跳过，避免误杀。 */
 const EXCLUDED = /stop-dev\.mjs|dev\.mjs|eslint|prettier|husky|--exec|git\s/i;
@@ -23,7 +23,7 @@ const isDev = (cmd) => {
   if (EXCLUDED.test(cmd)) {
     return false;
   }
-  if (/--filter\s+study-(nodejs|react)/.test(cmd)) {
+  if (/--filter\s+@study-lab\/(api|web)/.test(cmd)) {
     return true;
   }
   if (!cmd.includes(ROOT_MARK)) {
@@ -65,7 +65,7 @@ const main = async () => {
   const before = matchedPids(listProcesses());
 
   if (before.length === 0) {
-    console.info('[stop-dev] 未发现 study-fullstack 的 dev 服务进程。');
+    console.info('[stop-dev] 未发现 study-lab 的 dev 服务进程。');
     return;
   }
 

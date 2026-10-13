@@ -5,8 +5,8 @@ extendZodWithOpenApi(z);
 
 export * from './model/api-info';
 
-export * from './redis/sms-login';
+export * from './tech/redis/sms-login';
 
-export * from './postgres/transactions';
+export * from './tech/postgres/transactions';
 
-export * from './http/url-to-page';
+export * from './tech/http/url-to-page';

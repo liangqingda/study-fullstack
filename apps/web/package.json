@@ -1,5 +1,5 @@
 {
-  "name": "study-react",
+  "name": "@study-lab/web",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -13,7 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@liangqingda/study-nodejs-schema": "workspace:*",
+    "@study-lab/schema": "workspace:*",
     "@mantine/code-highlight": "9.4.1",
     "@mantine/core": "^9.4.1",
     "@mantine/hooks": "^9.4.1",

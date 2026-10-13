@@ -21,23 +21,23 @@ const schemaRoot = path.resolve(rootDir, '../../packages/schema');
 const previewFiles = new Set([
   'src/services/app.ts',
   'src/middlewares/error-handler.ts',
-  'src/apis/express/middleware/index.ts',
-  'src/apis/express/error-handling/index.ts',
-  'src/apis/express/response-methods/index.ts',
-  'src/apis/express/response-methods/assets/response-demo.txt',
-  'src/apis/express/response-methods/views/response-demo.ejs',
-  'src/apis/redis/sms-login/index.ts',
+  'src/apis/tech/express/middleware/index.ts',
+  'src/apis/tech/express/error-handling/index.ts',
+  'src/apis/tech/express/response-methods/index.ts',
+  'src/apis/tech/express/response-methods/assets/response-demo.txt',
+  'src/apis/tech/express/response-methods/views/response-demo.ejs',
+  'src/apis/tech/redis/sms-login/index.ts',
   'src/services/redis.ts',
-  'src/apis/postgres/transactions/index.ts',
-  'src/apis/postgres/transactions/run.ts',
-  'src/apis/postgres/transactions/01-atomicity.sql',
-  'src/apis/postgres/transactions/02-savepoint.sql',
-  'src/apis/postgres/transactions/03-snapshot-setup.sql',
-  'src/apis/postgres/transactions/04-serializable-setup.sql',
-  'src/apis/postgres/transactions/guard.sql',
-  'src/apis/http/url-to-page/index.ts',
+  'src/apis/tech/postgres/transactions/index.ts',
+  'src/apis/tech/postgres/transactions/run.ts',
+  'src/apis/tech/postgres/transactions/01-atomicity.sql',
+  'src/apis/tech/postgres/transactions/02-savepoint.sql',
+  'src/apis/tech/postgres/transactions/03-snapshot-setup.sql',
+  'src/apis/tech/postgres/transactions/04-serializable-setup.sql',
+  'src/apis/tech/postgres/transactions/guard.sql',
+  'src/apis/tech/http/url-to-page/index.ts',
 ]);
-const schemaPreviewFiles = new Set(['apis/redis/sms-login/index.ts', 'apis/postgres/transactions/index.ts', 'apis/model/api-info.ts', 'apis/http/url-to-page/index.ts']);
+const schemaPreviewFiles = new Set(['apis/tech/redis/sms-login/index.ts', 'apis/tech/postgres/transactions/index.ts', 'apis/model/api-info.ts', 'apis/tech/http/url-to-page/index.ts']);
 
 const backendSourcePreview = (): Plugin => ({
   name: 'backend-source-preview',
