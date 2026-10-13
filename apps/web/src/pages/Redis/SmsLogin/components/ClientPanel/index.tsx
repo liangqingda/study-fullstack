@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Badge, Button, Text, TextInput } from '@mantine/core';
 import {
   IconBrandGoogle,
@@ -19,14 +19,10 @@ import {
   postApiSmsLoginLogout,
   postApiSmsLoginSendCode,
 } from '@/apis';
+import { useCountdown } from '@/hooks/useCountdown';
 import { bearerAuth, isApiError } from '@/utils/http';
 
-import {
-  loadCooldownEnd,
-  loadStoredToken,
-  newOp,
-  persistToken,
-} from '../../utils';
+import { loadStoredToken, newOp, persistToken } from '../../utils';
 import CodeValue from './CodeValue';
 
 import styles from './index.scss';
@@ -44,116 +40,24 @@ const ClientPanel = ({
   const [ops, setOps] = useState<RedisOp[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
-  const [cooldown, setCooldown] = useState(() => {
-    const end = loadCooldownEnd(label);
 
-    return end > Date.now() ? Math.round((end - Date.now()) / 1000) : 0;
+  // 发码冷却倒计时：localStorage 持久化，刷新后由 hook 恢复（后端限频在 60s 内仍会拒绝）。
+  const cooldown = useCountdown({
+    persistKey: `sms-login:cooldown-end:${label}`,
   });
-  const cooldownEndRef = useRef<number>(loadCooldownEnd(label));
-  const timerRef = useRef<number | null>(null);
-  const [meRemaining, setMeRemaining] = useState(0);
-  const meExpiresAtRef = useRef(0);
-  const meTimerRef = useRef<number | null>(null);
-
-  const clearMeTimer = useCallback(() => {
-    if (meTimerRef.current !== null) {
-      window.clearInterval(meTimerRef.current);
-      meTimerRef.current = null;
-    }
-  }, []);
-
-  const startMeCountdown = useCallback(
-    (seconds: number) => {
-      meExpiresAtRef.current = Date.now() + seconds * 1000;
-      setMeRemaining(seconds);
-      clearMeTimer();
-      meTimerRef.current = window.setInterval(() => {
-        const remaining = Math.max(
-          0,
-          Math.round((meExpiresAtRef.current - Date.now()) / 1000),
-        );
-
-        setMeRemaining(remaining);
-
-        if (remaining <= 0) {
-          clearMeTimer();
-          persistToken(label, null);
-          setToken(null);
-          setMe(null);
-        }
-      }, 1000);
+  // 共享会话 TTL 倒计时：归零时清登录态。
+  const ttl = useCountdown({
+    onFinish: () => {
+      persistToken(label, null);
+      setToken(null);
+      setMe(null);
     },
-    [clearMeTimer, label],
-  );
-
-  const clearCooldownTimer = useCallback(() => {
-    if (timerRef.current !== null) {
-      window.clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-
-  const stopCooldown = useCallback(() => {
-    clearCooldownTimer();
-
-    try {
-      localStorage.removeItem(`sms-login:cooldown-end:${label}`);
-    } catch {
-      // 忽略。
-    }
-  }, [clearCooldownTimer, label]);
-
-  const startCooldown = useCallback(
-    (seconds: number) => {
-      cooldownEndRef.current = Date.now() + seconds * 1000;
-
-      try {
-        localStorage.setItem(
-          `sms-login:cooldown-end:${label}`,
-          String(cooldownEndRef.current),
-        );
-      } catch {
-        // 忽略存储失败，倒计时退化为纯内存态。
-      }
-
-      setCooldown(seconds);
-      clearCooldownTimer();
-      timerRef.current = window.setInterval(() => {
-        const remaining = Math.max(
-          0,
-          Math.round((cooldownEndRef.current - Date.now()) / 1000),
-        );
-
-        setCooldown(remaining);
-
-        if (remaining <= 0) {
-          stopCooldown();
-        }
-      }, 1000);
-    },
-    [clearCooldownTimer, stopCooldown, label],
-  );
+  });
+  // 解构出稳定引用，供 effect / 事件处理器使用（避免依赖整个 ttl 对象）。
+  const startTtl = ttl.start;
+  const resetTtl = ttl.reset;
 
   useEffect(() => {
-    // 刷新后恢复发码倒计时：后端限频在 60s 内仍会拒绝，界面保持一致。
-    const savedEnd = loadCooldownEnd(label);
-
-    if (savedEnd > Date.now()) {
-      cooldownEndRef.current = savedEnd;
-      timerRef.current = window.setInterval(() => {
-        const remaining = Math.max(
-          0,
-          Math.round((cooldownEndRef.current - Date.now()) / 1000),
-        );
-
-        setCooldown(remaining);
-
-        if (remaining <= 0) {
-          stopCooldown();
-        }
-      }, 1000);
-    }
-
     // 刷新后恢复登录态：从 localStorage 读 token，再用 /me 校验（会话在 Redis 中仍有效则自动续期）。
     const storedToken = loadStoredToken(label);
 
@@ -162,7 +66,7 @@ const ClientPanel = ({
         .then((response) => {
           setToken(storedToken);
           setMe(response.data);
-          startMeCountdown(response.data.remainingSeconds);
+          startTtl(response.data.remainingSeconds);
         })
         .catch(() => {
           persistToken(label, null);
@@ -170,12 +74,7 @@ const ClientPanel = ({
           setMe(null);
         });
     }
-
-    return () => {
-      clearCooldownTimer();
-      clearMeTimer();
-    };
-  }, [clearCooldownTimer, stopCooldown, label, startMeCountdown, clearMeTimer]);
+  }, [label, startTtl]);
 
   const auth = bearerAuth(token);
 
@@ -187,7 +86,7 @@ const ClientPanel = ({
       const response = await postApiSmsLoginSendCode({ body: { phone } });
 
       setSent(response.data);
-      startCooldown(response.data.ttlSeconds);
+      cooldown.start(response.data.ttlSeconds);
       setOps((current) =>
         [
           newOp('SET', `sms:send:${phone}`, 'NX + EX 60s：限频标记'),
@@ -205,7 +104,7 @@ const ClientPanel = ({
       setError(apiError?.message ?? '发码失败；请确认后端与 Redis 已启动。');
 
       if (apiError?.data?.retryAfterSeconds) {
-        startCooldown(apiError.data.retryAfterSeconds);
+        cooldown.start(apiError.data.retryAfterSeconds);
       }
     } finally {
       setBusy('');
@@ -229,7 +128,7 @@ const ClientPanel = ({
         remainingSeconds: response.data.expiresInSeconds,
         refreshed: false,
       });
-      startMeCountdown(response.data.expiresInSeconds);
+      startTtl(response.data.expiresInSeconds);
       setOps((current) =>
         [
           newOp('GET', `sms:code:${phone}`, '比对验证码'),
@@ -264,7 +163,7 @@ const ClientPanel = ({
       const response = await getApiSmsLoginMe({ headers: auth });
 
       setMe(response.data);
-      startMeCountdown(response.data.remainingSeconds);
+      startTtl(response.data.remainingSeconds);
       setOps((current) =>
         [
           newOp('GET', `session:${token?.slice(0, 8)}…`, '读取共享会话'),
@@ -297,8 +196,7 @@ const ClientPanel = ({
         ].slice(0, 12),
       );
       persistToken(label, null);
-      clearMeTimer();
-      setMeRemaining(0);
+      resetTtl();
       setToken(null);
       setMe(null);
       onLoginStateChange();
@@ -327,13 +225,15 @@ const ClientPanel = ({
           value={phone}
         />
         <Button
-          disabled={Boolean(token) || cooldown > 0}
+          disabled={Boolean(token) || cooldown.remaining > 0}
           leftSection={<IconBrandGoogle size={16} />}
           loading={busy === 'send'}
           onClick={() => void sendCode()}
           variant="default"
         >
-          {cooldown > 0 ? `${cooldown}s 后重试` : '发送验证码'}
+          {cooldown.remaining > 0
+            ? `${cooldown.remaining}s 后重试`
+            : '发送验证码'}
         </Button>
       </div>
 
@@ -372,7 +272,7 @@ const ClientPanel = ({
           </div>
           <div>
             <small>剩余 TTL</small>
-            <strong>{meRemaining}s</strong>
+            <strong>{ttl.remaining}s</strong>
             <small>（每秒递减 · 刷新 /me 续期）</small>
           </div>
           <div className={styles.sessionActions}>
