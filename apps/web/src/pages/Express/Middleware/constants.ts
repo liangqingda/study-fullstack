@@ -1,6 +1,6 @@
 import type { Example } from './types';
 
-import type { DemoStructure } from '@/components/DemoStructureDialog';
+import type { DemoStructure } from '@/components/DemoStructureDialog/types';
 
 /**
  * 后端接口的基础路径。

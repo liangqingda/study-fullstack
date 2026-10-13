@@ -1,23 +1,4 @@
-type TocItem = {
-  /** 章节锚点 id，由 React 直接渲染到正文标题上，保证点击跳转可靠。 */
-  id: string;
-  /** 章节标题文本。 */
-  text: string;
-  /** 标题层级（1-4，对应 h1-h4）。 */
-  level: number;
-  /** 标题在 Markdown 源文本中的行号（1 起），用于和正文标题一一对齐。 */
-  line: number;
-};
-
-type TocNode = {
-  /** 当前章节。 */
-  item: TocItem;
-  /** 其下的子章节。 */
-  children: TocNode[];
-};
-
-/** 参与目录导航的标题层级。 */
-const headingSelector = 'h1, h2, h3, h4';
+import type { TocItem, TocNode } from './types';
 
 /**
  * 由标题文本生成稳定锚点：保留中英文与数字，其余字符转为连字符；
@@ -138,6 +119,4 @@ const collectAncestors = (
   return null;
 };
 
-export { buildTree, collectAncestors, headingSelector, parseHeadings };
-
-export type { TocItem, TocNode };
+export { buildTree, collectAncestors, parseHeadings };

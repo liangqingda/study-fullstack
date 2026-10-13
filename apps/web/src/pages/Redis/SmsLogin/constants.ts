@@ -1,4 +1,4 @@
-import type { DemoStructure } from '@/components/DemoStructureDialog';
+import type { DemoStructure } from '@/components/DemoStructureDialog/types';
 
 /**
  * 代码结构弹窗展示的文件树。

@@ -78,8 +78,7 @@
   font-size: 12px;
 }
 
-.ops code,
-.code-value {
+.ops code {
   font-family: var(--mantine-font-family-monospace);
 }
 
@@ -90,14 +89,6 @@
 
 .ops span {
   color: var(--demo-ink-faint);
-}
-
-.code-value {
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: var(--demo-surface-subtle);
-  color: var(--demo-accent-ink);
-  font-size: 12px;
 }
 
 @media (max-width: 620px) {

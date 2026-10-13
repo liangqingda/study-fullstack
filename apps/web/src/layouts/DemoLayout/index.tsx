@@ -2,7 +2,7 @@ import { Group, Text, Title } from '@mantine/core';
 
 import type { ReactNode } from 'react';
 
-import type { DemoStructure } from '@/components/DemoStructureDialog';
+import type { DemoStructure } from '@/components/DemoStructureDialog/types';
 import DemoKnowledgeDialog from '@/components/DemoKnowledgeDialog';
 import DemoStructureDialog from '@/components/DemoStructureDialog';
 

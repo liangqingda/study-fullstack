@@ -1,0 +1,17 @@
+.tree { width: 100%; min-width: 0; margin-top: 12px; }
+.branches { margin: 0; padding: 0; list-style: none; }
+.directory > .branches { margin-left: 8px; padding-left: 10px; border-left: 1px solid var(--mantine-color-default-border); }
+.folder, .tree-file { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 30px; font-size: 13px; }
+.folder { cursor: pointer; font-weight: 600; list-style: none; }
+.folder::-webkit-details-marker { display: none; }
+.folder:hover, .folder:focus-visible, .tree-file:hover, .tree-file:focus-visible { color: var(--mantine-color-teal-7); }
+.folder:focus-visible, .tree-file:focus-visible { outline: 2px solid var(--mantine-color-teal-6); outline-offset: 2px; }
+.folder svg, .tree-file svg { flex: none; }
+.folder span, .tree-file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chevron { flex: none; transition: transform 120ms ease; }
+.directory[open] > .folder .chevron { transform: rotate(90deg); }
+.tree-file { padding: 2px 4px; background: transparent; text-align: left; cursor: pointer; }
+.viewed { color: var(--mantine-color-dimmed); }
+:global(html[data-mantine-color-scheme='dark']) {
+  .folder:hover, .tree-file:hover { color: var(--mantine-color-teal-3); }
+}

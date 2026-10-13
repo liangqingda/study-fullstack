@@ -7,7 +7,6 @@ import {
   IconX,
 } from '@tabler/icons-react';
 
-import type { ReactNode } from 'react';
 import type {
   MeResponse,
   SendCodeResponse,
@@ -28,12 +27,9 @@ import {
   newOp,
   persistToken,
 } from '../../utils';
+import CodeValue from './CodeValue';
 
 import styles from './index.scss';
-
-const CodeValue = ({ children }: { children: ReactNode }) => (
-  <code className={styles.codeValue}>{children}</code>
-);
 
 const ClientPanel = ({
   label,

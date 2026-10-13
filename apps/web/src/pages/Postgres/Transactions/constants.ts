@@ -1,6 +1,6 @@
 import type { Example } from './types';
 
-import type { DemoStructure } from '@/components/DemoStructureDialog';
+import type { DemoStructure } from '@/components/DemoStructureDialog/types';
 
 /**
  * 事务隔离级别的演示场景列表。

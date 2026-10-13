@@ -63,9 +63,12 @@ description: Implement runnable, observable learning demos in the study-fullstac
 
 ## 前端代码组织（有 Web 页面时）
 
-- 常量放到 `constants.ts`，util 方法放到 `utils.ts`，提取的类型放到 `types.ts`；这些文件就近存放在所属页面或组件目录下，不跨目录共享。
-- 组件适当拆分，每个组件单独一个文件，不要把多个组件堆在 `index.tsx` 里；子组件放在同目录的 `components/` 下，hook 放在 `hooks/` 下。
-- 只有当前页面用到的代码才放在该页面目录；跨 demo 复用的才提升到公共目录。
+- 常量放到 `constants.ts`，util 方法放到 `utils.ts`，提取的类型放到 `types.ts`，独立 hook 放到 `hooks/`；这些文件就近存放在所属页面或组件目录下，不跨目录共享。
+- 组件适当拆分，每个组件单独一个目录（`组件名/index.tsx` + `组件名/index.scss`），不要把多个组件堆在一个 `index.tsx` 里。
+- 拆出的子组件直接放在父组件目录下：`Demo/Demo1/index.tsx`，不要写成 `Demo/components/Demo1/`——不要在组件目录里再嵌套一层 `components/`。pages 下拆出的组件同理（页面组件目录内直接放子组件目录，不套 `components/`）。
+- 组件的样式随组件走：每个组件目录有自己的 `index.scss`；父组件 `index.scss` 只保留父组件自身布局相关的样式。
+- 上述约定同样适用于公共组件（如 `apps/web/src/components/DemoKnowledgeDialog`）与页面组件，不只局限于页面组件：公共/页面组件都可就近拆出 `hooks/`、`utils.ts`、`types.ts`、`constants.ts` 等。
+- 只有当前页面/组件用到的代码才放在该目录；跨 demo、跨公共组件复用的才提升到公共目录。
 
 ## 前端页面设计（有 Web 页面时）
 

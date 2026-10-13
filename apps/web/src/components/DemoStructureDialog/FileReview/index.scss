@@ -1,0 +1,18 @@
+.chevron { flex: none; transition: transform 120ms ease; }
+.expanded { transform: rotate(90deg); }
+.file-review { min-width: 0; overflow: hidden; border: 1px solid var(--mantine-color-default-border); border-radius: 6px; scroll-margin-top: 82px; }
+.file-heading { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 16px; background: var(--mantine-color-default-hover); }
+.file-toggle { display: flex; min-width: 0; align-items: center; gap: 7px; padding: 0; background: transparent; text-align: left; cursor: pointer; }
+.file-toggle svg { flex: none; }
+.file-toggle code { overflow-wrap: anywhere; color: var(--mantine-color-teal-7); font-size: 13px; }
+.file-toggle:hover code, .file-toggle:focus-visible code { text-decoration: underline; }
+.file-role { margin: 0; padding: 8px 16px 12px 41px; }
+.code-panel { width: 100%; min-width: 0; overflow-x: auto; border-top: 1px solid var(--mantine-color-default-border); }
+:global(html[data-mantine-color-scheme='dark']) {
+  .file-toggle code { color: var(--mantine-color-teal-3); }
+}
+@media (max-width: 620px) {
+  .file-heading { align-items: flex-start; }
+  .file-heading :global(.mantine-Checkbox-root) { flex: none; }
+  .file-role { padding-left: 16px; }
+}

@@ -1,6 +1,6 @@
 import type { NetworkPhase, PhaseKey, PresetUrl, RenderPhase } from './types';
 
-import type { DemoStructure } from '@/components/DemoStructureDialog';
+import type { DemoStructure } from '@/components/DemoStructureDialog/types';
 
 /**
  * 每个网络阶段的功能色（按协议/阶段编码，而非装饰）：

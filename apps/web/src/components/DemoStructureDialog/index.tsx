@@ -1,235 +1,24 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Button, Checkbox, Modal, Text, Title } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import {
-  IconChevronRight,
-  IconFileCode,
-  IconFolder,
-  IconHierarchy2,
-} from '@tabler/icons-react';
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
+import { Button, Modal, Text, Title } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconHierarchy2 } from '@tabler/icons-react';
 
-import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
+import type { DemoStructureDialogProps } from './types';
 
-import CodeBlock from '@/components/CodeBlock';
+import FileReview from './FileReview';
+import StructureTree from './StructureTree';
+import { MIN_SIDEBAR_WIDTH } from './constants';
+import { buildTree, clampSidebarWidth, fileKey, maxSidebarWidth } from './utils';
 
 import styles from './index.scss';
-
-export type StructureFile = {
-  path: string;
-  role: string;
-};
-
-export type DemoStructure = {
-  frontend: StructureFile[];
-  backend?: StructureFile[];
-  schema?: StructureFile[];
-  connection?: string;
-  database: string;
-};
-
-type DemoStructureDialogProps = {
-  structure: DemoStructure;
-};
-
-type Directory = {
-  name: string;
-  directories: Map<string, Directory>;
-  files: Map<string, StructureFile>;
-};
-
-const buildTree = (files: StructureFile[]): Directory => {
-  const root: Directory = {
-    name: '',
-    directories: new Map(),
-    files: new Map(),
-  };
-
-  for (const { path, role } of files) {
-    const segments = path.split('/');
-    const name = segments[segments.length - 1];
-    let directory = root;
-
-    for (const segment of segments.slice(0, -1)) {
-      let child = directory.directories.get(segment);
-
-      if (!child) {
-        child = { name: segment, directories: new Map(), files: new Map() };
-        directory.directories.set(segment, child);
-      }
-
-      directory = child;
-    }
-
-    if (name) {
-      directory.files.set(name, { path, role });
-    }
-  }
-
-  return root;
-};
-
-type TreeProps = {
-  directory: Directory;
-  repository: 'frontend' | 'backend' | 'schema';
-  readFiles: Record<string, boolean>;
-};
-
-const fileKey = (repository: TreeProps['repository'], path: string) =>
-  `${repository}:${path}`;
-const fileId = (repository: TreeProps['repository'], path: string) =>
-  `demo-source-${encodeURIComponent(fileKey(repository, path))}`;
-const minSidebarWidth = 240;
-const maxSidebarWidth = () =>
-  Math.max(minSidebarWidth, Math.min(720, window.innerWidth - 320));
-const clampSidebarWidth = (width: number) =>
-  Math.min(maxSidebarWidth(), Math.max(minSidebarWidth, width));
-
-const FileReview = ({
-  file,
-  repository,
-  read,
-  onReadChange,
-}: {
-  file: StructureFile;
-  repository: TreeProps['repository'];
-  read: boolean;
-  onReadChange: (read: boolean) => void;
-}) => {
-  const [expanded, setExpanded] = useState(!read);
-  const [source, setSource] = useState<string | null | undefined>(null);
-  const codeId = useId();
-
-  useEffect(() => {
-    if (!expanded || source !== null) {
-      return;
-    }
-
-    let active = true;
-
-    void import('./utils/source-files')
-      .then(({ getSourceFile }) => getSourceFile(repository, file.path))
-      .then((code) => {
-        if (active) {
-          setSource(code);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setSource(undefined);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [expanded, file.path, repository, source]);
-
-  return (
-    <section className={styles.fileReview} id={fileId(repository, file.path)}>
-      <div className={styles.fileHeading}>
-        <button
-          aria-controls={codeId}
-          aria-expanded={expanded}
-          className={styles.fileToggle}
-          onClick={() => setExpanded(!expanded)}
-          type="button"
-        >
-          <IconChevronRight
-            className={`${styles.chevron} ${expanded ? styles.expanded : ''}`}
-            size={15}
-          />
-          <IconFileCode size={16} />
-          <code>{file.path}</code>
-        </button>
-        <Checkbox
-          aria-label={`${file.path} 已读`}
-          checked={read}
-          label="已读"
-          onChange={(event) => {
-            const { checked } = event.currentTarget;
-
-            onReadChange(checked);
-            setExpanded(!checked);
-          }}
-          size="xs"
-        />
-      </div>
-      <Text c="dimmed" className={styles.fileRole} size="sm">
-        {file.role}
-      </Text>
-      {expanded && (
-        <div className={styles.codePanel} id={codeId}>
-          {source === null && (
-            <Text c="dimmed" size="sm">
-              加载源码中…
-            </Text>
-          )}
-          {source === undefined && (
-            <Text c="red" size="sm">
-              源码加载失败或当前构建未包含该文件。
-            </Text>
-          )}
-          {typeof source === 'string' && (
-            <CodeBlock
-              bare
-              code={source}
-              label={`${file.path} 源码`}
-              path={file.path}
-            />
-          )}
-        </div>
-      )}
-    </section>
-  );
-};
-
-const TreeBranches = ({ directory, repository, readFiles }: TreeProps) => (
-  <ul className={styles.branches}>
-    {[...directory.directories.values()].map((child) => (
-      <li key={child.name}>
-        <details className={styles.directory} open>
-          <summary className={styles.folder}>
-            <IconChevronRight className={styles.chevron} size={15} />
-            <IconFolder size={17} />
-            <span>{child.name}</span>
-          </summary>
-          <TreeBranches
-            directory={child}
-            readFiles={readFiles}
-            repository={repository}
-          />
-        </details>
-      </li>
-    ))}
-    {[...directory.files.entries()].map(([name, file]) => (
-      <li key={name}>
-        <button
-          className={`${styles.treeFile} ${readFiles[fileKey(repository, file.path)] ? styles.viewed : ''}`}
-          onClick={() =>
-            document
-              .getElementById(fileId(repository, file.path))
-              ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }
-          title={file.path}
-          type="button"
-        >
-          <IconFileCode size={15} />
-          <span>{name}</span>
-        </button>
-      </li>
-    ))}
-  </ul>
-);
-
-const StructureTree = ({ directory, repository, readFiles }: TreeProps) => (
-  <div className={styles.tree}>
-    <TreeBranches
-      directory={directory}
-      readFiles={readFiles}
-      repository={repository}
-    />
-  </div>
-);
 
 const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -315,7 +104,7 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
     const widths: Record<string, number> = {
       ArrowLeft: sidebarWidth - 20,
       ArrowRight: sidebarWidth + 20,
-      Home: minSidebarWidth,
+      Home: MIN_SIDEBAR_WIDTH,
       End: maxSidebarWidth(),
     };
 
@@ -399,7 +188,7 @@ const DemoStructureDialog = ({ structure }: DemoStructureDialogProps) => {
             aria-label="调整文件树宽度"
             aria-orientation="vertical"
             aria-valuemax={maxSidebarWidth()}
-            aria-valuemin={minSidebarWidth}
+            aria-valuemin={MIN_SIDEBAR_WIDTH}
             aria-valuenow={sidebarWidth}
             className={styles.resizer}
             onKeyDown={resizeWithKeyboard}

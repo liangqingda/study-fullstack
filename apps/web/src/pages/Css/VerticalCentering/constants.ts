@@ -11,7 +11,7 @@ import {
 
 import type { CenteringMethod, Principle } from './types';
 
-import type { DemoStructure } from '@/components/DemoStructureDialog';
+import type { DemoStructure } from '@/components/DemoStructureDialog/types';
 
 import styles from './index.scss';
 
